@@ -1,31 +1,26 @@
 # heycg_project/settings.py
-"""
-Django settings for heycg_project project.
-"""
 
 import os
 import dj_database_url
 from pathlib import Path
+from dotenv import load_dotenv
 
-# ===== O N G E Z A  H I Z I =====
+# ===== LOAD ENVIRONMENT VARIABLES =====
+load_dotenv()
+
+# ===== CLOUDINARY IMPORTS =====
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
-from dotenv import load_dotenv
-load_dotenv()  # Inasoma .env file
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
+# ===== SECURITY =====
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-!q(u41=*%5qcd9qs-+nmm+gu9eb1z#zs*bxy-6qxw!yqpu5r&=')
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+ALLOWED_HOSTS = ['*']
 
-# ===== MUHIMU: Ongeza hii =====
-ALLOWED_HOSTS = ['*']  # Kwa Render, au weka domain yako
-
-# Application definition
+# ===== INSTALLED APPS =====
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -35,8 +30,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     
-    # ===== O N G E Z A  H I Z I =====
-    'cloudinary_storage',  # Hii lazima iwe kabla ya cloudinary
+    # ===== CLOUDINARY =====
+    'cloudinary_storage',
     'cloudinary',
     
     'crispy_forms',
@@ -48,6 +43,7 @@ INSTALLED_APPS = [
     'members',
 ]
 
+# ===== MIDDLEWARE =====
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -80,7 +76,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'heycg_project.wsgi.application'
 
-# Database
+# ===== DATABASE =====
 DATABASES = {
     'default': dj_database_url.config(
         default='sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
@@ -88,7 +84,7 @@ DATABASES = {
     )
 }
 
-# Password validation
+# ===== PASSWORD VALIDATION =====
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -96,7 +92,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# Internationalization
+# ===== INTERNATIONALIZATION =====
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
@@ -109,49 +105,41 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # ============================================================
-# ===== M E D I A   F I L E S   -   C L O U D I N A R Y =====
+# ===== CLOUDINARY CONFIGURATION - FIXED =====
 # ============================================================
 
-# ===== CLOUDINARY CONFIGURATION =====
+# ===== FAFANUA CLOUDINARY VARIABLES =====
+CLOUDINARY_CLOUD_NAME = os.environ.get('CLOUDINARY_CLOUD_NAME')
+CLOUDINARY_API_KEY = os.environ.get('CLOUDINARY_API_KEY')
+CLOUDINARY_API_SECRET = os.environ.get('CLOUDINARY_API_SECRET')
+
+# ===== CONFIGURE CLOUDINARY =====
 cloudinary.config(
-    cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME'),
-    api_key = os.environ.get('CLOUDINARY_API_KEY'),
-    api_secret = os.environ.get('CLOUDINARY_API_SECRET'),
-    secure = True  # Inatumia HTTPS
+    cloud_name=CLOUDINARY_CLOUD_NAME,
+    api_key=CLOUDINARY_API_KEY,
+    api_secret=CLOUDINARY_API_SECRET,
+    secure=True
 )
 
 # ===== MEDIA FILES STORAGE =====
-# Sasa picha zote zinaenda Cloudinary, si filesystem tena!
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-# Media URL - hii ni URL ya picha kutoka Cloudinary
 MEDIA_URL = '/media/'
-
-# Hii haihitajiki tena, lakini tuweke tu
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# ===== OLD MEDIA SETTINGS - ZIMEONDOLEWA! =====
-# if DEBUG:
-#     MEDIA_URL = '/media/'
-#     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-# else:
-#     MEDIA_URL = '/static/media/'
-#     MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media')
 
 # ============================================================
 
-# Crispy Forms
+# ===== CRISPY FORMS =====
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
-# Login URLs
+# ===== LOGIN =====
 LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'members:dashboard'
 LOGOUT_REDIRECT_URL = 'home'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# CSRF and Session settings
+# ===== CSRF =====
 CSRF_COOKIE_SECURE = False
 CSRF_COOKIE_HTTPONLY = False
 CSRF_USE_SESSIONS = False
@@ -169,18 +157,18 @@ CSRF_TRUSTED_ORIGINS = [
 CSRF_COOKIE_NAME = 'csrftoken'
 CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
 
-# Admin Customization
+# ===== ADMIN =====
 ADMIN_SITE_HEADER = "HEYCG Membership Portal"
 ADMIN_SITE_TITLE = "HEYCG Admin"
 ADMIN_INDEX_TITLE = "Welcome to HEYCG Membership Portal Administration"
 
-# Pagination
+# ===== PAGINATION =====
 BLOG_PAGINATION = 6
 EVENTS_PAGINATION = 9
 GALLERY_PAGINATION = 12
 LOGOUT_REDIRECT_URL = '/'
 
-# Email settings
+# ===== EMAIL =====
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -191,7 +179,7 @@ DEFAULT_FROM_EMAIL = 'HEYCG <youngcharitygeneration20@gmail.com>'
 EMAIL_TIMEOUT = 30
 EMAIL_USE_LOCALTIME = True
 
-# TinyMCE
+# ===== TINYMCE =====
 TINYMCE_DEFAULT_CONFIG = {
     'height': 500,
     'width': '100%',
