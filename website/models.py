@@ -132,7 +132,7 @@ class Event(models.Model):
     event_date = models.DateTimeField()
     location = models.CharField(max_length=200)
     event_type = models.CharField(max_length=10, choices=EVENT_TYPES, default='upcoming')
-    image = models.ImageField(blank=True, null=True)  # Kwa Event na Gallery
+    image = models.ImageField(upload_to='event_images/', blank=True, null=True)  # Kwa Event na Gallery
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
@@ -141,7 +141,7 @@ class Event(models.Model):
 
 class GalleryImage(models.Model):
     title = models.CharField(max_length=100)
-    image = models.ImageField(blank=True, null=True)
+    image = models.ImageField(upload_to='gallery_images/', blank=True, null=True)
     description = models.TextField(blank=True)
     event = models.ForeignKey(Event, on_delete=models.SET_NULL, null=True, blank=True, related_name='gallery_images')
     uploaded_at = models.DateTimeField(auto_now_add=True)
