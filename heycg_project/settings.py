@@ -7,6 +7,13 @@ import os
 import dj_database_url
 from pathlib import Path
 
+# ===== O N G E Z A  H I Z I =====
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+from dotenv import load_dotenv
+load_dotenv()  # Inasoma .env file
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -27,6 +34,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    
+    # ===== O N G E Z A  H I Z I =====
+    'cloudinary_storage',  # Hii lazima iwe kabla ya cloudinary
+    'cloudinary',
     
     'crispy_forms',
     'crispy_bootstrap5',
@@ -97,15 +108,37 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# ===== MEDIA FILES =====
-if DEBUG:
-    # Local development
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-else:
-    # Production (Render)
-    MEDIA_URL = '/static/media/'
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media')
+# ============================================================
+# ===== M E D I A   F I L E S   -   C L O U D I N A R Y =====
+# ============================================================
+
+# ===== CLOUDINARY CONFIGURATION =====
+cloudinary.config(
+    cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    api_key = os.environ.get('CLOUDINARY_API_KEY'),
+    api_secret = os.environ.get('CLOUDINARY_API_SECRET'),
+    secure = True  # Inatumia HTTPS
+)
+
+# ===== MEDIA FILES STORAGE =====
+# Sasa picha zote zinaenda Cloudinary, si filesystem tena!
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+# Media URL - hii ni URL ya picha kutoka Cloudinary
+MEDIA_URL = '/media/'
+
+# Hii haihitajiki tena, lakini tuweke tu
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# ===== OLD MEDIA SETTINGS - ZIMEONDOLEWA! =====
+# if DEBUG:
+#     MEDIA_URL = '/media/'
+#     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# else:
+#     MEDIA_URL = '/static/media/'
+#     MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media')
+
+# ============================================================
 
 # Crispy Forms
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"

@@ -27,7 +27,7 @@ class UserProfile(models.Model):
     last_name = models.CharField(max_length=50)
     email = models.EmailField(unique=False, blank=True, null=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True, null=True)
-    profile_picture = models.ImageField(upload_to='media/profile_pics/', blank=True, null=True)
+    profile_picture = models.ImageField(blank=True, null=True)
     
     # Step 2: Complete Profile fields (filled after payment approval)
     middle_name = models.CharField(max_length=50, blank=True, null=True)
@@ -80,7 +80,7 @@ class Payment(models.Model):
     transaction_id = models.CharField(max_length=100, unique=True)
     payment_method = models.CharField(max_length=50, default='Airtel Lipa Namba')
     status = models.CharField(max_length=10, choices=PAYMENT_STATUS, default='pending')
-    proof_image = models.ImageField(upload_to='media/payment_proofs/', blank=True, null=True)
+    proof_image = models.ImageField(blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

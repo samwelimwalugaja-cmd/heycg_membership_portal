@@ -8,3 +8,6 @@ crispy-bootstrap5==0.7
 django-tinymce==4.0.0
 Pillow>=10.0.0
 reportlab==4.2.2
+cloudinary==1.44.3
+django-cloudinary-storage==0.3.0
+python-dotenv==1.0.1
