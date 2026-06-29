@@ -480,17 +480,21 @@
               </div>
             </div>
 
-            <!-- ========== PROFILE DROPDOWN ========== -->
+            <!-- ========== PROFILE DROPDOWN - FIXED ========== -->
             <div class="dropdown">
               <button class="btn btn-light rounded-pill d-flex align-items-center gap-1 gap-sm-2 profile-btn" type="button" data-bs-toggle="dropdown" style="padding: 4px 8px 4px 4px;">
-                <!-- Profile Picture -->
-                {% if request.user.profile.profile_picture and request.user.profile.profile_picture.url %}
-                  <img src="{{ request.user.profile.profile_picture.url }}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
-                {% else %}
-                  <div style="width: 32px; height: 32px; border-radius: 50%; background: #0a58ca; display: flex; align-items: center; justify-content: center; color: white;">
-                    <i class="bi bi-person-fill" style="font-size: 14px;"></i>
-                  </div>
-                {% endif %}
+                <!-- Profile Picture - With Default Fallback -->
+                <div style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; flex-shrink: 0;">
+                  {% if request.user.profile.profile_picture and request.user.profile.profile_picture.url %}
+                    <img src="{{ request.user.profile.profile_picture.url }}" 
+                         style="width: 100%; height: 100%; object-fit: cover;" 
+                         onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\"width:32px;height:32px;border-radius:50%;background:#0a58ca;display:flex;align-items:center;justify-content:center;color:white;\"><i class=\"bi bi-person-fill\" style=\"font-size:14px;\"></i></div>'">
+                  {% else %}
+                    <div style="width: 100%; height: 100%; background: #0a58ca; display: flex; align-items: center; justify-content: center; color: white;">
+                      <i class="bi bi-person-fill" style="font-size: 14px;"></i>
+                    </div>
+                  {% endif %}
+                </div>
                 <span class="fw-semibold small d-none d-sm-inline profile-name-text">{{ request.user.last_name|default:request.user.username }}</span>
                 <i class="bi bi-chevron-down small profile-chevron"></i>
               </button>
