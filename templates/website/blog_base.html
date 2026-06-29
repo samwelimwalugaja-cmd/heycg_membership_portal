@@ -1,0 +1,64 @@
+{% load static %}
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{% block meta_description %}HEYCG Blog - Stories, updates and news from HOCET Young Charity Generation{% endblock %}">
+     <link href="{% static 'images/favicon-01.png' %}" rel="icon">
+    <title>{% block title %}HEYCG Blog - HOCET Young Charity Generation{% endblock %}</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/blog.css' %}">
+    {% comment %} <link rel="stylesheet" href="{% static 'css/style.css' %}"> {% endcomment %}
+</head>
+<body>
+    <!-- Navigation (same as before) -->
+    
+    {% block content %}{% endblock %}
+    <!-- Ongeza hii kwenye base.html yako, baada ya header au mwanzoni mwa main content -->
+{% if messages %}
+<div class="container mt-3">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+    <!-- Newsletter Section -->
+    <section class="newsletter-section py-5 bg-primary text-white">
+        <div class="container text-center">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <h3>Subscribe to Our Newsletter</h3>
+                    <p>Get the latest updates about our charity work, events, and stories</p>
+                    <form method="POST" action="{% url 'website:newsletter_subscribe' %}" class="row g-3 justify-content-center">
+                        {% csrf_token %}
+                        <div class="col-md-6">
+                            <input type="email" name="email" class="form-control form-control-lg" placeholder="Enter your email" required>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-light btn-lg text-primary">Subscribe</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer (same as before) -->
+</body>
+</html>

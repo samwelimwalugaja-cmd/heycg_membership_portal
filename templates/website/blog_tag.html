@@ -1,0 +1,62 @@
+<!-- templates/website/blog_tag.html -->
+{% extends 'website/blog_base.html' %}
+
+{% block title %}#{{ tag.name }} - HEYCG Blog{% endblock %}
+
+{% block content %}
+<!-- Back to Website Button - Ongeza mwanzoni mwa block content -->
+<div class="container mt-4">
+    <a href="/" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Website
+    </a>
+    <a href="{% url 'website:blog_list' %}" class="btn btn-outline-primary ms-2">
+        <i class="fas fa-blog"></i> All Blog Posts
+    </a>
+</div>
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- Tag Header -->
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold">
+                    <i class="fas fa-tag"></i> #{{ tag.name }}
+                </h1>
+                <p class="lead text-muted">
+                    {{ posts|length }} post(s) with this tag
+                </p>
+            </div>
+            
+            <!-- Posts List -->
+            {% if posts %}
+                {% for post in posts %}
+                    <article class="mb-5 pb-3 border-bottom">
+                        <h2 class="h3">
+                            <a href="{{ post.get_absolute_url }}" class="text-decoration-none text-dark">
+                                {{ post.title }}
+                            </a>
+                        </h2>
+                        <div class="text-muted mb-2">
+                            <small>
+                                <i class="far fa-calendar-alt"></i> {{ post.published_at|date:"F d, Y" }}
+                                <i class="far fa-user ms-3"></i> {{ post.author.get_full_name|default:post.author.username }}
+                                <i class="far fa-eye ms-3"></i> {{ post.views }} views
+                            </small>
+                        </div>
+                        <p class="text-muted">{{ post.excerpt|truncatewords:40 }}</p>
+                        <a href="{{ post.get_absolute_url }}" class="btn btn-outline-primary btn-sm">
+                            Read More <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </article>
+                {% endfor %}
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-tag fa-3x text-muted mb-3"></i>
+                    <h3>No posts with this tag yet</h3>
+                    <p class="text-muted">Check back later for new stories</p>
+                    <a href="{% url 'website:blog_list' %}" class="btn btn-primary">Back to Blog</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

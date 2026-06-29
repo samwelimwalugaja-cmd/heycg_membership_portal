@@ -1,0 +1,88 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}Payment Receipt{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <div class="module" style="max-width: 800px; margin: 0 auto;">
+    <div style="background: white; padding: 40px; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.1);">
+      
+      <!-- Header -->
+      <div style="text-align: center; border-bottom: 2px solid #0a58ca; padding-bottom: 20px; margin-bottom: 20px;">
+        <h1 style="color: #0a58ca; margin: 0;">HEYCG</h1>
+        <p style="color: #666; margin: 5px 0;">HOCET Young Charity Generation</p>
+        <p style="color: #999; font-size: 14px;">Membership Payment Receipt</p>
+      </div>
+      
+      <!-- Receipt Info -->
+      <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+        <div>
+          <p><strong>Transaction ID:</strong> {{ payment.transaction_id }}</p>
+          <p><strong>Date:</strong> {{ payment.created_at|date:"F d, Y H:i" }}</p>
+        </div>
+        <div style="text-align: right;">
+          <p><strong>Status:</strong> 
+            {% if payment.status == 'approved' %}
+              <span style="color: green;">✅ Approved</span>
+            {% elif payment.status == 'pending' %}
+              <span style="color: orange;">⏳ Pending</span>
+            {% else %}
+              <span style="color: red;">❌ Rejected</span>
+            {% endif %}
+          </p>
+          <p><strong>Approved By:</strong> {{ payment.approved_by.get_full_name|default:payment.approved_by.username }}</p>
+        </div>
+      </div>
+      
+      <!-- Member Info -->
+      <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+        <h3 style="margin-top: 0;">Member Information</h3>
+        <p><strong>Name:</strong> {{ payment.user.get_full_name|default:payment.user.username }}</p>
+        <p><strong>Email:</strong> {{ payment.user.email }}</p>
+        <p><strong>Member ID:</strong> #{{ payment.user.id|stringformat:"06d" }}</p>
+      </div>
+      
+      <!-- Payment Details -->
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+        <thead>
+          <tr style="background: #0a58ca; color: white;">
+            <th style="padding: 10px; text-align: left;">Description</th>
+            <th style="padding: 10px; text-align: right;">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 10px;">
+              <strong>{{ payment.payment_type|title }} Fee</strong>
+              {% if payment.month_covered %}
+                <br><small style="color: #666;">Month: {{ payment.month_covered }}</small>
+              {% endif %}
+            </td>
+            <td style="padding: 10px; text-align: right; font-weight: bold;">
+              TZS {{ payment.amount|floatformat:0 }}
+            </td>
+          </tr>
+          <tr style="background: #f8f9fa; font-weight: bold;">
+            <td style="padding: 10px;">TOTAL</td>
+            <td style="padding: 10px; text-align: right;">TZS {{ payment.amount|floatformat:0 }}</td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <!-- Footer -->
+      <div style="text-align: center; border-top: 2px solid #0a58ca; padding-top: 20px; margin-top: 20px;">
+        <p style="color: #666; font-size: 12px; margin: 0;">
+          This is a system-generated receipt. For any queries, please contact HEYCG.
+        </p>
+        <p style="color: #999; font-size: 12px; margin: 5px 0;">
+          © 2026 HEYCG - HOCET Young Charity Generation
+        </p>
+        <button onclick="window.print()" style="background: #0a58ca; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 10px;">
+          🖨️ Print Receipt
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

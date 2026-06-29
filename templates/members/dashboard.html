@@ -1,0 +1,442 @@
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - HEYCG{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 px-lg-4 py-4">
+
+  <!-- Page Heading -->
+  <div class="page-heading mb-4">
+    <div class="page-heading-copy">
+      <span class="page-icon"><i class="bi bi-speedometer2" aria-hidden="true"></i></span>
+      <div>
+        <p class="eyebrow mb-1">Member Portal</p>
+        <h1 class="h3 mb-1">Dashboard</h1>
+        <p class="text-muted mb-0">Welcome back, {{ user.get_full_name|default:user.username }}! Here's your membership overview.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== STATS CARDS ===== -->
+  <div class="row g-3 g-md-4 mb-4">
+    
+    <!-- Card 1: Membership Status -->
+    <div class="col-6 col-md-3">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="card-subtitle mb-2 text-muted">Membership Status</h6>
+              <h3 class="card-title mb-0">
+                {% if user.profile.membership_status == 'active' %}
+                  <span class="badge bg-success fs-6">Active</span>
+                {% elif user.profile.membership_status == 'pending_approval' %}
+                  <span class="badge bg-warning fs-6">Pending</span>
+                {% elif user.profile.membership_status == 'pending_profile' %}
+                  <span class="badge bg-info fs-6">Profile Pending</span>
+                {% else %}
+                  <span class="badge bg-secondary fs-6">Inactive</span>
+                {% endif %}
+              </h3>
+            </div>
+            <div class="icon-circle bg-primary bg-opacity-10 text-primary">
+              <i class="bi bi-person-check fs-3"></i>
+            </div>
+          </div>
+          <div class="mt-2">
+            <small class="text-muted">
+              Member since {{ user.date_joined|date:"F d, Y" }}
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2: Total Payments -->
+    <div class="col-6 col-md-3">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="card-subtitle mb-2 text-muted">Total Payments</h6>
+              <h3 class="card-title mb-0">{{ total_payments|default:"0" }}</h3>
+            </div>
+            <div class="icon-circle bg-success bg-opacity-10 text-success">
+              <i class="bi bi-credit-card fs-3"></i>
+            </div>
+          </div>
+          <div class="mt-2">
+            <small class="text-muted">
+              {% if last_payment_date %}
+                Last: {{ last_payment_date|date:"M d, Y" }}
+              {% else %}
+                No payments yet
+              {% endif %}
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: Total Donations -->
+    <div class="col-6 col-md-3">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="card-subtitle mb-2 text-muted">Total Donations</h6>
+              <h3 class="card-title mb-0">
+                TZS {{ total_donations|floatformat:0|default:"0" }}
+              </h3>
+            </div>
+            <div class="icon-circle bg-danger bg-opacity-10 text-danger">
+              <i class="bi bi-heart fs-3"></i>
+            </div>
+          </div>
+          <div class="mt-2">
+            <small class="text-muted">
+              {{ donation_count|default:0 }} donation{{ donation_count|pluralize }}
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4: Events Attended -->
+    <div class="col-6 col-md-3">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="card-subtitle mb-2 text-muted">Events Attended</h6>
+              <h3 class="card-title mb-0">{{ events_attended|default:"0" }}</h3>
+            </div>
+            <div class="icon-circle bg-info bg-opacity-10 text-info">
+              <i class="bi bi-calendar-event fs-3"></i>
+            </div>
+          </div>
+          <div class="mt-2">
+            <small class="text-muted">
+              {% if next_event %}
+                Next: {{ next_event.event_date|date:"M d, Y" }}
+              {% else %}
+                No upcoming events
+              {% endif %}
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECOND ROW - Recent Payments & Upcoming Events ===== -->
+  <div class="row g-3 g-md-4 mb-4">
+    
+    <!-- Recent Payments -->
+    <div class="col-12 col-md-6">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0"><i class="bi bi-clock-history me-2"></i>Recent Payments</h5>
+          <a href="{% url 'members:payment_page' %}" class="btn btn-sm btn-outline-primary">View All</a>
+        </div>
+        <div class="card-body">
+          {% if recent_payments %}
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for payment in recent_payments %}
+                    <tr>
+                      <td>{{ payment.created_at|date:"M d, Y" }}</td>
+                      <td>TZS {{ payment.amount }}</td>
+                      <td>
+                        {% if payment.status == 'approved' %}
+                          <span class="badge bg-success">Approved</span>
+                        {% elif payment.status == 'pending' %}
+                          <span class="badge bg-warning">Pending</span>
+                        {% else %}
+                          <span class="badge bg-danger">Rejected</span>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="text-center py-4">
+              <i class="bi bi-credit-card fs-1 text-muted"></i>
+              <p class="text-muted mt-2">No payment history yet</p>
+              <a href="{% url 'members:payment_page' %}" class="btn btn-primary btn-sm">Make Payment</a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Upcoming Events - SASA INAELEKEZA KWENYE MEMBERS PAGE -->
+    <div class="col-12 col-md-6">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0"><i class="bi bi-calendar3 me-2"></i>Upcoming Events</h5>
+          <a href="{% url 'members:my_events' %}" class="btn btn-sm btn-outline-primary">View All</a>
+        </div>
+        <div class="card-body">
+          {% if upcoming_events %}
+            <div class="list-group list-group-flush">
+              {% for event in upcoming_events %}
+                <div class="list-group-item px-0 border-0 d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 class="mb-0">{{ event.title }}</h6>
+                    <small class="text-muted">
+                      <i class="bi bi-calendar-event me-1"></i>
+                      {{ event.event_date|date:"F d, Y" }} at {{ event.event_date|time:"H:i" }}
+                    </small>
+                    <br>
+                    <small class="text-muted">
+                      <i class="bi bi-geo-alt me-1"></i> {{ event.location|default:"TBD" }}
+                    </small>
+                  </div>
+                  <a href="{% url 'members:event_detail' event.id %}" class="btn btn-sm btn-outline-primary">Details</a>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="text-center py-4">
+              <i class="bi bi-calendar-x fs-1 text-muted"></i>
+              <p class="text-muted mt-2">No upcoming events at the moment</p>
+              <a href="{% url 'members:my_events' %}" class="btn btn-primary btn-sm">Browse Events</a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== THIRD ROW - Member Info ===== -->
+  <div class="row g-3 g-md-4">
+    <div class="col-12">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-transparent">
+          <h5 class="card-title mb-0"><i class="bi bi-person-circle me-2"></i>Member Information</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-3 text-center text-md-start mb-3 mb-md-0">
+              {% if user.profile.profile_picture and user.profile.profile_picture.url %}
+                <img src="{{ user.profile.profile_picture.url }}" class="rounded-circle" width="120" height="120" style="object-fit: cover; border: 3px solid #0a58ca;">
+              {% else %}
+                <div class="rounded-circle bg-primary d-inline-flex align-items-center justify-content-center" style="width: 120px; height: 120px;">
+                  <i class="bi bi-person-fill text-white fs-1"></i>
+                </div>
+              {% endif %}
+            </div>
+            <div class="col-md-9">
+              <div class="row">
+                <div class="col-md-6">
+                  <h5>{{ user.get_full_name|default:user.username }}</h5>
+                  <p class="text-muted mb-1"><i class="bi bi-envelope me-2"></i>{{ user.email }}</p>
+                  <p class="text-muted mb-1"><i class="bi bi-phone me-2"></i>{{ user.profile.phone_number|default:"Not set" }}</p>
+                  <p class="text-muted mb-0"><i class="bi bi-calendar me-2"></i>Joined: {{ user.date_joined|date:"F d, Y" }}</p>
+                </div>
+                <div class="col-md-6">
+                  <p class="mb-1"><strong>Member ID:</strong> #{{ user.id|stringformat:"06d" }}</p>
+                  <p class="mb-1">
+                    <strong>Status:</strong>
+                    {% if user.profile.membership_status == 'active' %}
+                      <span class="badge bg-success">Active</span>
+                    {% elif user.profile.membership_status == 'pending_approval' %}
+                      <span class="badge bg-warning">Pending</span>
+                    {% else %}
+                      <span class="badge bg-secondary">Inactive</span>
+                    {% endif %}
+                  </p>
+                  <p class="mb-0"><strong>Total Payments:</strong> {{ total_payments|default:0 }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<style>
+  /* ===== BASE CARD STYLES ===== */
+  .card {
+    background: var(--bs-body-bg, #ffffff) !important;
+    border-color: var(--bs-border-color, #dee2e6) !important;
+    border-radius: 12px;
+    transition: transform 0.2s;
+  }
+  
+  .card:hover {
+    transform: translateY(-3px);
+  }
+  
+  .card-header {
+    background: transparent !important;
+    border-bottom: 1px solid var(--bs-border-color, rgba(0,0,0,0.05)) !important;
+  }
+  
+  .card-title {
+    color: var(--bs-heading-color, #212529) !important;
+  }
+  
+  .card-subtitle {
+    color: var(--bs-secondary-color, #6c757d) !important;
+  }
+  
+  .card-body {
+    background: transparent !important;
+  }
+  
+  /* ===== DARK THEME - CARD OVERRIDES ===== */
+  [data-bs-theme="dark"] .card {
+    background: #1a1a2e !important;
+    border-color: #2d2d44 !important;
+  }
+  
+  [data-bs-theme="dark"] .card-header {
+    background: transparent !important;
+    border-bottom-color: #2d2d44 !important;
+  }
+  
+  [data-bs-theme="dark"] .card-title {
+    color: #e0e0e0 !important;
+  }
+  
+  [data-bs-theme="dark"] .card-subtitle {
+    color: #adb5bd !important;
+  }
+  
+  [data-bs-theme="dark"] .card-body {
+    background: transparent !important;
+  }
+  
+  [data-bs-theme="dark"] .text-muted {
+    color: #adb5bd !important;
+  }
+  
+  /* ===== LIST GROUP ===== */
+  .list-group-item {
+    background: transparent !important;
+    border-color: var(--bs-border-color, #e9ecef) !important;
+    color: var(--bs-body-color, #212529) !important;
+  }
+  
+  [data-bs-theme="dark"] .list-group-item {
+    background: transparent !important;
+    border-color: #2d2d44 !important;
+    color: #e0e0e0 !important;
+  }
+  
+  /* ===== TABLE ===== */
+  .table {
+    color: var(--bs-body-color, #212529) !important;
+  }
+  
+  .table th {
+    color: var(--bs-secondary-color, #6c757d) !important;
+    border-color: var(--bs-border-color, #dee2e6) !important;
+  }
+  
+  .table td {
+    border-color: var(--bs-border-color, #dee2e6) !important;
+  }
+  
+  .table-hover tbody tr:hover {
+    background: var(--bs-tertiary-bg, #f8f9fa) !important;
+  }
+  
+  [data-bs-theme="dark"] .table {
+    color: #e0e0e0 !important;
+  }
+  
+  [data-bs-theme="dark"] .table th {
+    color: #adb5bd !important;
+    border-color: #2d2d44 !important;
+  }
+  
+  [data-bs-theme="dark"] .table td {
+    border-color: #2d2d44 !important;
+  }
+  
+  [data-bs-theme="dark"] .table-hover tbody tr:hover {
+    background: rgba(255, 255, 255, 0.03) !important;
+  }
+  
+  /* ===== BADGES ===== */
+  .badge {
+    font-weight: 500;
+    padding: 6px 14px;
+  }
+  
+  /* ===== ICON CIRCLE ===== */
+  .icon-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  [data-bs-theme="dark"] .icon-circle.bg-primary.bg-opacity-10 {
+    background: rgba(10, 88, 202, 0.2) !important;
+  }
+  
+  [data-bs-theme="dark"] .icon-circle.bg-success.bg-opacity-10 {
+    background: rgba(40, 167, 69, 0.2) !important;
+  }
+  
+  [data-bs-theme="dark"] .icon-circle.bg-danger.bg-opacity-10 {
+    background: rgba(220, 53, 69, 0.2) !important;
+  }
+  
+  [data-bs-theme="dark"] .icon-circle.bg-info.bg-opacity-10 {
+    background: rgba(13, 202, 240, 0.2) !important;
+  }
+  
+  [data-bs-theme="dark"] .icon-circle i {
+    color: #e0e0e0 !important;
+  }
+  
+  [data-bs-theme="dark"] .icon-circle.text-primary i {
+    color: #58a6ff !important;
+  }
+  
+  [data-bs-theme="dark"] .icon-circle.text-success i {
+    color: #3fb950 !important;
+  }
+  
+  [data-bs-theme="dark"] .icon-circle.text-danger i {
+    color: #f85149 !important;
+  }
+  
+  [data-bs-theme="dark"] .icon-circle.text-info i {
+    color: #58c4ff !important;
+  }
+  
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .icon-circle {
+      width: 40px;
+      height: 40px;
+    }
+    .icon-circle i {
+      font-size: 1.2rem !important;
+    }
+  }
+</style>
+
+{% endblock %}

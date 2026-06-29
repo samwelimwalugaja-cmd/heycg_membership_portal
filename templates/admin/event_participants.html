@@ -1,0 +1,177 @@
+<!-- templates/admin/event_participants.html -->
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+  <div class="card">
+    <div class="card-header bg-primary text-white">
+      <h3><i class="fas fa-users"></i> Manage Participants - {{ event.title }}</h3>
+    </div>
+    <div class="card-body">
+      
+      <!-- Event Info -->
+      <div class="row mb-4">
+        <div class="col-md-4">
+          <strong>Event Date:</strong> {{ event.event_date|date:"F d, Y H:i" }}
+        </div>
+        <div class="col-md-4">
+          <strong>Location:</strong> {{ event.location }}
+        </div>
+        <div class="col-md-4">
+          <strong>Current Participants:</strong> <span class="badge bg-success">{{ registered_count }}</span>
+        </div>
+      </div>
+
+      <!-- Add Participants Form -->
+      <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+          <h5><i class="fas fa-user-plus"></i> Add Participants to This Event</h5>
+        </div>
+        <div class="card-body">
+          <form method="POST" id="addParticipantsForm">
+            {% csrf_token %}
+            <div class="row">
+              <div class="col-md-8">
+                <label class="form-label">Select Users (Hold Ctrl/Cmd to select multiple)</label>
+                <select name="user_ids" id="userSelect" class="form-select" multiple size="10">
+                  {% for user in available_users %}
+                  <option value="{{ user.id }}">
+                    {{ user.get_full_name|default:user.username }} - {{ user.email }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-md-4">
+                <button type="submit" name="action" value="add" class="btn btn-success w-100 mb-2">
+                  <i class="fas fa-plus"></i> Add Selected Users
+                </button>
+                <div class="mt-3">
+                  <input type="text" id="searchUser" class="form-control" placeholder="Search users...">
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Current Participants List -->
+      <div class="card">
+        <div class="card-header bg-info text-white">
+          <h5><i class="fas fa-users"></i> Current Participants ({{ registered_count }})</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th><input type="checkbox" id="selectAll"></th>
+                  <th>#</th>
+                  <th>Full Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Registration Date</th>
+                  <th>Attended</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for reg in registrations %}
+                <tr>
+                  <td><input type="checkbox" class="user-checkbox" value="{{ reg.user.id }}"></td>
+                  <td>{{ forloop.counter }}</td>
+                  <td>{{ reg.user.get_full_name|default:reg.user.username }}</td>
+                  <td>{{ reg.user.email }}</td>
+                  <td>{{ reg.user.profile.phone_number|default:"N/A" }}</td>
+                  <td>{{ reg.registration_date|date:"M d, Y H:i" }}</td>
+                  <td>
+                    {% if reg.attended %}
+                      <span class="badge bg-success">Yes</span>
+                    {% else %}
+                      <span class="badge bg-warning">Pending</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="7" class="text-center">No participants yet</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          
+          <form method="POST" id="removeParticipantsForm" class="mt-3">
+            {% csrf_token %}
+            <input type="hidden" name="user_ids_to_remove" id="userIdsToRemove">
+            <button type="submit" name="action" value="remove" class="btn btn-danger" id="removeBtn" disabled>
+              <i class="fas fa-trash"></i> Remove Selected Participants
+            </button>
+          </form>
+        </div>
+      </div>
+      
+      <div class="mt-4">
+        <a href="{% url 'admin:website_event_changelist' %}" class="btn btn-secondary">
+          <i class="fas fa-arrow-left"></i> Back to Events
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+select[multiple] {
+  height: auto;
+  min-height: 200px;
+}
+.table th, .table td {
+  vertical-align: middle;
+}
+</style>
+
+<script>
+// Search functionality
+document.getElementById('searchUser')?.addEventListener('keyup', function() {
+  const searchTerm = this.value.toLowerCase();
+  const options = document.getElementById('userSelect').options;
+  for (let i = 0; i < options.length; i++) {
+    const text = options[i].text.toLowerCase();
+    options[i].style.display = text.includes(searchTerm) ? '' : 'none';
+  }
+});
+
+// Select all functionality
+document.getElementById('selectAll')?.addEventListener('change', function() {
+  const checkboxes = document.querySelectorAll('.user-checkbox');
+  checkboxes.forEach(cb => cb.checked = this.checked);
+  toggleRemoveButton();
+});
+
+// Toggle remove button
+document.querySelectorAll('.user-checkbox').forEach(cb => {
+  cb.addEventListener('change', toggleRemoveButton);
+});
+
+function toggleRemoveButton() {
+  const checkboxes = document.querySelectorAll('.user-checkbox:checked');
+  const removeBtn = document.getElementById('removeBtn');
+  if (removeBtn) {
+    removeBtn.disabled = checkboxes.length === 0;
+  }
+}
+
+// Remove participants
+document.getElementById('removeParticipantsForm')?.addEventListener('submit', function(e) {
+  const selected = [];
+  document.querySelectorAll('.user-checkbox:checked').forEach(cb => {
+    selected.push(cb.value);
+  });
+  if (selected.length === 0) {
+    e.preventDefault();
+    alert('Please select users to remove');
+  } else {
+    document.getElementById('userIdsToRemove').value = selected.join(',');
+  }
+});
+</script>
+{% endblock %}

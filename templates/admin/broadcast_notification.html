@@ -1,0 +1,388 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}Broadcast Notification{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    /* Light theme styles */
+    .broadcast-container {
+        background: #ffffff !important;
+        color: #212529 !important;
+        padding: 20px;
+        border-radius: 8px;
+    }
+    
+    .broadcast-container h1 {
+        color: #0a58ca !important;
+        margin-bottom: 20px;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin: 20px 0;
+    }
+    
+    .stat-card {
+        padding: 15px;
+        border-radius: 5px;
+        text-align: center;
+        color: #fff !important;
+    }
+    
+    .stat-card h2 {
+        margin: 0;
+        font-size: 28px;
+        color: #fff !important;
+    }
+    
+    .stat-card small {
+        color: rgba(255,255,255,0.9) !important;
+        font-size: 12px;
+    }
+    
+    .stat-card.primary { background: #0a58ca; }
+    .stat-card.success { background: #28a745; }
+    .stat-card.warning { background: #ffc107; color: #000 !important; }
+    .stat-card.warning h2 { color: #000 !important; }
+    .stat-card.warning small { color: #000 !important; }
+    .stat-card.secondary { background: #6c757d; }
+    
+    .broadcast-form {
+        background: #f8f9fa !important;
+        padding: 20px;
+        border-radius: 5px;
+        margin-top: 20px;
+        border: 1px solid #dee2e6;
+    }
+    
+    .broadcast-form label {
+        font-weight: bold;
+        color: #212529 !important;
+        display: block;
+        margin-bottom: 5px;
+    }
+    
+    .broadcast-form input[type="text"],
+    .broadcast-form select,
+    .broadcast-form textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 14px;
+        background: #ffffff !important;
+        color: #212529 !important;
+    }
+    
+    .broadcast-form textarea {
+        height: 120px;
+    }
+    
+    .broadcast-form .help-text {
+        color: #6c757d !important;
+        font-size: 12px;
+        margin-top: 3px;
+    }
+    
+    .broadcast-form .error-text {
+        color: #dc3545 !important;
+        font-size: 12px;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .email-option {
+        margin: 20px 0;
+        padding: 15px;
+        background: #d4edda !important;
+        border-radius: 5px;
+        border: 1px solid #c3e6cb;
+    }
+    
+    .email-option label {
+        color: #155724 !important;
+        cursor: pointer;
+    }
+    
+    .email-option input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        margin-right: 8px;
+        accent-color: #28a745;
+    }
+    
+    .btn-send {
+        background: #0a58ca !important;
+        color: #ffffff !important;
+        border: none;
+        padding: 12px 35px;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        font-weight: bold;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-send:hover {
+        background: #084298 !important;
+    }
+    
+    .btn-cancel {
+        background: #6c757d !important;
+        color: #ffffff !important;
+        padding: 12px 30px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 16px;
+        display: inline-block;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .btn-cancel:hover {
+        background: #5a6268 !important;
+    }
+    
+    .warning-box {
+        margin-top: 30px;
+        padding: 15px;
+        background: #fff3cd !important;
+        border-left: 4px solid #ffc107;
+        border-radius: 5px;
+        color: #856404 !important;
+    }
+    
+    .warning-box strong {
+        color: #856404 !important;
+    }
+    
+    .warning-box ul {
+        margin: 5px 0;
+        padding-left: 20px;
+    }
+    
+    .back-link {
+        margin-top: 20px;
+        display: block;
+        color: #0a58ca !important;
+        text-decoration: none;
+    }
+    
+    .back-link:hover {
+        text-decoration: underline;
+    }
+    
+    .breadcrumbs {
+        background: #f8f9fa !important;
+        padding: 10px 15px !important;
+        border-bottom: 1px solid #dee2e6 !important;
+    }
+    
+    .breadcrumbs a {
+        color: #0a58ca !important;
+    }
+    
+    .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+    
+    @media (max-width: 768px) {
+        .grid-2 {
+            grid-template-columns: 1fr;
+        }
+        .stats-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">Home</a>
+    &rsaquo; <a href="{% url 'admin:app_list' app_label='members' %}">Members</a>
+    &rsaquo; <a href="{% url 'admin:members_notification_changelist' %}">Notifications</a>
+    &rsaquo; Broadcast
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <div class="broadcast-container">
+        <h1>📢 Send Notification to All Users</h1>
+        
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card primary">
+                <h2>{{ user_counts.all }}</h2>
+                <small>Total Users</small>
+            </div>
+            <div class="stat-card success">
+                <h2>{{ user_counts.active_members }}</h2>
+                <small>Active Members</small>
+            </div>
+            <div class="stat-card warning">
+                <h2>{{ user_counts.pending_members }}</h2>
+                <small>Pending Members</small>
+            </div>
+            <div class="stat-card secondary">
+                <h2>{{ user_counts.inactive_members }}</h2>
+                <small>Inactive Members</small>
+            </div>
+        </div>
+        
+        <!-- Form -->
+        <form method="POST" class="broadcast-form">
+            {% csrf_token %}
+            
+            <!-- Title -->
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+                {{ form.title }}
+                {% if form.title.help_text %}
+                    <div class="help-text">{{ form.title.help_text }}</div>
+                {% endif %}
+                {% if form.title.errors %}
+                    <div class="error-text">{{ form.title.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <!-- Message -->
+            <div class="form-group">
+                <label for="{{ form.message.id_for_label }}">{{ form.message.label }}</label>
+                {{ form.message }}
+                {% if form.message.help_text %}
+                    <div class="help-text">{{ form.message.help_text }}</div>
+                {% endif %}
+                {% if form.message.errors %}
+                    <div class="error-text">{{ form.message.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="grid-2">
+                <!-- Type -->
+                <div class="form-group">
+                    <label for="{{ form.notification_type.id_for_label }}">{{ form.notification_type.label }}</label>
+                    {{ form.notification_type }}
+                </div>
+                
+                <!-- Priority -->
+                <div class="form-group">
+                    <label for="{{ form.priority.id_for_label }}">{{ form.priority.label }}</label>
+                    {{ form.priority }}
+                    {% if form.priority.help_text %}
+                        <div class="help-text">{{ form.priority.help_text }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="grid-2">
+                <!-- Audience -->
+                <div class="form-group">
+                    <label for="{{ form.audience.id_for_label }}">{{ form.audience.label }}</label>
+                    {{ form.audience }}
+                    {% if form.audience.help_text %}
+                        <div class="help-text">{{ form.audience.help_text }}</div>
+                    {% endif %}
+                </div>
+                
+                <!-- Link -->
+                <div class="form-group">
+                    <label for="{{ form.link.id_for_label }}">{{ form.link.label }}</label>
+                    {{ form.link }}
+                    {% if form.link.help_text %}
+                        <div class="help-text">{{ form.link.help_text }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Send Email -->
+            <div class="email-option">
+                <label for="{{ form.send_email.id_for_label }}">
+                    {{ form.send_email }}
+                    <strong>{{ form.send_email.label }}</strong>
+                </label>
+                {% if form.send_email.help_text %}
+                    <div class="help-text" style="margin-left: 30px;">{{ form.send_email.help_text }}</div>
+                {% endif %}
+            </div>
+            
+            <!-- Submit Buttons -->
+            <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                <button type="submit" class="btn-send" onclick="return confirmSend()">
+                    📨 Send Notification
+                </button>
+                <a href="{% url 'admin:members_notification_changelist' %}" class="btn-cancel">
+                    Cancel
+                </a>
+            </div>
+        </form>
+        
+        <!-- Warning -->
+        <div class="warning-box">
+            <strong>⚠️ Important Notes:</strong>
+            <ul>
+                <li>This will send notification to ALL users in the selected audience</li>
+                <li>Users can opt out by disabling notification preferences</li>
+                <li>This action cannot be undone</li>
+                <li>All notifications will appear in users' dashboard</li>
+            </ul>
+        </div>
+        
+        <!-- Back to List -->
+        <a href="{% url 'admin:members_notification_changelist' %}" class="back-link">
+            ← Back to notifications list
+        </a>
+    </div>
+</div>
+
+<script>
+function confirmSend() {
+    const title = document.querySelector('input[name="title"]')?.value || '';
+    const audience = document.querySelector('select[name="audience"]');
+    const audienceText = audience ? audience.options[audience.selectedIndex]?.text : '';
+    
+    const confirmMsg = `⚠️ Are you sure you want to send this notification?\n\n` +
+                      `📌 Title: ${title}\n` +
+                      `👥 Audience: ${audienceText}\n\n` +
+                      `This will be sent to ALL users in the selected audience.`;
+    
+    return confirm(confirmMsg);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Add validation
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const title = document.querySelector('input[name="title"]')?.value?.trim();
+            const message = document.querySelector('textarea[name="message"]')?.value?.trim();
+            
+            if (!title || title.length < 5) {
+                alert('Please enter a title (minimum 5 characters)');
+                e.preventDefault();
+                return false;
+            }
+            
+            if (!message || message.length < 10) {
+                alert('Please enter a message (minimum 10 characters)');
+                e.preventDefault();
+                return false;
+            }
+            
+            return true;
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,767 @@
+<!-- templates/members/settings.html -->
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Settings - HEYCG{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 px-lg-4 py-4">
+  
+  <!-- Page Heading -->
+  <div class="page-heading">
+    <div class="page-heading-copy">
+      <span class="page-icon"><i class="bi bi-gear" aria-hidden="true"></i></span>
+      <div>
+        <p class="eyebrow mb-1">Account</p>
+        <h1 class="h3 mb-1">Settings</h1>
+        <p class="text-muted mb-0">Manage your account security, notifications, and membership preferences.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    
+    <!-- Left Sidebar - Settings Menu -->
+    <div class="col-12 col-md-3">
+      <div class="list-group">
+        <a href="#security" class="list-group-item list-group-item-action active" data-bs-toggle="list">
+          <i class="bi bi-shield-lock me-2"></i> Security
+        </a>
+        <a href="#notifications" class="list-group-item list-group-item-action" data-bs-toggle="list">
+          <i class="bi bi-bell me-2"></i> Notifications
+          <span class="badge bg-primary rounded-pill float-end">{% if user.notification_preferences %}{% else %}New{% endif %}</span>
+        </a>
+        <a href="#membership" class="list-group-item list-group-item-action" data-bs-toggle="list">
+          <i class="bi bi-person-check me-2"></i> Membership
+        </a>
+        <a href="#payments" class="list-group-item list-group-item-action" data-bs-toggle="list">
+          <i class="bi bi-credit-card me-2"></i> Payment Methods
+        </a>
+        <a href="#data" class="list-group-item list-group-item-action" data-bs-toggle="list">
+          <i class="bi bi-database me-2"></i> Data
+        </a>
+      </div>
+    </div>
+
+    <!-- Right Side - Settings Content -->
+    <div class="col-12 col-md-9">
+      <div class="tab-content">
+        
+        <!-- ========== SECURITY SETTINGS ========== -->
+        <div class="tab-pane fade show active" id="security">
+          <div class="panel">
+            <div class="panel-header">
+              <h2 class="h5 mb-1"><i class="bi bi-shield-lock"></i> Security Settings</h2>
+              <p class="text-muted mb-0">Manage your password and account security.</p>
+            </div>
+            <div class="panel-body">
+              
+              <!-- Change Password Form -->
+              <form method="POST" action="{% url 'members:change_password' %}">
+                {% csrf_token %}
+                <h6 class="mb-3">Change Password</h6>
+                <div class="mb-3">
+                  <label class="form-label">Current Password</label>
+                  <input type="password" name="current_password" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">New Password</label>
+                  <input type="password" name="new_password" class="form-control" required>
+                  <div class="form-text small">Minimum 6 characters, with letters and numbers</div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Confirm New Password</label>
+                  <input type="password" name="confirm_password" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Update Password</button>
+              </form>
+              
+              <hr class="my-4">
+              
+              <!-- Active Sessions -->
+              <h6 class="mb-3">Active Sessions</h6>
+              <div class="bg-light rounded p-3 mb-2">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <i class="bi bi-laptop me-2"></i>
+                    <strong>Current Session</strong>
+                    <div class="small text-muted">You are currently logged in on this device</div>
+                  </div>
+                  <span class="badge bg-success">Active Now</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== NOTIFICATION SETTINGS ========== -->
+        <div class="tab-pane fade" id="notifications">
+          <div class="panel">
+            <div class="panel-header">
+              <h2 class="h5 mb-1"><i class="bi bi-bell"></i> Notification Preferences</h2>
+              <p class="text-muted mb-0">Choose what notifications you receive and how.</p>
+            </div>
+            <div class="panel-body">
+              <form method="POST" action="{% url 'members:save_notifications' %}">
+                {% csrf_token %}
+                
+                <!-- Push Notifications -->
+                <h6 class="mb-3 text-primary">Push Notifications</h6>
+                <p class="small text-muted mb-3">Control which notifications appear in your dashboard.</p>
+                
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="checkbox" name="payment_reminders" id="paymentReminders" 
+                         {% if user.notification_preferences.payment_reminders %}checked{% endif %}>
+                  <label class="form-check-label" for="paymentReminders">
+                    <strong>Payment Reminders</strong>
+                    <div class="small text-muted">Get notified when membership fee is due</div>
+                  </label>
+                </div>
+                
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="checkbox" name="membership_expiring" id="membershipExpiring"
+                         {% if user.notification_preferences.membership_expiring %}checked{% endif %}>
+                  <label class="form-check-label" for="membershipExpiring">
+                    <strong>Membership Expiring</strong>
+                    <div class="small text-muted">Get notified before your membership expires</div>
+                  </label>
+                </div>
+                
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="checkbox" name="donation_updates" id="donationUpdates"
+                         {% if user.notification_preferences.donation_updates %}checked{% endif %}>
+                  <label class="form-check-label" for="donationUpdates">
+                    <strong>Donation Updates</strong>
+                    <div class="small text-muted">Get updates about donation campaigns and impact reports</div>
+                  </label>
+                </div>
+                
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="checkbox" name="announcements" id="announcements"
+                         {% if user.notification_preferences.announcements %}checked{% endif %}>
+                  <label class="form-check-label" for="announcements">
+                    <strong>Announcements</strong>
+                    <div class="small text-muted">Get important announcements from HEYCG</div>
+                  </label>
+                </div>
+                
+                <hr class="my-4">
+                
+                <!-- Email Notifications -->
+                <h6 class="mb-3 text-primary">Email Notifications</h6>
+                <p class="small text-muted mb-3">Receive notifications via email in addition to dashboard alerts.</p>
+                
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="checkbox" name="email_payment_reminders" id="emailPaymentReminders"
+                         {% if user.notification_preferences.email_payment_reminders %}checked{% endif %}>
+                  <label class="form-check-label" for="emailPaymentReminders">
+                    <strong>Email Payment Reminders</strong>
+                    <div class="small text-muted">Receive payment reminders via email</div>
+                  </label>
+                </div>
+                
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="checkbox" name="email_membership_expiring" id="emailMembershipExpiring"
+                         {% if user.notification_preferences.email_membership_expiring %}checked{% endif %}>
+                  <label class="form-check-label" for="emailMembershipExpiring">
+                    <strong>Email Membership Expiring</strong>
+                    <div class="small text-muted">Receive membership expiration alerts via email</div>
+                  </label>
+                </div>
+                
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="checkbox" name="email_donation_updates" id="emailDonationUpdates"
+                         {% if user.notification_preferences.email_donation_updates %}checked{% endif %}>
+                  <label class="form-check-label" for="emailDonationUpdates">
+                    <strong>Email Donation Updates</strong>
+                    <div class="small text-muted">Receive donation updates via email</div>
+                  </label>
+                </div>
+                
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="checkbox" name="email_announcements" id="emailAnnouncements"
+                         {% if user.notification_preferences.email_announcements %}checked{% endif %}>
+                  <label class="form-check-label" for="emailAnnouncements">
+                    <strong>Email Announcements</strong>
+                    <div class="small text-muted">Receive announcements via email</div>
+                  </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary mt-3">
+                  <i class="bi bi-save me-2"></i> Save Preferences
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== MEMBERSHIP SETTINGS ========== -->
+        <div class="tab-pane fade" id="membership">
+          <div class="panel">
+            <div class="panel-header">
+              <h2 class="h5 mb-1"><i class="bi bi-person-check"></i> Membership Settings</h2>
+              <p class="text-muted mb-0">View and manage your HEYCG membership details.</p>
+            </div>
+            <div class="panel-body">
+              <div class="bg-light rounded p-3 mb-3">
+                <div class="row">
+                  <div class="col-6">
+                    <small class="text-muted">Status</small>
+                    <p class="fw-semibold mb-0">
+                      {% if user.profile.membership_status == 'active' %}
+                        <span class="badge bg-success">Active Member</span>
+                      {% elif user.profile.membership_status == 'pending_profile' %}
+                        <span class="badge bg-warning">Profile Pending</span>
+                      {% elif user.profile.membership_status == 'pending_approval' %}
+                        <span class="badge bg-info">Payment Pending</span>
+                      {% else %}
+                        <span class="badge bg-secondary">{{ user.profile.membership_status|title }}</span>
+                      {% endif %}
+                    </p>
+                  </div>
+                  <div class="col-6">
+                    <small class="text-muted">Member Since</small>
+                    <p class="fw-semibold mb-0">{{ user.date_joined|date:"F d, Y" }}</p>
+                  </div>
+                  <div class="col-6 mt-2">
+                    <small class="text-muted">Next Payment Due</small>
+                    <p class="fw-semibold mb-0">
+                      {% if user.profile.next_payment_due %}
+                        {{ user.profile.next_payment_due|date:"F d, Y" }}
+                      {% else %}
+                        <span class="text-muted">Not set</span>
+                      {% endif %}
+                    </p>
+                  </div>
+                  <div class="col-6 mt-2">
+                    <small class="text-muted">Monthly Fee</small>
+                    <p class="fw-semibold mb-0">TZS 2,000</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="autoRenew" name="auto_renewal">
+                <label class="form-check-label" for="autoRenew">
+                  <strong>Auto-Renewal</strong>
+                  <div class="small text-muted">Automatically renew membership each month (TZS 2,000)</div>
+                </label>
+              </div>
+              
+              <div class="mt-3">
+                <a href="#" class="btn btn-outline-primary btn-sm">View Payment History</a>
+                <a href="{% url 'members:payment_page' %}" class="btn btn-primary btn-sm ms-2">Make Payment</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== PAYMENT METHODS ========== -->
+        <div class="tab-pane fade" id="payments">
+          <div class="panel">
+            <div class="panel-header">
+              <h2 class="h5 mb-1"><i class="bi bi-credit-card"></i> Payment Methods</h2>
+              <p class="text-muted mb-0">Manage your payment options for membership fees.</p>
+            </div>
+            <div class="panel-body">
+              <div class="alert alert-info small">
+                <i class="bi bi-info-circle me-2"></i>
+                HEYCG accepts payments via Airtel Money, Tigo Pesa, and M-Pesa.
+              </div>
+              
+              <!-- Payment Method 1: Airtel Money -->
+              <div class="payment-method mb-3 p-3 border rounded" data-method="airtel">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <i class="bi bi-phone fs-4 me-2" style="color: #0a58ca;"></i>
+                    <strong>Airtel Money</strong>
+                    <div class="small text-muted">Pay via Airtel Lipa Namba: 14493258</div>
+                  </div>
+                  <button class="btn btn-sm btn-outline-primary set-default-btn" data-method="airtel">
+                    Set as Default
+                  </button>
+                  <span class="badge bg-success default-badge" style="display: none;">Default</span>
+                </div>
+              </div>
+              
+              <!-- Payment Method 2: Tigo Pesa -->
+              <div class="payment-method mb-3 p-3 border rounded" data-method="tigo">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <i class="bi bi-phone fs-4 me-2" style="color: #0a58ca;"></i>
+                    <strong>Tigo Pesa</strong>
+                    <div class="small text-muted">Pay via Tigo Lipa Namba: 14493258</div>
+                  </div>
+                  <button class="btn btn-sm btn-outline-primary set-default-btn" data-method="tigo">
+                    Set as Default
+                  </button>
+                  <span class="badge bg-success default-badge" style="display: none;">Default</span>
+                </div>
+              </div>
+              
+              <!-- Payment Method 3: M-Pesa -->
+              <div class="payment-method mb-3 p-3 border rounded" data-method="mpesa">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <i class="bi bi-phone fs-4 me-2" style="color: #0a58ca;"></i>
+                    <strong>M-Pesa</strong>
+                    <div class="small text-muted">Pay via M-Pesa Lipa Namba: 14493258</div>
+                  </div>
+                  <button class="btn btn-sm btn-outline-primary set-default-btn" data-method="mpesa">
+                    Set as Default
+                  </button>
+                  <span class="badge bg-success default-badge" style="display: none;">Default</span>
+                </div>
+              </div>
+              
+              <!-- Save button -->
+              <button class="btn btn-primary mt-3" id="savePaymentMethod">
+                <i class="bi bi-save me-2"></i> Save Payment Method
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== DATA MANAGEMENT ========== -->
+        <div class="tab-pane fade" id="data">
+          <div class="panel">
+            <div class="panel-header">
+              <h2 class="h5 mb-1"><i class="bi bi-database"></i> Data Management</h2>
+              <p class="text-muted mb-0">Export or delete your account data.</p>
+            </div>
+            <div class="panel-body">
+              <div class="mb-4">
+                <h6>Download Your Data</h6>
+                <p class="small text-muted">Get a PDF report of all your personal data including profile, payments, and event registrations.</p>
+                
+                <!-- Download PDF Button -->
+                <button class="btn btn-primary" onclick="downloadPDF()">
+                  <i class="bi bi-filetype-pdf me-2"></i> Download PDF Report
+                </button>
+                
+                <div class="mt-2">
+                  <small class="text-muted">
+                    <i class="bi bi-info-circle"></i> The PDF report includes your profile information, payment history, donation history, and event registrations.
+                  </small>
+                </div>
+              </div>
+              
+              <hr>
+            
+              <!-- Delete Account Section -->
+              <div>
+                <h6 class="text-danger">Delete Account</h6>
+                <p class="small text-muted">Permanently delete your HEYCG account and all associated data. This action cannot be undone.</p>
+                
+                <div class="mb-3">
+                  <label class="form-label">Type <strong class="text-danger">DELETE</strong> to confirm</label>
+                  <input type="text" class="form-control" id="deleteConfirmInput" placeholder="DELETE">
+                </div>
+                
+                <button class="btn btn-outline-danger" id="deleteAccountBtn" disabled>
+                  <i class="bi bi-trash"></i> Delete Account
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Account Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-danger">⚠️ Delete Account</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you <strong>absolutely sure</strong> you want to delete your account?</p>
+        <p class="small text-muted">This action is permanent and cannot be undone. All your data including profile, payments, and event registrations will be removed.</p>
+        <div class="alert alert-warning">
+          <i class="bi bi-exclamation-triangle"></i> This action cannot be reversed. All your data will be permanently deleted.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form method="POST" action="{% url 'members:delete_account' %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Yes, Delete My Account</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.list-group-item.active {
+  background: #0a58ca;
+  border-color: #0a58ca;
+}
+.panel-body {
+  padding: 20px;
+}
+.btn-primary {
+  background: #0a58ca;
+  border: none;
+}
+.btn-primary:hover {
+  background: #084298;
+}
+.form-check-input:checked {
+  background-color: #0a58ca;
+  border-color: #0a58ca;
+}
+.payment-method {
+  transition: all 0.2s;
+}
+.payment-method:hover {
+  background-color: #f8f9fa;
+}
+.payment-method .default-badge {
+  background: #28a745;
+}
+.payment-method .set-default-btn {
+  font-size: 12px;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // ===== PAYMENT METHODS =====
+  // Load saved payment method from localStorage
+  const savedMethod = localStorage.getItem('defaultPaymentMethod') || 'airtel';
+  setDefaultMethod(savedMethod);
+  
+  // Handle "Set as Default" buttons
+  document.querySelectorAll('.set-default-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const method = this.dataset.method;
+      setDefaultMethod(method);
+      localStorage.setItem('defaultPaymentMethod', method);
+      
+      Swal.fire({
+        icon: 'success',
+        title: 'Default Payment Method Updated',
+        text: `${method.charAt(0).toUpperCase() + method.slice(1)} is now your default payment method.`,
+        timer: 2000,
+        showConfirmButton: false
+      });
+    });
+  });
+  
+  function setDefaultMethod(method) {
+    // Remove default badge from all
+    document.querySelectorAll('.default-badge').forEach(b => b.style.display = 'none');
+    document.querySelectorAll('.set-default-btn').forEach(b => b.style.display = 'inline-block');
+    
+    // Show default badge for selected
+    const selectedMethod = document.querySelector(`.payment-method[data-method="${method}"]`);
+    if (selectedMethod) {
+      selectedMethod.querySelector('.default-badge').style.display = 'inline-block';
+      selectedMethod.querySelector('.set-default-btn').style.display = 'none';
+    }
+  }
+  
+  // ===== SAVE PAYMENT METHOD =====
+  document.getElementById('savePaymentMethod').addEventListener('click', function() {
+    const method = localStorage.getItem('defaultPaymentMethod') || 'airtel';
+    Swal.fire({
+      icon: 'success',
+      title: 'Saved!',
+      text: `Your default payment method (${method.charAt(0).toUpperCase() + method.slice(1)}) has been saved.`,
+      timer: 2000,
+      showConfirmButton: false
+    });
+  });
+  
+  // ===== DELETE ACCOUNT CONFIRMATION =====
+  const deleteInput = document.getElementById('deleteConfirmInput');
+  const deleteBtn = document.getElementById('deleteAccountBtn');
+  
+  if (deleteInput && deleteBtn) {
+    deleteInput.addEventListener('input', function() {
+      if (this.value === 'DELETE') {
+        deleteBtn.disabled = false;
+        deleteBtn.classList.remove('btn-outline-danger');
+        deleteBtn.classList.add('btn-danger');
+      } else {
+        deleteBtn.disabled = true;
+        deleteBtn.classList.remove('btn-danger');
+        deleteBtn.classList.add('btn-outline-danger');
+      }
+    });
+    
+    deleteBtn.addEventListener('click', function() {
+      if (!deleteBtn.disabled) {
+        const modalElement = document.getElementById('deleteModal');
+        const modalInstance = new bootstrap.Modal(modalElement);
+        modalInstance.show();
+      }
+    });
+  }
+});
+
+// ===== DOWNLOAD PDF =====
+function downloadPDF() {
+  Swal.fire({
+    title: 'Generating PDF...',
+    text: 'Please wait while we prepare your report',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    }
+  });
+  
+  fetch('/members/api/user-data/')
+    .then(response => response.json())
+    .then(data => {
+      Swal.close();
+      
+      // Generate PDF using html2pdf library
+      if (typeof html2pdf === 'undefined') {
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+        script.onload = function() {
+          generatePDF(data);
+        };
+        script.onerror = function() {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to load PDF library. Please try again.',
+            confirmButtonText: 'OK'
+          });
+        };
+        document.head.appendChild(script);
+      } else {
+        generatePDF(data);
+      }
+    })
+    .catch(error => {
+      Swal.close();
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to fetch data. Please try again.',
+        confirmButtonText: 'OK'
+      });
+      console.error('Download error:', error);
+    });
+}
+
+function generatePDF(data) {
+  // Create HTML content for PDF
+  const content = document.createElement('div');
+  content.style.cssText = 'padding: 40px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;';
+  
+  // Header
+  content.innerHTML = `
+    <div style="text-align: center; border-bottom: 2px solid #0a58ca; padding-bottom: 20px; margin-bottom: 20px;">
+      <h1 style="color: #0a58ca; margin: 0;">HEYCG</h1>
+      <p style="color: #666; margin: 5px 0;">HOCET Young Charity Generation</p>
+      <p style="color: #999; font-size: 14px;">Member Data Report</p>
+      <p style="color: #999; font-size: 12px;">Generated: ${new Date().toLocaleString()}</p>
+    </div>
+  `;
+  
+  // User Profile
+  if (data.user) {
+    content.innerHTML += `
+      <h2 style="color: #0a58ca; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-top: 30px;">👤 Profile Information</h2>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr><td style="padding: 8px;"><strong>Full Name:</strong></td><td style="padding: 8px;">${data.user.first_name} ${data.user.last_name}</td></tr>
+        <tr><td style="padding: 8px;"><strong>Email:</strong></td><td style="padding: 8px;">${data.user.email}</td></tr>
+        <tr><td style="padding: 8px;"><strong>Username:</strong></td><td style="padding: 8px;">${data.user.username}</td></tr>
+        <tr><td style="padding: 8px;"><strong>Member Since:</strong></td><td style="padding: 8px;">${data.user.date_joined ? new Date(data.user.date_joined).toLocaleDateString() : 'N/A'}</td></tr>
+      </table>
+    `;
+  }
+  
+  // Membership Status
+  if (data.profile) {
+    content.innerHTML += `
+      <h2 style="color: #0a58ca; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-top: 30px;">📋 Membership Details</h2>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr><td style="padding: 8px;"><strong>Status:</strong></td><td style="padding: 8px;">${data.profile.membership_status || 'N/A'}</td></tr>
+        <tr><td style="padding: 8px;"><strong>Phone:</strong></td><td style="padding: 8px;">${data.profile.phone_number || 'Not set'}</td></tr>
+        <tr><td style="padding: 8px;"><strong>Address:</strong></td><td style="padding: 8px;">${data.profile.address || 'Not set'}</td></tr>
+      </table>
+    `;
+  }
+  
+  // Payments
+  if (data.payments && data.payments.length > 0) {
+    content.innerHTML += `
+      <h2 style="color: #0a58ca; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-top: 30px;">💰 Payment History</h2>
+      <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+        <thead>
+          <tr style="background: #f8f9fa;">
+            <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Date</th>
+            <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Month</th>
+            <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Amount</th>
+            <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+    
+    data.payments.forEach(payment => {
+      content.innerHTML += `
+        <tr>
+          <td style="padding: 8px; border: 1px solid #ddd;">${payment.created_at ? new Date(payment.created_at).toLocaleDateString() : 'N/A'}</td>
+          <td style="padding: 8px; border: 1px solid #ddd;">${payment.month_covered || '-'}</td>
+          <td style="padding: 8px; border: 1px solid #ddd;">TZS ${payment.amount}</td>
+          <td style="padding: 8px; border: 1px solid #ddd;">
+            <span style="color: ${payment.status === 'approved' ? 'green' : payment.status === 'pending' ? 'orange' : 'red'}">
+              ${payment.status || 'N/A'}
+            </span>
+          </td>
+        </tr>
+      `;
+    });
+    
+    content.innerHTML += `
+        </tbody>
+      </table>
+      <p style="text-align: right; margin-top: 10px; font-weight: bold;">Total Payments: ${data.payments.length}</p>
+    `;
+  } else {
+    content.innerHTML += `
+      <h2 style="color: #0a58ca; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-top: 30px;">💰 Payment History</h2>
+      <p style="color: #999; text-align: center; padding: 20px;">No payment history available.</p>
+    `;
+  }
+  
+  // Donations
+  if (data.donations && data.donations.length > 0) {
+    content.innerHTML += `
+      <h2 style="color: #0a58ca; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-top: 30px;">❤️ Donation History</h2>
+      <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+        <thead>
+          <tr style="background: #f8f9fa;">
+            <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Date</th>
+            <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Campaign</th>
+            <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+    
+    data.donations.forEach(donation => {
+      content.innerHTML += `
+        <tr>
+          <td style="padding: 8px; border: 1px solid #ddd;">${donation.donation_date ? new Date(donation.donation_date).toLocaleDateString() : 'N/A'}</td>
+          <td style="padding: 8px; border: 1px solid #ddd;">${donation.campaign__title || 'N/A'}</td>
+          <td style="padding: 8px; border: 1px solid #ddd;">TZS ${donation.amount}</td>
+        </tr>
+      `;
+    });
+    
+    content.innerHTML += `
+        </tbody>
+      </table>
+      <p style="text-align: right; margin-top: 10px; font-weight: bold;">Total Donations: ${data.donations.length}</p>
+    `;
+  } else {
+    content.innerHTML += `
+      <h2 style="color: #0a58ca; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-top: 30px;">❤️ Donation History</h2>
+      <p style="color: #999; text-align: center; padding: 20px;">No donation history available.</p>
+    `;
+  }
+  
+  // Event Registrations
+  if (data.registrations && data.registrations.length > 0) {
+    content.innerHTML += `
+      <h2 style="color: #0a58ca; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-top: 30px;">📅 Event Registrations</h2>
+      <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+        <thead>
+          <tr style="background: #f8f9fa;">
+            <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Event</th>
+            <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Date</th>
+            <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+    
+    data.registrations.forEach(reg => {
+      content.innerHTML += `
+        <tr>
+          <td style="padding: 8px; border: 1px solid #ddd;">${reg.event__title || 'N/A'}</td>
+          <td style="padding: 8px; border: 1px solid #ddd;">${reg.registration_date ? new Date(reg.registration_date).toLocaleDateString() : 'N/A'}</td>
+          <td style="padding: 8px; border: 1px solid #ddd;">${reg.status || 'N/A'}</td>
+        </tr>
+      `;
+    });
+    
+    content.innerHTML += `
+        </tbody>
+      </table>
+      <p style="text-align: right; margin-top: 10px; font-weight: bold;">Total Events: ${data.registrations.length}</p>
+    `;
+  } else {
+    content.innerHTML += `
+      <h2 style="color: #0a58ca; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-top: 30px;">📅 Event Registrations</h2>
+      <p style="color: #999; text-align: center; padding: 20px;">No event registrations available.</p>
+    `;
+  }
+  
+  // Footer
+  content.innerHTML += `
+    <div style="text-align: center; border-top: 2px solid #0a58ca; padding-top: 20px; margin-top: 30px;">
+      <p style="color: #666; font-size: 12px; margin: 0;">
+        © 2026 HEYCG - HOCET Young Charity Generation. All Rights Reserved.
+      </p>
+      <p style="color: #999; font-size: 11px; margin: 5px 0;">
+        This report was generated automatically. For any queries, contact: youngcharitygeneration20@gmail.com
+      </p>
+    </div>
+  `;
+  
+  // Generate PDF
+  const opt = {
+    margin:        [10, 10, 10, 10],
+    filename:     `HEYCG_Report_${new Date().toISOString().slice(0,10)}.pdf`,
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
+    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+  
+  Swal.fire({
+    title: 'Generating PDF...',
+    text: 'Please wait',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    }
+  });
+  
+  html2pdf().set(opt).from(content).save()
+    .then(function() {
+      Swal.close();
+      Swal.fire({
+        icon: 'success',
+        title: 'PDF Downloaded!',
+        text: 'Your data report has been downloaded successfully.',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    })
+    .catch(function(err) {
+      Swal.close();
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to generate PDF. Please try again.',
+        confirmButtonText: 'OK'
+      });
+      console.error('PDF error:', err);
+    });
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: heycg-membership-portal
+    runtime: python
+    repo: https://github.com/samwelimwalugaja-cmd/heycg_membership_portal
+    plan: free
+    region: oregon
+    buildCommand: ./build.sh
+    startCommand: gunicorn heycg_project.wsgi:application
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: heycg-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: PYTHON_VERSION
+        value: 3.14.3
+
+databases:
+  - name: heycg-db
+    plan: free
+    databaseName: heycg_db
+    user: heycg_user

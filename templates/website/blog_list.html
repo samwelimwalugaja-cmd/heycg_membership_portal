@@ -1,0 +1,1039 @@
+<!-- templates/website/blog_list.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Blog - HEYCG Stories & Updates{% endblock %}
+
+{% block content %}
+
+<!-- Back to Website Buttons - Kushoto Juu -->
+<div class="container mt-4">
+    <div class="back-buttons-wrapper">
+        <a href="/" class="btn-back-to-website">
+            <i class="fas fa-arrow-left"></i> Back to Website
+        </a>
+        <a href="{% url 'website:blog_list' %}" class="btn-all-posts ms-2">
+            <i class="fas fa-blog"></i> All Blog Posts
+        </a>
+    </div>
+</div>
+
+<!-- Modern Blog Hero Section with Background Image & Overlay -->
+<section class="blog-hero-modern" style="background-image: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('{% static 'images/blog-hero-bg.jpg' %}');">
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <div class="hero-badge">
+                    <i class="fas fa-newspaper"></i> Our Blog
+                </div>
+                <h1 class="hero-title">Stories That <span class="highlight">Inspire</span></h1>
+                <p class="hero-subtitle">Discover the latest updates, heartwarming stories, and news from our charity work across Tanzania.</p>
+                
+                <!-- Search Bar -->
+                <div class="search-wrapper">
+                    <form method="GET" action="" class="search-form">
+                        <div class="search-input-group">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" name="q" class="search-input" 
+                                   placeholder="Search articles by title, category or content..." 
+                                   value="{{ search_query }}">
+                            <button type="submit" class="search-btn">Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Posts Section -->
+{% if featured_posts %}
+<section class="featured-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Featured <span class="highlight">Stories</span></h2>
+            <p>Hand-picked articles you don't want to miss</p>
+        </div>
+        <div class="row g-4">
+            {% for post in featured_posts %}
+            <div class="col-lg-4 col-md-6">
+                <div class="featured-card">
+                    {% if post.featured_image %}
+                    <div class="card-image">
+                        <img src="{{ post.featured_image.url }}" alt="{{ post.title }}">
+                        <div class="card-category">
+                            <span>{{ post.category.name }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="card-content">
+                        <div class="post-meta">
+                            <span><i class="far fa-calendar-alt"></i> {{ post.published_at|date:"M d, Y" }}</span>
+                            <span><i class="far fa-user"></i> {{ post.author.get_full_name|default:post.author.username }}</span>
+                            <span><i class="far fa-eye"></i> {{ post.views }} views</span>
+                        </div>
+                        <h3>{{ post.title }}</h3>
+                        <p>{{ post.excerpt|truncatewords:20 }}</p>
+                        <a href="{{ post.get_absolute_url }}" class="read-more">
+                            Read Full Story <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Main Blog Section -->
+<section class="main-blog-section">
+    <div class="container">
+        <div class="row g-5">
+            <!-- Main Content -->
+            <div class="col-lg-8">
+                {% if posts %}
+                    {% for post in posts %}
+                    <article class="blog-card-modern">
+                        <div class="row g-0">
+                            {% if post.featured_image %}
+                            <div class="col-md-4">
+                                <div class="blog-image-wrapper">
+                                    <img src="{{ post.featured_image.url }}" class="blog-image" alt="{{ post.title }}">
+                                    {% if post.is_featured %}
+                                    <div class="featured-badge">
+                                        <i class="fas fa-star"></i> Featured
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="blog-body">
+                                    <div class="blog-categories">
+                                        <a href="{% url 'website:blog_category' post.category.slug %}" class="category-tag">
+                                            {{ post.category.name }}
+                                        </a>
+                                        {% for tag in post.tags.all|slice:":2" %}
+                                        <a href="{% url 'website:blog_tag' tag.slug %}" class="tag-tag">
+                                            #{{ tag.name }}
+                                        </a>
+                                        {% endfor %}
+                                    </div>
+                                    <h2 class="blog-title">{{ post.title }}</h2>
+                                    <div class="blog-excerpt">{{ post.excerpt|truncatewords:25 }}</div>
+                                    <div class="blog-footer">
+                                        <div class="blog-stats">
+                                            <span><i class="far fa-heart"></i> {{ post.likes.count }}</span>
+                                            <span><i class="far fa-comment"></i> {{ post.comments.count }}</span>
+                                            <span><i class="far fa-clock"></i> {{ post.reading_time }} min read</span>
+                                        </div>
+                                        <a href="{{ post.get_absolute_url }}" class="btn-read-more">
+                                            Continue Reading <i class="fas fa-chevron-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="col-md-12">
+                                <div class="blog-body no-image">
+                                    <div class="blog-categories">
+                                        <a href="{% url 'website:blog_category' post.category.slug %}" class="category-tag">
+                                            {{ post.category.name }}
+                                        </a>
+                                    </div>
+                                    <h2 class="blog-title">{{ post.title }}</h2>
+                                    <div class="blog-excerpt">{{ post.excerpt|truncatewords:40 }}</div>
+                                    <div class="blog-footer">
+                                        <div class="blog-stats">
+                                            <span><i class="far fa-calendar-alt"></i> {{ post.published_at|date:"M d, Y" }}</span>
+                                            <span><i class="far fa-user"></i> {{ post.author.get_full_name|default:post.author.username }}</span>
+                                            <span><i class="far fa-eye"></i> {{ post.views }} views</span>
+                                        </div>
+                                        <a href="{{ post.get_absolute_url }}" class="btn-read-more">
+                                            Continue Reading <i class="fas fa-chevron-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </article>
+                    {% endfor %}
+                    
+                    <!-- Modern Pagination -->
+                    {% if posts.has_other_pages %}
+                    <nav class="pagination-modern">
+                        <ul class="pagination-list">
+                            {% if posts.has_previous %}
+                            <li><a href="?page={{ posts.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}" class="page-link-nav">
+                                <i class="fas fa-chevron-left"></i> Previous
+                            </a></li>
+                            {% endif %}
+                            
+                            {% for num in posts.paginator.page_range %}
+                                {% if posts.number == num %}
+                                <li><span class="page-link-nav active">{{ num }}</span></li>
+                                {% elif num > posts.number|add:'-3' and num < posts.number|add:'3' %}
+                                <li><a href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}" class="page-link-nav">{{ num }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if posts.has_next %}
+                            <li><a href="?page={{ posts.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}" class="page-link-nav">
+                                Next <i class="fas fa-chevron-right"></i>
+                            </a></li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                {% else %}
+                    <!-- Empty State -->
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-blog"></i>
+                        </div>
+                        <h3>No posts found</h3>
+                        <p>Check back later for new stories and updates from our charity work.</p>
+                        <a href="/" class="btn-home">
+                            <i class="fas fa-home"></i> Back to Home
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Modern Sidebar -->
+            <div class="col-lg-4">
+                <div class="sidebar-modern">
+                    <!-- Categories Widget -->
+                    <div class="sidebar-widget">
+                        <h3 class="widget-title">
+                            <i class="fas fa-folder-tree"></i> Categories
+                        </h3>
+                        <div class="widget-content">
+                            {% if categories %}
+                                <div class="category-list">
+                                    {% for category in categories %}
+                                    <a href="{% url 'website:blog_category' category.slug %}" class="category-item">
+                                        <span class="category-name">{{ category.name }}</span>
+                                        <span class="category-count">{{ category.post_count }}</span>
+                                    </a>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="no-data">No categories yet.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Popular Tags Widget -->
+                    <div class="sidebar-widget">
+                        <h3 class="widget-title">
+                            <i class="fas fa-tags"></i> Popular Tags
+                        </h3>
+                        <div class="widget-content">
+                            {% if tags %}
+                                <div class="tags-cloud">
+                                    {% for tag in tags %}
+                                    <a href="{% url 'website:blog_tag' tag.slug %}" class="tag-cloud-item">
+                                        #{{ tag.name }}
+                                        <span class="tag-count">({{ tag.post_count }})</span>
+                                    </a>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="no-data">No tags yet.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Posts Widget -->
+                    <div class="sidebar-widget">
+                        <h3 class="widget-title">
+                            <i class="fas fa-clock"></i> Recent Posts
+                        </h3>
+                        <div class="widget-content">
+                            {% if recent_posts %}
+                                <div class="recent-list">
+                                    {% for post in recent_posts %}
+                                    <a href="{{ post.get_absolute_url }}" class="recent-item">
+                                        {% if post.featured_image %}
+                                        <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" class="recent-img">
+                                        {% else %}
+                                        <div class="recent-img-placeholder">
+                                            <i class="fas fa-image"></i>
+                                        </div>
+                                        {% endif %}
+                                        <div class="recent-info">
+                                            <h4>{{ post.title|truncatewords:8 }}</h4>
+                                            <span><i class="far fa-calendar-alt"></i> {{ post.published_at|date:"M d, Y" }}</span>
+                                        </div>
+                                    </a>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="no-data">No posts yet.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Newsletter Widget -->
+                    <div class="sidebar-widget newsletter-widget">
+                        <h3 class="widget-title">
+                            <i class="fas fa-envelope"></i> Newsletter
+                        </h3>
+                        <div class="widget-content">
+                            <p>Subscribe to get updates on our charity work.</p>
+                            <form method="POST" action="{% url 'website:newsletter_subscribe' %}" class="newsletter-form">
+                                {% csrf_token %}
+                                <div class="newsletter-input-group">
+                                    <input type="email" name="email" placeholder="Your email address" required>
+                                    <button type="submit">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+/* Back Buttons Styles */
+.back-buttons-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.btn-back-to-website {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    border: 2px solid #e0e0e0;
+    padding: 10px 24px;
+    border-radius: 50px;
+    color: #2c3e50;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-back-to-website:hover {
+    background: #2c3e50;
+    border-color: #2c3e50;
+    color: white;
+}
+
+.btn-all-posts {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    padding: 10px 24px;
+    border-radius: 50px;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-all-posts:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+    color: white;
+}
+
+/* Modern Blog Hero Section with Background Image */
+.blog-hero-modern {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 80px 0 100px;
+    position: relative;
+    margin-top: 20px;
+    border-radius: 20px;
+}
+
+.hero-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-size: 14px;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.hero-title {
+    font-size: 48px;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.hero-title .highlight {
+    color: #ffd700;
+    position: relative;
+    display: inline-block;
+}
+
+.hero-subtitle {
+    font-size: 18px;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 40px;
+    line-height: 1.6;
+}
+
+/* Search Form */
+.search-wrapper {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.search-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 60px;
+    padding: 5px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.search-icon {
+    position: absolute;
+    left: 20px;
+    color: #999;
+    font-size: 18px;
+}
+
+.search-input {
+    flex: 1;
+    border: none;
+    padding: 18px 20px 18px 50px;
+    border-radius: 60px;
+    font-size: 16px;
+    outline: none;
+}
+
+.search-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    padding: 12px 30px;
+    border-radius: 50px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.search-btn:hover {
+    transform: scale(1.02);
+}
+
+/* Featured Section */
+.featured-section {
+    padding: 80px 0;
+    background: #f8f9fa;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.section-header h2 {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.section-header .highlight {
+    color: #667eea;
+    position: relative;
+}
+
+.section-header p {
+    color: #6c757d;
+    font-size: 18px;
+}
+
+.featured-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+}
+
+.featured-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.card-image {
+    position: relative;
+    overflow: hidden;
+    height: 220px;
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.featured-card:hover .card-image img {
+    transform: scale(1.05);
+}
+
+.card-category {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+}
+
+.card-category span {
+    background: #667eea;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.card-content {
+    padding: 25px;
+}
+
+.card-content .post-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.card-content h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+
+.card-content p {
+    color: #6c757d;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.read-more {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: gap 0.3s ease;
+}
+
+.read-more:hover {
+    gap: 12px;
+    color: #764ba2;
+}
+
+/* Main Blog Section */
+.main-blog-section {
+    padding: 80px 0;
+    background: white;
+}
+
+.blog-card-modern {
+    background: white;
+    border: 1px solid #eef2f6;
+    border-radius: 20px;
+    margin-bottom: 30px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.02);
+}
+
+.blog-card-modern:hover {
+    border-color: #667eea;
+    box-shadow: 0 10px 30px rgba(102,126,234,0.1);
+    transform: translateY(-3px);
+}
+
+.blog-image-wrapper {
+    position: relative;
+    height: 100%;
+    min-height: 240px;
+    overflow: hidden;
+}
+
+.blog-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.blog-card-modern:hover .blog-image {
+    transform: scale(1.05);
+}
+
+.featured-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    color: #856404;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.blog-body {
+    padding: 30px;
+}
+
+.blog-body.no-image {
+    padding: 30px;
+}
+
+.blog-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.category-tag {
+    background: #eef2ff;
+    color: #667eea;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 11px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.category-tag:hover {
+    background: #667eea;
+    color: white;
+}
+
+.tag-tag {
+    background: #f0f0f0;
+    color: #666;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 11px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.tag-tag:hover {
+    background: #667eea;
+    color: white;
+}
+
+.blog-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    line-height: 1.3;
+}
+
+.blog-excerpt {
+    color: #6c757d;
+    line-height: 1.7;
+    margin-bottom: 20px;
+}
+
+.blog-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #eef2f6;
+}
+
+.blog-stats {
+    display: flex;
+    gap: 15px;
+    font-size: 13px;
+    color: #adb5bd;
+}
+
+.blog-stats i {
+    margin-right: 5px;
+}
+
+.btn-read-more {
+    background: none;
+    border: none;
+    color: #667eea;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: gap 0.3s ease;
+}
+
+.btn-read-more:hover {
+    gap: 12px;
+    color: #764ba2;
+}
+
+/* Sidebar */
+.sidebar-modern {
+    position: sticky;
+    top: 30px;
+}
+
+.sidebar-widget {
+    background: #f8f9fa;
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 30px;
+    border: 1px solid #eef2f6;
+    transition: all 0.3s ease;
+}
+
+.sidebar-widget:hover {
+    border-color: #667eea;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+}
+
+.widget-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #667eea;
+    display: inline-block;
+}
+
+.widget-title i {
+    color: #667eea;
+    margin-right: 10px;
+}
+
+.category-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    text-decoration: none;
+    color: #2c3e50;
+    border-bottom: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+.category-item:hover {
+    color: #667eea;
+    transform: translateX(5px);
+}
+
+.category-name {
+    font-weight: 500;
+}
+
+.category-count {
+    background: #eef2ff;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: #667eea;
+}
+
+/* Tags Cloud */
+.tags-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.tag-cloud-item {
+    background: white;
+    padding: 6px 14px;
+    border-radius: 25px;
+    font-size: 12px;
+    text-decoration: none;
+    color: #667eea;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+.tag-cloud-item:hover {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+    transform: translateY(-2px);
+}
+
+.tag-count {
+    font-size: 10px;
+    opacity: 0.7;
+}
+
+/* Recent Posts */
+.recent-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.recent-item {
+    display: flex;
+    gap: 15px;
+    text-decoration: none;
+    align-items: center;
+    padding: 10px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.recent-item:hover {
+    background: white;
+    transform: translateX(5px);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.recent-img {
+    width: 65px;
+    height: 65px;
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+.recent-img-placeholder {
+    width: 65px;
+    height: 65px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.recent-info h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 5px 0;
+    color: #2c3e50;
+}
+
+.recent-info span {
+    font-size: 11px;
+    color: #adb5bd;
+}
+
+.recent-info i {
+    margin-right: 5px;
+}
+
+/* Newsletter Widget */
+.newsletter-widget {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.newsletter-widget .widget-title {
+    color: white;
+    border-bottom-color: rgba(255,255,255,0.3);
+}
+
+.newsletter-widget .widget-title i {
+    color: white;
+}
+
+.newsletter-widget p {
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 20px;
+}
+
+.newsletter-form {
+    position: relative;
+}
+
+.newsletter-input-group {
+    display: flex;
+    gap: 10px;
+}
+
+.newsletter-input-group input {
+    flex: 1;
+    padding: 12px 15px;
+    border: none;
+    border-radius: 12px;
+    outline: none;
+    font-size: 14px;
+}
+
+.newsletter-input-group button {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    padding: 0 20px;
+    border-radius: 12px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.newsletter-input-group button:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+/* Pagination */
+.pagination-modern {
+    margin-top: 50px;
+    text-align: center;
+}
+
+.pagination-list {
+    display: inline-flex;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.page-link-nav {
+    display: inline-block;
+    padding: 10px 18px;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    color: #2c3e50;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.page-link-nav:hover {
+    background: #667eea;
+    border-color: #667eea;
+    color: white;
+}
+
+.page-link-nav.active {
+    background: #667eea;
+    border-color: #667eea;
+    color: white;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 80px 40px;
+    background: #f8f9fa;
+    border-radius: 20px;
+}
+
+.empty-icon {
+    font-size: 64px;
+    color: #667eea;
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+.empty-state p {
+    color: #6c757d;
+    margin-bottom: 30px;
+}
+
+.btn-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 12px 30px;
+    border-radius: 30px;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+}
+
+.btn-home:hover {
+    transform: translateY(-2px);
+    color: white;
+}
+
+.no-data {
+    color: #6c757d;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 32px;
+    }
+    
+    .hero-subtitle {
+        font-size: 16px;
+    }
+    
+    .blog-title {
+        font-size: 20px;
+    }
+    
+    .blog-body {
+        padding: 20px;
+    }
+    
+    .blog-footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .sidebar-modern {
+        position: static;
+        margin-top: 30px;
+    }
+    
+    .section-header h2 {
+        font-size: 28px;
+    }
+    
+    .back-buttons-wrapper {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .btn-back-to-website, .btn-all-posts {
+        justify-content: center;
+    }
+}
+</style>
+
+{% endblock %}

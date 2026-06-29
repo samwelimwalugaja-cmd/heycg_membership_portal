@@ -1,0 +1,150 @@
+<!-- templates/email/contact_email.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>HEYCG Contact Message</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 580px;
+      margin: 20px auto;
+      background-color: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .header {
+      background: #0a58ca;
+      padding: 20px 24px;
+    }
+    .header h1 {
+      color: white;
+      margin: 0;
+      font-size: 20px;
+      font-weight: 500;
+    }
+    .header p {
+      color: rgba(255,255,255,0.8);
+      margin: 4px 0 0;
+      font-size: 12px;
+    }
+    .content {
+      padding: 24px;
+    }
+    .alert-header {
+      background-color: #e8f4fd;
+      border-left: 4px solid #0a58ca;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+    .alert-header strong {
+      color: #0a58ca;
+      font-size: 14px;
+    }
+    .alert-header p {
+      margin: 4px 0 0;
+      font-size: 13px;
+      color: #5f6368;
+    }
+    .info-box {
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+    .info-row {
+      margin-bottom: 10px;
+    }
+    .info-label {
+      font-weight: 600;
+      color: #5f6368;
+      font-size: 12px;
+      display: inline-block;
+      width: 70px;
+    }
+    .info-value {
+      color: #202124;
+      font-size: 14px;
+    }
+    .message-box {
+      background-color: #f1f3f4;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+    .message-box .label {
+      font-size: 11px;
+      color: #5f6368;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    .message-text {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #202124;
+    }
+    .footer {
+      background-color: #f8f9fa;
+      padding: 16px 24px;
+      text-align: center;
+      font-size: 11px;
+      color: #8e8e8e;
+      border-top: 1px solid #e0e0e0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🤝 HEYCG</h1>
+      <p>HOCET Young Charity Generation</p>
+    </div>
+    
+    <div class="content">
+      <!-- Alert style header like Google -->
+      <div class="alert-header">
+        <strong>📬 New Contact Form Submission</strong>
+        <p>You have received a new message from {{ name }}</p>
+      </div>
+      
+      <div class="info-box">
+        <div class="info-row">
+          <span class="info-label">From:</span>
+          <span class="info-value"><strong>{{ name }}</strong> &lt;{{ email }}&gt;</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Subject:</span>
+          <span class="info-value">{{ subject }}</span>
+        </div>
+      </div>
+      
+      <div class="message-box">
+        <div class="label">💬 Message</div>
+        <div class="message-text">
+          {{ message|linebreaks }}
+        </div>
+      </div>
+      
+      <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e0e0e0;">
+        <a href="mailto:{{ email }}" style="color: #0a58ca; text-decoration: none; font-size: 13px;">Reply to {{ name }} →</a>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p>HEYCG - Makanisa matatu Street, Kimara, DSM 16104</p>
+      <p>&copy; 2025 HEYCG. All rights reserved.</p>
+      <p style="margin-top: 8px;">
+        <a href="mailto:youngcharitygeneration20@gmail.com" style="color: #0a58ca;">youngcharitygeneration20@gmail.com</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

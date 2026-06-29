@@ -1,0 +1,322 @@
+<!-- templates/members/payment_status.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>HEYCG | Payment Status</title>
+  <link rel="icon" href="{% static 'assets/images/favicon-01.png' %}" type="image/x-icon">
+  <!-- Bootstrap 5 CSS + Icons + Google Fonts -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: rgb(240, 237, 237);
+      min-height: 100vh;
+      padding: 1rem;
+    }
+
+    .payment-container {
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    /* Header / Navbar - compact */
+    .navbar-custom {
+      background: white;
+      border-radius: 1rem;
+      padding: 0.6rem 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 1.2rem;
+      background: linear-gradient(135deg, #0a58ca, #764ba2);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* User profile badge - compact */
+    .user-dropdown {
+      position: relative;
+      cursor: pointer;
+    }
+    
+    .user-badge {
+      background: #f8f9fa;
+      padding: 0.3rem 0.8rem;
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      font-size: 0.75rem;
+    }
+    
+    .user-badge:hover {
+      background: #e9ecef;
+    }
+
+    .user-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0a58ca, #764ba2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 0.7rem;
+      overflow: hidden;
+    }
+    
+    .user-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .profile-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 8px;
+      background: white;
+      border-radius: 0.75rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      min-width: 130px;
+      z-index: 1000;
+      overflow: hidden;
+      display: none;
+    }
+    
+    .profile-dropdown.show {
+      display: block;
+      animation: fadeIn 0.15s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .logout-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0.6rem 1rem;
+      text-decoration: none;
+      color: #dc3545;
+      font-size: 0.8rem;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    
+    .logout-link:hover {
+      background: #fff5f5;
+      color: #dc3545;
+    }
+    
+    .logout-link i {
+      font-size: 0.9rem;
+    }
+
+    .status-card {
+      background: white;
+      border-radius: 1.5rem;
+      overflow: hidden;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+
+    .spinner-clock {
+      animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .btn-primary-custom {
+      background: linear-gradient(135deg, #0a58ca, #764ba2);
+      border: none;
+      border-radius: 40px;
+      padding: 10px 30px;
+      color: white;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .btn-primary-custom:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 5px 15px rgba(10,88,202,0.3);
+      color: white;
+    }
+
+    .btn-success-custom {
+      background: linear-gradient(135deg, #28a745, #1e7e34);
+      border: none;
+      border-radius: 40px;
+      padding: 10px 30px;
+      color: white;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .btn-success-custom:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 5px 15px rgba(40,167,69,0.3);
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+<div class="payment-container">
+  <!-- Navbar with Profile Dropdown -->
+  <div class="navbar-custom d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center gap-2">
+      <i class="fas fa-hands-helping" style="color: #0a58ca; font-size: 1.2rem;"></i>
+      <span class="logo">HEYCG</span>
+    </div>
+    
+    <div class="user-dropdown" id="userDropdown">
+      <div class="user-badge" onclick="toggleDropdown()">
+        <div class="user-avatar">
+          {% if user.profile.profile_picture %}
+              <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture">
+          {% else %}
+              <i class="fas fa-user" style="font-size: 0.7rem;"></i>
+          {% endif %}
+        </div>
+        <div>
+          <div class="fw-semibold" style="font-size: 0.7rem;">{{ user.first_name }} {{ user.last_name }}</div>
+          <div class="text-muted" style="font-size: 0.6rem;" id="memberStatusLabel">
+            {% if status == 'pending_payment' %}Pending Payment
+            {% elif status == 'pending_approval' %}Payment Pending
+            {% elif status == 'pending_profile' %}Profile Pending
+            {% elif status == 'active' %}Active Member
+            {% else %}Member
+            {% endif %}
+          </div>
+        </div>
+        <i class="fas fa-chevron-down" style="font-size: 0.6rem;"></i>
+      </div>
+      <div class="profile-dropdown" id="dropdownMenu">
+        <a href="{% url 'accounts:logout' %}" class="logout-link">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Status Card -->
+  <div class="status-card">
+    <div class="card-body p-5 text-center">
+      
+      {% if status == 'pending_payment' %}
+        <i class="fas fa-exclamation-circle fa-4x text-warning mb-3"></i>
+        <h3 class="fw-bold mb-3">Payment Required</h3>
+        <p class="text-muted">Please complete your payment to activate membership.</p>
+        <a href="{% url 'members:make_payment' %}" class="btn btn-primary-custom mt-3">
+          <i class="fas fa-credit-card me-2"></i>Make Payment
+        </a>
+        
+      {% elif status == 'pending_approval' %}
+        <i class="fas fa-hourglass-half fa-4x text-info mb-3 spinner-clock"></i>
+        <h3 class="fw-bold mb-3">Payment Under Review</h3>
+        <p class="text-muted">Your payment proof has been submitted and is awaiting admin approval.</p>
+        <div class="alert alert-info mt-3">
+          <i class="fas fa-info-circle me-2"></i>
+          <strong>Transaction ID:</strong> {{ payment.transaction_id|default:"Pending" }}<br>
+          <small>You will be redirected to dashboard once approved.</small>
+        </div>
+        <div class="mt-4">
+          <p class="small text-muted">
+            <i class="fas fa-clock"></i> Estimated waiting time: 24-48 hours<br>
+            <i class="fas fa-envelope"></i> Check your email for updates
+          </p>
+        </div>
+        
+      {% elif status == 'pending_profile' %}
+        <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+        <h3 class="fw-bold mb-3">Payment Approved!</h3>
+        <p class="text-muted">Your payment has been approved. Please complete your profile.</p>
+        <a href="{% url 'members:complete_profile' %}" class="btn btn-success-custom mt-3">
+          <i class="fas fa-user-edit me-2"></i>Complete Profile
+        </a>
+        
+      {% elif status == 'active' %}
+        <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+        <h3 class="fw-bold mb-3">Membership Active!</h3>
+        <p class="text-muted">Your membership is active. Welcome to HEYCG family!</p>
+        <a href="{% url 'members:dashboard' %}" class="btn btn-primary-custom mt-3">
+          <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+        </a>
+        
+      {% else %}
+        <i class="fas fa-times-circle fa-4x text-danger mb-3"></i>
+        <h3 class="fw-bold mb-3">Payment Rejected</h3>
+        <p class="text-muted">Your payment was rejected. Please contact admin or make a new payment.</p>
+        <a href="{% url 'members:make_payment' %}" class="btn btn-primary-custom mt-3">
+          <i class="fas fa-credit-card me-2"></i>Try Again
+        </a>
+      {% endif %}
+      
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// Dropdown toggle function
+function toggleDropdown() {
+    const dropdown = document.getElementById('dropdownMenu');
+    dropdown.classList.toggle('show');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('dropdownMenu');
+    const userDropdown = document.getElementById('userDropdown');
+    if (userDropdown && !userDropdown.contains(event.target)) {
+        if (dropdown) dropdown.classList.remove('show');
+    }
+});
+
+// Auto redirect if status changes to active
+{% if status == 'pending_approval' %}
+setInterval(async function() {
+    try {
+        const response = await fetch('/members/check-payment-status/');
+        const data = await response.json();
+        if (data.status === 'active') {
+            window.location.href = "/members/dashboard/";
+        } else if (data.status === 'pending_profile') {
+            window.location.href = "/members/complete-profile/";
+        }
+    } catch (error) {
+        console.error('Error checking status:', error);
+    }
+}, 5000);
+{% endif %}
+</script>
+
+</body>
+</html>

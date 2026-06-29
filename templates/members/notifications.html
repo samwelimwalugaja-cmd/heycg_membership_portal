@@ -1,0 +1,635 @@
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Notifications - HEYCG{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-2 px-sm-3 px-lg-4 py-3 py-sm-4">
+  
+  <!-- Page Heading -->
+  <div class="page-heading mb-3 mb-sm-4">
+    <div class="page-heading-copy">
+      <span class="page-icon"><i class="bi bi-bell" aria-hidden="true"></i></span>
+      <div>
+        <p class="eyebrow mb-1">Notifications</p>
+        <h1 class="h3 mb-1">All Notifications</h1>
+        <p class="text-muted mb-0" style="font-size: 0.9rem;">
+          {% if total_unread > 0 %}
+            You have <strong class="text-primary">{{ total_unread }}</strong> unread notifications
+          {% else %}
+            <i class="bi bi-check-circle text-success"></i> All caught up! No unread notifications
+          {% endif %}
+        </p>
+      </div>
+    </div>
+    
+    <!-- Actions -->
+    <div class="mt-2 mt-sm-0 d-flex gap-2 flex-wrap align-items-center">
+      <!-- Bulk Actions -->
+      <div id="bulkActions" style="display: none;" class="d-flex gap-2 align-items-center">
+        <span class="text-muted small" id="selectedCount">0 selected</span>
+        <button class="btn btn-outline-danger btn-sm" onclick="deleteSelected()">
+          <i class="bi bi-trash"></i> Delete Selected
+        </button>
+        <button class="btn btn-outline-secondary btn-sm" onclick="clearSelection()">
+          <i class="bi bi-x-circle"></i> Clear
+        </button>
+      </div>
+      
+      <!-- Normal Actions -->
+      <div id="normalActions" class="d-flex gap-2 flex-wrap">
+        {% if page_obj %}
+          <button class="btn btn-outline-primary btn-sm" onclick="markAllRead()">
+            <i class="bi bi-check-all"></i> Mark All Read
+          </button>
+          <button class="btn btn-outline-danger btn-sm" onclick="deleteAll()">
+            <i class="bi bi-trash"></i> Delete All
+          </button>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Row -->
+  <div class="row g-2 g-sm-3 mb-3 mb-sm-4">
+    <div class="col-12 col-md-8">
+      <div class="d-flex flex-wrap gap-1 gap-sm-2">
+        <a href="?type=all&read={{ current_read_filter }}" 
+           class="btn {% if current_type == 'all' %}btn-primary{% else %}btn-outline-secondary{% endif %} btn-sm">
+          All
+        </a>
+        {% for type_code, type_name in notification_types %}
+          <a href="?type={{ type_code }}&read={{ current_read_filter }}" 
+             class="btn {% if current_type == type_code %}btn-primary{% else %}btn-outline-secondary{% endif %} btn-sm">
+            {{ type_name }}
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <select class="form-select form-select-sm" onchange="window.location.href='?type={{ current_type }}&read='+this.value">
+        <option value="all" {% if current_read_filter == 'all' %}selected{% endif %}>All Status</option>
+        <option value="unread" {% if current_read_filter == 'unread' %}selected{% endif %}>Unread</option>
+        <option value="read" {% if current_read_filter == 'read' %}selected{% endif %}>Read</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Notifications List -->
+  <div class="panel notification-panel">
+    <div class="panel-body p-0">
+      {% if page_obj %}
+        <!-- Select All Checkbox -->
+        <div class="p-3 border-bottom select-all-bar">
+          <div class="d-flex align-items-center gap-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="selectAll" onchange="toggleAll(this)">
+              <label class="form-check-label small" for="selectAll">
+                <strong>Select All</strong>
+                <span class="text-muted">({{ page_obj.paginator.count }} notifications)</span>
+              </label>
+            </div>
+            <span class="text-muted small">|</span>
+            <span class="text-muted small" id="selectedCountTop">0 selected</span>
+          </div>
+        </div>
+        
+        <div class="list-group list-group-flush notification-list">
+          {% for notification in page_obj %}
+            <div class="list-group-item notification-item {% if not notification.is_read %}unread{% endif %}" 
+                 id="notification-{{ notification.id }}"
+                 data-notification-id="{{ notification.id }}"
+                 style="border-left: 4px solid {% if not notification.is_read %}#0a58ca{% else %}transparent{% endif %}; padding: 12px 15px;">
+              
+              <div class="d-flex align-items-start gap-2 gap-sm-3">
+                <!-- Checkbox -->
+                <div class="form-check mt-1">
+                  <input class="form-check-input notification-checkbox" 
+                         type="checkbox" 
+                         id="check-{{ notification.id }}" 
+                         data-id="{{ notification.id }}"
+                         onchange="updateSelection()">
+                </div>
+                
+                <!-- Icon based on type -->
+                <div class="notification-icon mt-1 flex-shrink-0">
+                  {% if notification.type == 'payment' %}
+                    <i class="bi bi-credit-card fs-5 text-primary"></i>
+                  {% elif notification.type == 'membership' %}
+                    <i class="bi bi-person-check fs-5 text-warning"></i>
+                  {% elif notification.type == 'donation' %}
+                    <i class="bi bi-heart fs-5 text-danger"></i>
+                  {% elif notification.type == 'announcement' %}
+                    <i class="bi bi-megaphone fs-5 text-info"></i>
+                  {% else %}
+                    <i class="bi bi-bell fs-5 text-secondary"></i>
+                  {% endif %}
+                </div>
+                
+                <!-- Content -->
+                <div class="flex-grow-1" style="min-width: 0;">
+                  <div class="d-flex flex-wrap justify-content-between align-items-start gap-1">
+                    <div class="flex-grow-1" style="min-width: 0;">
+                      <strong class="{% if not notification.is_read %}text-primary{% endif %}" style="font-size: 0.9rem; word-break: break-word;">
+                        {{ notification.title }}
+                      </strong>
+                      <span class="badge bg-light text-muted ms-1 type-badge">{{ notification.get_type_display }}</span>
+                      {% if notification.priority == 'high' %}
+                        <span class="badge bg-danger ms-1 urgent-badge">Urgent</span>
+                      {% endif %}
+                    </div>
+                    <small class="text-muted flex-shrink-0 notification-time" style="font-size: 10px; white-space: nowrap;">
+                      {{ notification.created_at|date:"M d, Y H:i" }}
+                    </small>
+                  </div>
+                  
+                  <p class="mb-1 text-muted small notification-message" style="word-break: break-word; font-size: 0.8rem;">{{ notification.message }}</p>
+                  
+                  <div class="d-flex flex-wrap gap-2 gap-sm-3 mt-2">
+                    {% if notification.link %}
+                      <a href="{{ notification.link }}" class="text-decoration-none small text-primary notification-link">
+                        <i class="bi bi-arrow-right-circle"></i> View Details
+                      </a>
+                    {% endif %}
+                    
+                    {% if not notification.is_read %}
+                      <button class="btn btn-link btn-sm text-decoration-none p-0 mark-read-btn" 
+                              onclick="markAsRead({{ notification.id }})" style="font-size: 0.8rem;">
+                        <i class="bi bi-check-circle"></i> Mark as Read
+                      </button>
+                    {% endif %}
+                    
+                    <button class="btn btn-link btn-sm text-danger text-decoration-none p-0 delete-btn" 
+                            onclick="deleteNotification({{ notification.id }})" style="font-size: 0.8rem;">
+                      <i class="bi bi-trash"></i> Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if page_obj.paginator.num_pages > 1 %}
+          <div class="p-3 pagination-bar">
+            <nav>
+              <ul class="pagination justify-content-center mb-0 flex-wrap">
+                {% if page_obj.has_previous %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}&type={{ current_type }}&read={{ current_read_filter }}">
+                      <i class="bi bi-chevron-left"></i>
+                    </a>
+                  </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                  <li class="page-item {% if num == page_obj.number %}active{% endif %}">
+                    <a class="page-link" href="?page={{ num }}&type={{ current_type }}&read={{ current_read_filter }}">
+                      {{ num }}
+                    </a>
+                  </li>
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}&type={{ current_type }}&read={{ current_read_filter }}">
+                      <i class="bi bi-chevron-right"></i>
+                    </a>
+                  </li>
+                {% endif %}
+              </ul>
+            </nav>
+          </div>
+        {% endif %}
+      {% else %}
+        <div class="text-center py-5">
+          <i class="bi bi-bell-slash fs-1 text-muted"></i>
+          <h5 class="mt-3">No notifications</h5>
+          <p class="text-muted">You're all caught up! Check back later for updates.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<style>
+/* ===== BASE STYLES - Support Both Light & Dark Theme ===== */
+
+/* Notification Panel */
+.notification-panel {
+    background: var(--bs-body-bg, #ffffff) !important;
+    border: 1px solid var(--bs-border-color, #dee2e6) !important;
+    border-radius: 8px !important;
+}
+
+.notification-panel .panel-body {
+    background: transparent !important;
+}
+
+/* Select All Bar */
+.select-all-bar {
+    background: var(--bs-tertiary-bg, #f8f9fa) !important;
+    border-bottom-color: var(--bs-border-color, #dee2e6) !important;
+}
+
+.select-all-bar .form-check-label {
+    color: var(--bs-body-color, #212529) !important;
+}
+
+/* Notification List */
+.notification-list {
+    background: transparent !important;
+}
+
+/* Notification Item */
+.notification-item {
+    background: var(--bs-body-bg, #ffffff) !important;
+    border-bottom-color: var(--bs-border-color, #dee2e6) !important;
+    color: var(--bs-body-color, #212529) !important;
+    transition: background-color 0.2s;
+}
+
+.notification-item:hover {
+    background: var(--bs-tertiary-bg, #f8f9fa) !important;
+}
+
+/* Unread Notification - Works in both themes */
+.notification-item.unread {
+    background: var(--bs-primary-bg-subtle, #f0f7ff) !important;
+    border-left-color: #0a58ca !important;
+}
+
+.notification-item.unread:hover {
+    background: var(--bs-primary-bg-subtle-hover, #e3f0ff) !important;
+}
+
+/* Dark theme unread */
+[data-bs-theme="dark"] .notification-item.unread {
+    background: #1a2a4a !important;
+    border-left-color: #0a58ca !important;
+}
+
+[data-bs-theme="dark"] .notification-item.unread:hover {
+    background: #1f3060 !important;
+}
+
+/* Badges */
+.type-badge {
+    background: var(--bs-tertiary-bg, #f1f3f5) !important;
+    color: var(--bs-body-color, #212529) !important;
+}
+
+.urgent-badge {
+    background: #dc3545 !important;
+    color: #ffffff !important;
+}
+
+/* Notification Message */
+.notification-message {
+    color: var(--bs-secondary-color, #6c757d) !important;
+}
+
+/* Notification Time */
+.notification-time {
+    color: var(--bs-secondary-color, #6c757d) !important;
+}
+
+/* Links */
+.notification-link {
+    color: var(--bs-primary, #0a58ca) !important;
+}
+
+.notification-link:hover {
+    color: var(--bs-primary-hover, #084298) !important;
+}
+
+/* Checkbox */
+.notification-checkbox {
+    width: 18px !important;
+    height: 18px !important;
+    cursor: pointer;
+    accent-color: #0a58ca;
+}
+
+/* Pagination */
+.pagination-bar {
+    background: var(--bs-tertiary-bg, #f8f9fa) !important;
+    border-top: 1px solid var(--bs-border-color, #dee2e6) !important;
+}
+
+.pagination .page-item .page-link {
+    background: var(--bs-body-bg, #ffffff) !important;
+    color: var(--bs-primary, #0a58ca) !important;
+    border-color: var(--bs-border-color, #dee2e6) !important;
+}
+
+.pagination .page-item.active .page-link {
+    background: #0a58ca !important;
+    color: #ffffff !important;
+    border-color: #0a58ca !important;
+}
+
+.pagination .page-item .page-link:hover {
+    background: var(--bs-tertiary-bg, #f8f9fa) !important;
+}
+
+/* Dark theme pagination */
+[data-bs-theme="dark"] .pagination .page-item .page-link {
+    background: #2d2d2d !important;
+    color: #58a6ff !important;
+    border-color: #404040 !important;
+}
+
+[data-bs-theme="dark"] .pagination .page-item.active .page-link {
+    background: #0a58ca !important;
+    color: #ffffff !important;
+}
+
+/* Buttons - Dark theme support */
+[data-bs-theme="dark"] .btn-outline-primary {
+    color: #58a6ff !important;
+    border-color: #58a6ff !important;
+}
+
+[data-bs-theme="dark"] .btn-outline-primary:hover {
+    background: #0a58ca !important;
+    color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .btn-outline-danger {
+    color: #ff6b6b !important;
+    border-color: #ff6b6b !important;
+}
+
+[data-bs-theme="dark"] .btn-outline-danger:hover {
+    background: #dc3545 !important;
+    color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .btn-outline-secondary {
+    color: #adb5bd !important;
+    border-color: #adb5bd !important;
+}
+
+/* Form Select - Dark theme */
+[data-bs-theme="dark"] .form-select {
+    background-color: #2d2d2d !important;
+    color: #e0e0e0 !important;
+    border-color: #404040 !important;
+}
+
+[data-bs-theme="dark"] .form-select option {
+    background-color: #2d2d2d !important;
+    color: #e0e0e0 !important;
+}
+
+/* Empty state */
+[data-bs-theme="dark"] .text-muted {
+    color: #adb5bd !important;
+}
+
+[data-bs-theme="dark"] .text-primary {
+    color: #58a6ff !important;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    .notification-item {
+        padding: 10px 12px !important;
+    }
+    .notification-item .d-flex {
+        gap: 8px !important;
+    }
+    .notification-item .fs-5 {
+        font-size: 1rem !important;
+    }
+    .notification-checkbox {
+        width: 16px !important;
+        height: 16px !important;
+    }
+}
+</style>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+// ===== SELECTION FUNCTIONS =====
+let selectedIds = [];
+
+function toggleAll(selectAllCheckbox) {
+    const checkboxes = document.querySelectorAll('.notification-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAllCheckbox.checked;
+    });
+    updateSelection();
+}
+
+function updateSelection() {
+    const checkboxes = document.querySelectorAll('.notification-checkbox');
+    const selected = document.querySelectorAll('.notification-checkbox:checked');
+    const total = checkboxes.length;
+    
+    selectedIds = [];
+    selected.forEach(cb => {
+        selectedIds.push(parseInt(cb.dataset.id));
+    });
+    
+    const count = selected.length;
+    document.getElementById('selectedCount').textContent = `${count} selected`;
+    document.getElementById('selectedCountTop').textContent = `${count} selected`;
+    
+    const bulkActions = document.getElementById('bulkActions');
+    const normalActions = document.getElementById('normalActions');
+    
+    if (count > 0) {
+        bulkActions.style.display = 'flex';
+        normalActions.style.display = 'none';
+    } else {
+        bulkActions.style.display = 'none';
+        normalActions.style.display = 'flex';
+    }
+    
+    const selectAll = document.getElementById('selectAll');
+    if (selectAll) {
+        if (count === total && total > 0) {
+            selectAll.checked = true;
+            selectAll.indeterminate = false;
+        } else if (count > 0 && count < total) {
+            selectAll.checked = false;
+            selectAll.indeterminate = true;
+        } else {
+            selectAll.checked = false;
+            selectAll.indeterminate = false;
+        }
+    }
+}
+
+function clearSelection() {
+    document.querySelectorAll('.notification-checkbox').forEach(cb => {
+        cb.checked = false;
+    });
+    const selectAll = document.getElementById('selectAll');
+    if (selectAll) {
+        selectAll.checked = false;
+        selectAll.indeterminate = false;
+    }
+    updateSelection();
+}
+
+// ===== DELETE SELECTED =====
+function deleteSelected() {
+    if (selectedIds.length === 0) {
+        alert('Please select at least one notification to delete.');
+        return;
+    }
+    
+    const confirmMsg = `Are you sure you want to delete ${selectedIds.length} notification(s)?`;
+    if (!confirm(confirmMsg)) return;
+    
+    const btn = document.querySelector('.btn-outline-danger');
+    if (btn) {
+        btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Deleting...';
+        btn.disabled = true;
+    }
+    
+    const deletePromises = selectedIds.map(id => {
+        return fetch(`/members/notifications/delete/${id}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json());
+    });
+    
+    Promise.all(deletePromises)
+        .then(results => {
+            const success = results.filter(r => r.success).length;
+            const failed = results.length - success;
+            
+            if (success > 0) {
+                alert(`✅ ${success} notification(s) deleted successfully!${failed > 0 ? ` (${failed} failed)` : ''}`);
+                location.reload();
+            } else {
+                alert('❌ Failed to delete notifications. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('❌ An error occurred. Please try again.');
+        })
+        .finally(() => {
+            if (btn) {
+                btn.innerHTML = '<i class="bi bi-trash"></i> Delete Selected';
+                btn.disabled = false;
+            }
+        });
+}
+
+// ===== EXISTING FUNCTIONS =====
+function markAsRead(id) {
+  fetch(`/members/notifications/mark/${id}/`, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': getCookie('csrftoken'),
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      const element = document.getElementById(`notification-${id}`);
+      if (element) {
+        element.classList.remove('unread');
+        element.style.borderLeftColor = 'transparent';
+        const markBtn = element.querySelector('.mark-read-btn');
+        if (markBtn) {
+          markBtn.remove();
+        }
+      }
+      location.reload();
+    }
+  })
+  .catch(error => console.error('Error:', error));
+}
+
+function markAllRead() {
+  if (!confirm('Mark all notifications as read?')) return;
+  fetch('/members/notifications/mark-all/', {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': getCookie('csrftoken'),
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      location.reload();
+    }
+  })
+  .catch(error => console.error('Error:', error));
+}
+
+function deleteNotification(id) {
+  if (!confirm('Delete this notification?')) return;
+  fetch(`/members/notifications/delete/${id}/`, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': getCookie('csrftoken'),
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      const element = document.getElementById(`notification-${id}`);
+      if (element) {
+        element.style.display = 'none';
+      }
+    }
+  })
+  .catch(error => console.error('Error:', error));
+}
+
+function deleteAll() {
+  if (!confirm('Delete all notifications? This action cannot be undone.')) return;
+  fetch('/members/notifications/delete-all/', {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': getCookie('csrftoken'),
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      location.reload();
+    }
+  })
+  .catch(error => console.error('Error:', error));
+}
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+// Initialize selection on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updateSelection();
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,658 @@
+<!-- templates/members/payment_page.html -->
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Membership Payment - HEYCG{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 px-lg-4 py-4">
+  
+  <!-- Page Heading -->
+  <div class="page-heading mb-4">
+    <div class="page-heading-copy">
+      <span class="page-icon"><i class="bi bi-credit-card"></i></span>
+      <div>
+        <p class="eyebrow mb-1">Financial</p>
+        <h1 class="h3 mb-1">Membership Payment</h1>
+        <p class="text-muted mb-0">Manage your monthly membership fees. Each month costs TZS 2,000.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alert for missed payments -->
+  {% if profile.account_disabled %}
+    <div class="alert alert-danger mb-4">
+      <i class="bi bi-exclamation-triangle fs-4 me-2"></i>
+      <strong>Account Disabled!</strong> You have missed 6+ months of payments. Please pay to reactivate your account.
+    </div>
+  {% endif %}
+
+  <!-- Missed Months Alert -->
+  {% if missed_months and missed_months|length > 0 %}
+    <div class="alert alert-warning mb-4">
+      <i class="bi bi-clock-history me-2"></i>
+      <strong>You have missed payments for:</strong>
+      {% for month in missed_months %}
+        <span class="badge bg-danger ms-1">{{ month }}</span>
+      {% endfor %}
+      <br>
+      <span class="mt-2 d-block">Total due: <strong>TZS {{ total_due|floatformat:0 }}</strong></span>
+    </div>
+  {% else %}
+    <div class="alert alert-success mb-4">
+      <i class="bi bi-check-circle me-2"></i>
+      <strong>All caught up!</strong> You have no missed payments. Keep it up! 💪
+    </div>
+  {% endif %}
+
+  <div class="row g-4">
+    
+    <!-- LEFT COLUMN -->
+    <div class="col-xl-7">
+      
+      <!-- Payment Status -->
+      <div class="panel mb-4">
+        <div class="panel-header">
+          <h2 class="h5 mb-1"><i class="bi bi-info-circle"></i> Payment Status</h2>
+        </div>
+        <div class="panel-body">
+          <div class="row">
+            <div class="col-md-4">
+              <small class="text-muted">Status</small>
+              <p class="fw-bold">
+                {% if profile.account_disabled %}
+                  <span class="badge bg-danger">⚠️ Disabled</span>
+                {% elif profile.membership_status == 'active' %}
+                  <span class="badge bg-success">✅ Active</span>
+                {% else %}
+                  <span class="badge bg-warning">⏳ Pending</span>
+                {% endif %}
+              </p>
+            </div>
+            <div class="col-md-4">
+              <small class="text-muted">Monthly Fee</small>
+              <p class="fw-bold">TZS 2,000</p>
+            </div>
+            <div class="col-md-4">
+              <small class="text-muted">Missed Months</small>
+              <p class="fw-bold {% if profile.missed_months > 0 %}text-danger{% else %}text-success{% endif %}">
+                {{ profile.missed_months|default:0 }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Form -->
+      <div class="panel">
+        <div class="panel-header">
+          <h2 class="h5 mb-1"><i class="bi bi-calculator"></i> Make Payment</h2>
+          <p class="text-muted mb-0">Pay TZS 2,000 per month. You can pay more to cover multiple months.</p>
+        </div>
+        <div class="panel-body">
+          <form method="POST" action="{% url 'members:submit_monthly_payment' %}" enctype="multipart/form-data" id="paymentForm">
+            {% csrf_token %}
+            
+            <div class="mb-3">
+              <label class="form-label fw-bold">Amount (TZS)</label>
+              <div class="row g-2 mb-2">
+                <div class="col-4 col-md-3">
+                  <button type="button" class="btn btn-outline-secondary w-100 amount-btn" data-amount="2000">2,000</button>
+                </div>
+                <div class="col-4 col-md-3">
+                  <button type="button" class="btn btn-outline-secondary w-100 amount-btn" data-amount="4000">4,000</button>
+                </div>
+                <div class="col-4 col-md-3">
+                  <button type="button" class="btn btn-outline-secondary w-100 amount-btn" data-amount="6000">6,000</button>
+                </div>
+                <div class="col-4 col-md-3">
+                  <button type="button" class="btn btn-outline-secondary w-100 amount-btn" data-amount="12000">12,000</button>
+                </div>
+                <div class="col-4">
+                  <button type="button" class="btn btn-outline-secondary w-100 amount-btn" data-amount="24000">24,000</button>
+                </div>
+                <div class="col-4">
+                  <button type="button" class="btn btn-outline-secondary w-100 amount-btn" data-amount="36000">36,000</button>
+                </div>
+                <div class="col-4">
+                  <button type="button" class="btn btn-outline-secondary w-100 amount-btn" data-amount="other">Other</button>
+                </div>
+                <div class="col-12 mt-2">
+                  <input type="number" name="amount" id="amountInput" class="form-control" placeholder="Enter amount (minimum TZS 2,000)" min="2000" step="1000" required>
+                  <div class="form-text text-muted mt-1" id="monthsPreview">
+                    <i class="bi bi-info-circle"></i> This will cover <span id="monthsCount">0</span> month(s) 
+                    <span id="monthsList" class="text-primary fw-bold"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label fw-bold">Payment Proof <span class="text-danger">*</span></label>
+              <div class="upload-area" onclick="document.getElementById('paymentProof').click()">
+                <i class="bi bi-cloud-upload fs-2"></i>
+                <p class="mb-0">Click or drag & drop to upload</p>
+                <small>PNG, JPG, PDF (Max 2MB)</small>
+                <input type="file" id="paymentProof" name="proof_image" accept="image/*,.pdf" style="display: none;" required>
+                <div id="fileNameDisplay" class="small text-success mt-2"></div>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Reference (Optional)</label>
+              <input type="text" name="transaction_ref" class="form-control" placeholder="Enter transaction ID or phone number">
+            </div>
+            
+            <div class="form-check mb-4">
+              <input class="form-check-input" type="checkbox" id="termsCheck" required>
+              <label class="form-check-label small" for="termsCheck">
+                I confirm that the payment information is correct.
+              </label>
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-100 py-2" id="submitBtn">
+              <i class="bi bi-check2-circle"></i> Submit Payment
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN - Payment History -->
+    <div class="col-xl-5">
+      <div class="panel h-100">
+        <div class="panel-header">
+          <h2 class="h5 mb-1"><i class="bi bi-clock-history"></i> Payment History</h2>
+          <p class="text-muted mb-0">Your recent payment transactions.</p>
+        </div>
+        <div class="panel-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0 payment-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Month</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if payments %}
+                  {% for payment in payments %}
+                  <tr>
+                    <td>{{ payment.created_at|date:"M d, Y" }}</td>
+                    <td>
+                      {% if payment.payment_type == 'monthly' %}
+                        {% if payment.month_covered %}
+                          {{ payment.month_covered }}
+                        {% else %}
+                          <span class="text-muted">-</span>
+                        {% endif %}
+                      {% else %}
+                        <span class="text-muted">Joining Fee</span>
+                      {% endif %}
+                    </td>
+                    <td class="fw-bold">TZS {{ payment.amount|floatformat:0 }}</td>
+                    <td>
+                      {% if payment.status == 'approved' %}
+                        <span class="badge bg-success">✅ Approved</span>
+                      {% elif payment.status == 'pending' %}
+                        <span class="badge bg-warning">⏳ Pending</span>
+                      {% else %}
+                        <span class="badge bg-danger">❌ Rejected</span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr>
+                    <td colspan="4" class="text-center py-4">
+                      <i class="bi bi-receipt fs-1 text-muted"></i>
+                      <p class="text-muted mt-2">No payment history yet.</p>
+                    </td>
+                  </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* ============================================
+   LIGHT THEME
+   ============================================ */
+.panel {
+  background: #ffffff !important;
+  border-color: #dee2e6 !important;
+  border-radius: 12px;
+}
+
+.panel-header {
+  border-bottom-color: #e9ecef !important;
+}
+
+.panel-header h2 {
+  color: #1f2937 !important;
+}
+
+.panel-header .text-muted {
+  color: #6c757d !important;
+}
+
+.amount-btn {
+  font-size: 13px;
+  padding: 8px 4px;
+  transition: all 0.3s;
+  border-color: #dee2e6 !important;
+  color: #212529 !important;
+  background: #ffffff !important;
+}
+.amount-btn:hover {
+  background: #0a58ca !important;
+  color: white !important;
+  border-color: #0a58ca !important;
+  transform: translateY(-2px);
+}
+.amount-btn.active {
+  background: #0a58ca !important;
+  color: white !important;
+  border-color: #0a58ca !important;
+}
+
+.upload-area {
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 25px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #f8fafc;
+}
+.upload-area:hover {
+  border-color: #0a58ca;
+  background: #e8f4fd;
+}
+
+.payment-table thead th {
+  background: #f8f9fa !important;
+  color: #6c757d !important;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  border-bottom: 2px solid #dee2e6 !important;
+}
+.payment-table tbody td {
+  color: #212529 !important;
+  vertical-align: middle;
+  border-color: #e9ecef !important;
+}
+.payment-table tbody tr:hover {
+  background: #f8f9fa !important;
+}
+
+/* ============================================
+   DARK THEME
+   ============================================ */
+html[data-theme="dark"] .panel {
+  background: #1a1a2e !important;
+  border-color: #2d2d44 !important;
+}
+html[data-theme="dark"] .panel-header {
+  border-bottom-color: #2d2d44 !important;
+}
+html[data-theme="dark"] .panel-header h2 {
+  color: #e0e0e0 !important;
+}
+html[data-theme="dark"] .panel-header .text-muted {
+  color: #adb5bd !important;
+}
+
+html[data-theme="dark"] .amount-btn {
+  border-color: #2d2d44 !important;
+  color: #e0e0e0 !important;
+  background: transparent !important;
+}
+html[data-theme="dark"] .amount-btn:hover {
+  background: #0a58ca !important;
+  color: white !important;
+  border-color: #0a58ca !important;
+}
+html[data-theme="dark"] .amount-btn.active {
+  background: #0a58ca !important;
+  color: white !important;
+  border-color: #0a58ca !important;
+}
+
+html[data-theme="dark"] .upload-area {
+  border-color: #2d2d44 !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+html[data-theme="dark"] .upload-area:hover {
+  border-color: #0a58ca !important;
+  background: rgba(10, 88, 202, 0.1) !important;
+}
+
+html[data-theme="dark"] .payment-table thead th {
+  background: #2d2d44 !important;
+  color: #adb5bd !important;
+  border-bottom-color: #2d2d44 !important;
+}
+html[data-theme="dark"] .payment-table tbody td {
+  color: #e0e0e0 !important;
+  border-color: #2d2d44 !important;
+}
+html[data-theme="dark"] .payment-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+html[data-theme="dark"] .form-control {
+  background: #1a1a2e !important;
+  border-color: #2d2d44 !important;
+  color: #e0e0e0 !important;
+}
+html[data-theme="dark"] .form-control:focus {
+  border-color: #0a58ca !important;
+  box-shadow: 0 0 0 0.2rem rgba(10, 88, 202, 0.25) !important;
+}
+html[data-theme="dark"] .form-control::placeholder {
+  color: #6c757d !important;
+}
+
+html[data-theme="dark"] .text-muted {
+  color: #adb5bd !important;
+}
+
+html[data-theme="dark"] .badge.bg-success {
+  background: #0f766e !important;
+}
+html[data-theme="dark"] .badge.bg-warning {
+  background: #b45309 !important;
+  color: #fff7ed !important;
+}
+html[data-theme="dark"] .badge.bg-danger {
+  background: #991b1b !important;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 576px) {
+  .amount-btn {
+    font-size: 11px;
+    padding: 6px 2px;
+  }
+  .panel-body {
+    padding: 15px;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const amountInput = document.getElementById('amountInput');
+    const monthsCount = document.getElementById('monthsCount');
+    const monthsList = document.getElementById('monthsList');
+    const monthsPreview = document.getElementById('monthsPreview');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    // ===== AMOUNT BUTTONS =====
+    document.querySelectorAll('.amount-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const amount = this.dataset.amount;
+            
+            document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
+            
+            if (amount === 'other') {
+                amountInput.value = '';
+                amountInput.focus();
+                monthsCount.textContent = '0';
+                monthsList.textContent = '';
+                return;
+            }
+            
+            const amountNum = parseInt(amount);
+            if (!isNaN(amountNum) && amountNum > 0) {
+                amountInput.value = amountNum;
+                this.classList.add('active');
+                updateMonthsPreview(amountNum);
+            }
+        });
+    });
+
+    // ===== UPDATE MONTHS PREVIEW =====
+    function updateMonthsPreview(amount) {
+        const months = Math.floor(amount / 2000);
+        monthsCount.textContent = months;
+        
+        if (months > 0) {
+            // Pata next month kutoka API
+            fetch('/members/api/last-payment-month/')
+                .then(response => response.json())
+                .then(data => {
+                    const monthNames = [];
+                    let startDate = new Date();
+                    
+                    if (data.next_month) {
+                        const parts = data.next_month.split(' ');
+                        const monthNames_short = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+                        const monthIndex = monthNames_short.indexOf(parts[0]);
+                        const year = parseInt(parts[1]);
+                        startDate = new Date(year, monthIndex, 1);
+                    } else {
+                        startDate.setMonth(startDate.getMonth() + 1);
+                    }
+                    
+                    for (let i = 0; i < months && i < 3; i++) {
+                        const monthDate = new Date(startDate);
+                        monthDate.setMonth(startDate.getMonth() + i);
+                        const monthStr = monthDate.toLocaleString('default', { month: 'short', year: 'numeric' });
+                        monthNames.push(monthStr);
+                    }
+                    
+                    let displayText = '';
+                    if (months <= 3) {
+                        displayText = ` (${monthNames.join(', ')})`;
+                    } else {
+                        displayText = ` (${monthNames.join(', ')} + ${months - 3} more)`;
+                    }
+                    monthsList.textContent = displayText;
+                })
+                .catch(() => {
+                    monthsList.textContent = '';
+                });
+        } else {
+            monthsList.textContent = '';
+        }
+    }
+
+    // ===== AMOUNT INPUT =====
+    amountInput.addEventListener('input', function() {
+        const rawValue = this.value.replace(/,/g, '');
+        const amount = parseInt(rawValue) || 0;
+        
+        document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
+        
+        if (amount > 0) {
+            updateMonthsPreview(amount);
+        } else {
+            monthsCount.textContent = '0';
+            monthsList.textContent = '';
+        }
+    });
+
+    // ===== FILE UPLOAD =====
+    document.getElementById('paymentProof').addEventListener('change', function() {
+        const display = document.getElementById('fileNameDisplay');
+        if (this.files && this.files[0]) {
+            const file = this.files[0];
+            if (file.size > 2 * 1024 * 1024) {
+                alert('File is too large. Maximum size is 2MB.');
+                this.value = '';
+                display.innerHTML = '';
+                return;
+            }
+            display.innerHTML = '<i class="bi bi-check-circle"></i> ' + file.name + ' (' + (file.size / 1024).toFixed(0) + 'KB)';
+        } else {
+            display.innerHTML = '';
+        }
+    });
+
+    // ===== FORM SUBMISSION =====
+    document.getElementById('paymentForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const file = document.getElementById('paymentProof').files[0];
+        const terms = document.getElementById('termsCheck');
+        const rawValue = amountInput.value.replace(/,/g, '');
+        const amount = parseFloat(rawValue);
+        const months = Math.floor(amount / 2000);
+        
+        if (!file) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Payment Proof Required',
+                text: 'Please upload your payment proof/screenshot.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+        
+        if (!amount || amount < 2000 || isNaN(amount)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid Amount',
+                text: 'Please enter a valid amount (minimum TZS 2,000).',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+        
+        if (!terms.checked) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Terms Not Confirmed',
+                text: 'Please confirm that your information is correct.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+        
+        // ===== HESABU MIEZI KWA USAHIHI =====
+        Swal.fire({
+            title: 'Calculating...',
+            text: 'Please wait',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
+        
+        fetch('/members/api/last-payment-month/')
+            .then(response => response.json())
+            .then(data => {
+                Swal.close();
+                
+                const monthNames = [];
+                let startDate = new Date();
+                
+                if (data.next_month) {
+                    const parts = data.next_month.split(' ');
+                    const monthNames_short = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+                    const monthIndex = monthNames_short.indexOf(parts[0]);
+                    const year = parseInt(parts[1]);
+                    startDate = new Date(year, monthIndex, 1);
+                } else {
+                    startDate.setMonth(startDate.getMonth() + 1);
+                }
+                
+                for (let i = 0; i < months; i++) {
+                    const monthDate = new Date(startDate);
+                    monthDate.setMonth(startDate.getMonth() + i);
+                    const monthStr = monthDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+                    monthNames.push(monthStr);
+                }
+                
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Confirm Payment',
+                    html: `
+                        <div style="text-align: left; padding: 10px;">
+                            <p><strong>Amount:</strong> TZS ${amount.toLocaleString()}</p>
+                            <p><strong>Months Covered:</strong> ${months} month(s)</p>
+                            <p><strong>Months:</strong> ${monthNames.join(', ')}</p>
+                            <p><strong>Total:</strong> TZS ${amount.toLocaleString()}</p>
+                        </div>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: '✅ Yes, Submit',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#0a58ca'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Processing...',
+                            text: 'Submitting your payment',
+                            allowOutsideClick: false,
+                            didOpen: () => Swal.showLoading()
+                        });
+                        document.getElementById('paymentForm').submit();
+                    }
+                });
+            })
+            .catch(() => {
+                Swal.close();
+                // Fallback
+                const monthNames = [];
+                let startDate = new Date();
+                startDate.setMonth(startDate.getMonth() + 1);
+                
+                for (let i = 0; i < months; i++) {
+                    const monthDate = new Date(startDate);
+                    monthDate.setMonth(startDate.getMonth() + i);
+                    const monthStr = monthDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+                    monthNames.push(monthStr);
+                }
+                
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Confirm Payment',
+                    html: `
+                        <div style="text-align: left; padding: 10px;">
+                            <p><strong>Amount:</strong> TZS ${amount.toLocaleString()}</p>
+                            <p><strong>Months Covered:</strong> ${months} month(s)</p>
+                            <p><strong>Months:</strong> ${monthNames.join(', ')}</p>
+                            <p><strong>Total:</strong> TZS ${amount.toLocaleString()}</p>
+                        </div>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: '✅ Yes, Submit',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#0a58ca'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('paymentForm').submit();
+                    }
+                });
+            });
+    });
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+
+{% endblock %}

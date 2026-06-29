@@ -1,0 +1,479 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Gallery - HEYCG{% endblock %}
+
+
+{% block content %}
+
+<header id="header" class="header d-flex align-items-center fixed-top" style="background-color: #000000ab;">
+    <div class="container-fluid container-xl position-relative d-flex align-items-center">
+
+      <a href="/" class="logo d-flex align-items-center me-auto">
+        <!-- Uncomment the line below if you also wish to use an image logo -->
+       <img src="{% static 'images/charity_logo_white.png' %}" alt="HEYCG Logo">
+      </a>
+
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="/" >Home</a></li>
+          <li><a href="{% url 'website:events_gallery' %}" class="active">Events & Gallery</a></li>
+          <li><a href="{% url 'website:donation_page' %}">Donation</a></li>
+          <li><a href="{% url 'website:blog_list' %}">Blog</a></li>
+          {% comment %} <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <ul>
+              <li><a href="#">Dropdown 1</a></li>
+              <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                <ul>
+                  <li><a href="#">Deep Dropdown 1</a></li>
+                  <li><a href="#">Deep Dropdown 2</a></li>
+                  <li><a href="#">Deep Dropdown 3</a></li>
+                  <li><a href="#">Deep Dropdown 4</a></li>
+                  <li><a href="#">Deep Dropdown 5</a></li>
+                </ul>
+              </li>
+              <li><a href="#">Dropdown 2</a></li>
+              <li><a href="#">Dropdown 3</a></li>
+              <li><a href="#">Dropdown 4</a></li>
+            </ul>
+          </li> {% endcomment %}
+          
+        </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+
+      <a class="cta-btn" href="{% url 'accounts:login' %}" target="_blank">login</a>
+
+    </div>
+  </header>
+
+
+
+  <main class="main pt-5">
+
+
+   <!-- Events Table Section -->
+<section class="events-table-section py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Events History</h2>
+        
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Event Title</th>
+                        <th>Description</th>
+                        <th>Date</th>
+                        <th>Location</th>
+                        <th>Gallery</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in events_page %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td><strong>{{ event.title }}</strong></td>
+                        <td>{{ event.description|truncatewords:20 }}</td>
+                        <td>{{ event.event_date|date:"M d, Y" }}</td>
+                        <td>{{ event.location }}</td>
+                        <td class="text-center">
+                            <!-- Button inafungua MODAL ya EVENT hii tu -->
+                            <a href="{% url 'website:event_gallery' event.id %}" class="btn btn-info btn-sm">
+    <i class="fas fa-images"></i> View Gallery ({{ event.gallery_images.count }})
+</a>
+                        </td>
+                    </tr>
+                    
+                    <!-- MODAL - Inaonyesha PICHA ZA EVENT HII TU -->
+                    <div class="modal fade" id="galleryModal{{ event.id }}" tabindex="-1">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header bg-primary text-white">
+                                    <h5 class="modal-title">
+                                        <i class="fas fa-images me-2"></i> {{ event.title }} - Event Gallery
+                                    </h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        {% for image in event.gallery_images.all %}
+                                        <div class="col-md-4 col-sm-6 mb-3">
+                                            <div class="gallery-thumb">
+                                                <img src="{{ image.image.url }}" class="img-fluid rounded" alt="{{ image.title }}" style="height: 180px; width: 100%; object-fit: cover;">
+                                                <p class="small text-center mt-1">{{ image.title }}</p>
+                                            </div>
+                                        </div>
+                                        {% empty %}
+                                        <div class="col-12 text-center py-4">
+                                            <i class="fas fa-images fa-3x text-muted mb-2"></i>
+                                            <p class="text-muted">No images uploaded for this event yet.</p>
+                                            <p class="small">Go to Admin → Gallery Images → Add and select this event.</p>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {% if events_page.has_other_pages %}
+        <nav>
+            <ul class="pagination justify-content-center">
+                {% if events_page.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ events_page.previous_page_number }}">Previous</a></li>
+                {% endif %}
+                {% for num in events_page.paginator.page_range %}
+                <li class="page-item {% if events_page.number == num %}active{% endif %}">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                </li>
+                {% endfor %}
+                {% if events_page.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ events_page.next_page_number }}">Next</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</section>
+
+
+
+
+    
+
+    
+
+
+  </main>
+
+  <footer id="footer" class="footer dark-background">
+
+    <div class="container footer-top">
+      <div class="row gy-4">
+        <div class="col-lg-4 col-md-6 footer-about">
+          <a href="index.html" class="logo d-flex align-items-center">
+            <span class="sitename">HEYCG</span>
+          </a>
+          <div class="footer-contact pt-3">
+            <p>Makanisa matatu Street</p>
+            <p>Kimara, DSM 16104</p>
+            <p class="mt-3"><strong>Phone:</strong> <span>+255 719 005 790</span></p>
+            <p><strong>Email:</strong> <span>youngcharity@gmail.com</span></p>
+          </div>
+          <div class="social-links d-flex mt-4">
+            <a href="https://www.tiktok.com/@young_charity_generation" target="_blank"><i class="bi bi-tiktok"></i></a>
+            <a href="https://www.facebook.com/profile.php?id=61555713284053" target="_blank"><i class="bi bi-facebook"></i></a>
+            <a href="" target="_blank"><i class="bi bi-instagram"></i></a>
+            <a href="https://www.youtube.com/@YoungCharityGeneration" target="_blank"><i class="bi bi-youtube"></i></a>
+          </div>
+        </div>
+
+        {% comment %} <div class="col-lg-2 col-md-3 footer-links">
+          <h4>Useful Links</h4>
+          <ul>
+            <li><i class="bi bi-chevron-right"></i> <a href="#hero">Home</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#about">About us</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#services">Services</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Terms of service</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Privacy policy</a></li>
+          </ul>
+        </div> {% endcomment %}
+
+        <div class="col-lg-2 col-md-3 footer-links">
+          <h4>Our Services</h4>
+          <ul>
+            <li><i class="bi bi-chevron-right"></i> <a href="{% url 'website:events_gallery' %}">Event & Gallery</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="{% url 'website:blog_list' %}">Blog</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="{% url 'website:donation_page' %}">Donation</a></li>
+            {% comment %} <li><i class="bi bi-chevron-right"></i> <a href="#">Marketing</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Graphic Design</a></li> {% endcomment %}
+          </ul>
+        </div>
+
+        <div class="col-lg-4 col-md-12 footer-newsletter">
+  <h4>Stay Updated</h4>
+  <p>Subscribe to receive the latest charity events, community projects, and important announcements from HEYCG.</p>
+  
+  <!-- Form rahisi - Bila JavaScript -->
+  <form method="post" action="{% url 'website:newsletter_subscribe' %}" id="newsletterForm">
+    {% csrf_token %}
+    <div class="newsletter-form">
+      <input type="email" name="email" placeholder="Enter your email" 
+             autocomplete="email" required>
+      <button type="submit" class="subscribe-btn">Subscribe</button>
+    </div>
+  </form>
+  
+  <!-- Django Messages -->
+  {% if messages %}
+    <div class="newsletter-messages">
+      {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'warning' %}warning{% else %}success{% endif %} alert-dismissible fade show" role="alert" style="font-size: 13px; padding: 8px 12px; margin-bottom: 5px;">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" style="font-size: 10px; padding: 8px;"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+
+<style>
+/* Ensure button matches your design */
+.subscribe-btn {
+  background: #0a58ca;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+.subscribe-btn:hover {
+  background: #084298;
+}
+
+/* Make sure form displays properly */
+.newsletter-form {
+  display: flex;
+  gap: 0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+  background: white;
+}
+
+.newsletter-form input[type="email"] {
+  flex: 1;
+  padding: 10px 15px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  background: transparent;
+  min-width: 0;
+}
+
+.newsletter-form input[type="email"]::placeholder {
+  color: #999;
+}
+
+.newsletter-form .subscribe-btn {
+  padding: 10px 25px;
+  background: #0a58ca;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background 0.3s;
+  white-space: nowrap;
+  border-radius: 0;
+}
+
+.newsletter-form .subscribe-btn:hover {
+  background: #084298;
+}
+
+.newsletter-messages {
+  margin-top: 10px;
+}
+
+.newsletter-messages .alert {
+  font-size: 13px;
+  padding: 8px 12px;
+  margin-bottom: 5px;
+  border-radius: 4px;
+}
+
+.newsletter-messages .alert-success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.newsletter-messages .alert-danger {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.newsletter-messages .alert-warning {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+</style>
+
+      </div>
+    </div>
+
+    <div class="container copyright text-center mt-4">
+      <p>© <span>Copyright</span> <strong class="px-1 sitename">HEYCG</strong> <span>All Rights Reserved</span></p>
+      <div class="credits">
+        <!-- All the links in the footer should remain intact. -->
+        <!-- You can delete the links only if you've purchased the pro version. -->
+        <!-- Licensing information: https://bootstrapmade.com/license/ -->
+        <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
+        Designed by <a href="https://bootstrapmade.com/">shmforfuture</a> | <a href="https://bootstrapmade.com/tools/">WebDeveloper</a>
+      </div>
+    </div>
+
+  </footer>
+
+  <!-- Scroll Top -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Preloader -->
+  <div id="preloader"></div>
+
+
+
+  <style>
+/* Table Styles */
+.table {
+    vertical-align: middle;
+}
+
+.table thead th {
+    background-color: #2c3e50;
+    color: white;
+    border: none;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+
+.table tbody td {
+    border-bottom: 1px solid #dee2e6;
+    vertical-align: middle;
+}
+
+/* Pagination */
+.pagination .page-link {
+    color: #2c3e50;
+    margin: 0 3px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.pagination .active .page-link {
+    background-color: #2c3e50;
+    border-color: #2c3e50;
+    color: white;
+}
+
+.pagination .page-link:hover {
+    background-color: #34495e;
+    color: white;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: #2c3e50;
+    border-color: #2c3e50;
+}
+
+.btn-primary:hover {
+    background-color: #34495e;
+    border-color: #34495e;
+}
+
+.btn-info {
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+}
+
+.btn-info:hover {
+    background-color: #138496;
+    border-color: #138496;
+}
+
+/* Badge */
+.badge.bg-success {
+    font-size: 11px;
+    padding: 4px 8px;
+}
+
+/* Form inputs */
+.form-control, .form-select {
+    font-size: 14px;
+    border-radius: 8px;
+}
+
+/* Modal */
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .table thead th, .table tbody td {
+        font-size: 12px;
+        padding: 8px;
+    }
+    
+    .btn-info {
+        font-size: 10px;
+        padding: 4px 8px;
+    }
+}
+</style>
+
+<script>
+// Search functionality
+document.getElementById('searchBtn').addEventListener('click', function() {
+    filterTable();
+});
+
+document.getElementById('searchInput').addEventListener('keyup', function(e) {
+    if (e.key === 'Enter') {
+        filterTable();
+    }
+});
+
+document.getElementById('locationFilter').addEventListener('change', function() {
+    filterTable();
+});
+
+function filterTable() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const locationFilter = document.getElementById('locationFilter').value.toLowerCase();
+    const tableRows = document.querySelectorAll('#eventsTable tbody tr');
+    
+    tableRows.forEach(row => {
+        const title = row.cells[1].innerText.toLowerCase();
+        const description = row.cells[2].innerText.toLowerCase();
+        const location = row.cells[4].innerText.toLowerCase();
+        
+        const matchesSearch = searchTerm === '' || 
+                              title.includes(searchTerm) || 
+                              description.includes(searchTerm);
+        const matchesLocation = locationFilter === '' || location.includes(locationFilter);
+        
+        if (matchesSearch && matchesLocation) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+</script>
+{% endblock %}

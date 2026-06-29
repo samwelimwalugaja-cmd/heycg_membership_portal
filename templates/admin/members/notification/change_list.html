@@ -1,0 +1,13 @@
+{% extends "admin/change_list.html" %}
+
+{% block object-tools %}
+    <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+        {% if show_broadcast_button %}
+            <a href="{{ broadcast_url }}" 
+               style="background: #0a58ca; color: white; padding: 8px 20px; border-radius: 4px; text-decoration: none; font-weight: bold; display: inline-flex; align-items: center; gap: 8px;">
+                <span>📢</span> Send Notification to All Users
+            </a>
+        {% endif %}
+        {{ block.super }}
+    </div>
+{% endblock %}

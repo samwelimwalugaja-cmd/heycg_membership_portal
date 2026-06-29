@@ -1,0 +1,131 @@
+<!-- templates/members/partials/events_grid.html -->
+{% load static %}
+
+<div class="row g-4">
+  {% if events %}
+    {% for event in events %}
+    <div class="col-md-6 col-xl-4">
+      <div class="card h-100 border-0 shadow-sm event-card">
+        {% if event.image %}
+          <img src="{{ event.image.url }}" class="card-img-top" alt="{{ event.title }}" style="height: 160px; object-fit: cover;">
+        {% else %}
+          <div class="bg-light text-center py-5">
+            <i class="bi bi-calendar-event fs-1 text-muted"></i>
+          </div>
+        {% endif %}
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <span class="badge bg-primary">
+              <i class="bi bi-calendar3 me-1"></i> {{ event.event_date|date:"M d, Y" }}
+            </span>
+            {% if type == 'registered' %}
+              <span class="badge bg-success">Registered</span>
+            {% elif type == 'past' %}
+              <span class="badge bg-secondary">Past Event</span>
+            {% endif %}
+          </div>
+          <h5 class="card-title event-title">{{ event.title }}</h5>
+          <p class="card-text small text-muted event-location">
+            <i class="bi bi-geo-alt"></i> {{ event.location }}
+          </p>
+          <p class="card-text small">{{ event.description|truncatewords:20 }}</p>
+          
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <small class="text-muted">
+              <i class="bi bi-people"></i> {{ event.registrations.count }} participants
+            </small>
+            
+            <!-- BUTTONS -->
+            {% if type == 'registered' %}
+              <button class="btn btn-sm btn-outline-danger" onclick="window.cancelRegistration({{ event.id }})">
+                <i class="bi bi-x-circle"></i> Cancel
+              </button>
+            {% elif type == 'past' %}
+              <div class="btn-group">
+                <a href="{% url 'members:event_gallery_member' event.id %}" class="btn btn-sm btn-outline-primary">
+                  <i class="bi bi-images"></i> Gallery
+                </a>
+                {% if user in event.registrations.all %}
+                  <button class="btn btn-sm btn-outline-success" onclick="window.showCertificateModal({{ event.id }}, '{{ event.title|escapejs }}')">
+                    <i class="bi bi-award"></i> Certificate
+                  </button>
+                {% else %}
+                  <button class="btn btn-sm btn-outline-secondary" disabled title="You must attend this event to get a certificate">
+                    <i class="bi bi-award"></i> Certificate
+                  </button>
+                {% endif %}
+              </div>
+            {% else %}
+              {% if user in event.registrations.all %}
+                <button class="btn btn-sm btn-outline-danger" onclick="window.cancelRegistration({{ event.id }})">
+                  <i class="bi bi-x-circle"></i> Cancel
+                </button>
+              {% else %}
+                <button class="btn btn-sm btn-primary" onclick="window.registerEvent({{ event.id }})">
+                  <i class="bi bi-check-lg"></i> Register
+                </button>
+              {% endif %}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+    
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="col-12">
+      <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+          {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                <i class="bi bi-chevron-left"></i> Previous
+              </a>
+            </li>
+          {% else %}
+            <li class="page-item disabled">
+              <span class="page-link"><i class="bi bi-chevron-left"></i> Previous</span>
+            </li>
+          {% endif %}
+          
+          {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+              <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+              </li>
+            {% endif %}
+          {% endfor %}
+          
+          {% if page_obj.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                Next <i class="bi bi-chevron-right"></i>
+              </a>
+            </li>
+          {% else %}
+            <li class="page-item disabled">
+              <span class="page-link">Next <i class="bi bi-chevron-right"></i></span>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+    {% endif %}
+    
+  {% else %}
+    <div class="col-12">
+      <div class="alert alert-info text-center py-5">
+        <i class="bi bi-calendar-x fs-1"></i>
+        <p class="mb-0 mt-2">No events found.</p>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+// Ensure functions are available
+console.log('Events grid loaded');
+</script>

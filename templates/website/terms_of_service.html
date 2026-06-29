@@ -1,0 +1,577 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Terms of Service - HEYCG{% endblock %}
+
+{% block content %}
+
+<!-- Page Title - With Background Image and Overlay -->
+<div style="
+    position: relative;
+    background-image: url('{% static 'images/about01.jpg' %}');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    padding: 140px 0 60px 0;
+    text-align: center;
+    min-height: 350px;
+    display: flex;
+    align-items: center;
+">
+    <div style="
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(10, 22, 40, 0.85) 0%, rgba(10, 88, 202, 0.75) 100%);
+        z-index: 1;
+    "></div>
+    
+    <div class="container" style="position: relative; z-index: 2; width: 100%;">
+        <h1 style="color: #ffffff; font-size: 42px; font-weight: 800; text-shadow: 0 2px 10px rgba(0,0,0,0.3); margin-bottom: 10px;">Terms of Service</h1>
+        <p style="color: rgba(255,255,255,0.9); font-size: 20px; font-weight: 300; text-shadow: 0 1px 5px rgba(0,0,0,0.2);">Masharti na Miongozo ya Matumizi ya HEYCG</p>
+        <p style="color: rgba(255,255,255,0.6); margin-top: 15px;">
+            <a href="{% url 'website:home' %}" style="color: rgba(255,255,255,0.7); text-decoration: none;">Home</a>
+            <span style="margin: 0 10px; color: rgba(255,255,255,0.4);">/</span>
+            <span style="color: rgba(255,255,255,0.5);">Terms of Service</span>
+        </p>
+    </div>
+</div>
+
+<!-- Content -->
+<div style="padding: 40px 0 60px 0; background: #f8f9fa;">
+    <div class="container">
+        <div id="termsContent" style="max-width: 900px; margin: 0 auto; padding: 40px 30px; background: #ffffff; border-radius: 10px; box-shadow: 0 0 30px rgba(0,0,0,0.08); margin-top: -30px; position: relative; z-index: 3;">
+            
+            <!-- Action Buttons -->
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: flex-end; margin-bottom: 30px;">
+                <a href="#" onclick="window.print(); return false;" style="background: #6c757d; color: white; padding: 10px 22px; border-radius: 6px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; text-decoration: none;">
+                    <i class="bi bi-printer"></i> Print
+                </a>
+                <a href="#" onclick="openPDFModal(); return false;" style="background: #dc3545; color: white; padding: 10px 22px; border-radius: 6px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; text-decoration: none;">
+                    <i class="bi bi-file-pdf"></i> Download PDF
+                </a>
+                <a href="#" onclick="openShareModal(); return false;" style="background: #0a58ca; color: white; padding: 10px 22px; border-radius: 6px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; text-decoration: none;">
+                    <i class="bi bi-share"></i> Share
+                </a>
+            </div>
+            
+            <h2 style="color: #0a58ca; font-size: 28px; text-align: center; margin-bottom: 5px;">Terms of Service</h2>
+            <p style="text-align: center; color: #6c757d; font-size: 16px; margin-bottom: 30px;">HOCET Young Charity Generation (HEYCG)</p>
+            
+            <!-- ===== CONTENT SECTIONS (SAME AS BEFORE) ===== -->
+            <h2 style="color: #0a58ca; font-size: 22px; margin-top: 35px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e8f0fe;">1. Introduction</h2>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">Welcome to HEYCG (HOCET Young Charity Generation). By accessing or using our website, membership portal, and services, you agree to comply with and be bound by the following terms and conditions of use. Please read these terms carefully before using our services.</p>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">These Terms of Service apply to all users, members, visitors, and others who access or use our services.</p>
+            
+            <h2 style="color: #0a58ca; font-size: 22px; margin-top: 35px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e8f0fe;">2. Membership</h2>
+            
+            <h3 style="color: #1a2a4a; font-size: 18px; margin-top: 25px; margin-bottom: 10px;">2.1 Registration</h3>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">To become a member of HEYCG, you must:</p>
+            <ul style="padding-left: 25px; margin-bottom: 15px; color: #444444; line-height: 1.8;">
+                <li>Be at least 18 years old</li>
+                <li>Provide accurate and complete registration information</li>
+                <li>Pay the registration fee of <strong style="color: #0a58ca;">TZS 3,000</strong></li>
+                <li>Agree to pay monthly membership fees of <strong style="color: #0a58ca;">TZS 2,000</strong></li>
+                <li>Maintain the confidentiality of your account credentials</li>
+            </ul>
+            
+            <h3 style="color: #1a2a4a; font-size: 18px; margin-top: 25px; margin-bottom: 10px;">2.2 Membership Benefits</h3>
+            <ul style="padding-left: 25px; margin-bottom: 15px; color: #444444; line-height: 1.8;">
+                <li>Access to member-only events and activities</li>
+                <li>Voting rights in organization matters</li>
+                <li>Opportunity to participate in charity programs</li>
+                <li>Access to member resources and updates</li>
+                <li>Networking opportunities with fellow members</li>
+            </ul>
+            
+            <h3 style="color: #1a2a4a; font-size: 18px; margin-top: 25px; margin-bottom: 10px;">2.3 Membership Termination</h3>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">HEYCG reserves the right to terminate membership for:</p>
+            <ul style="padding-left: 25px; margin-bottom: 15px; color: #444444; line-height: 1.8;">
+                <li>Non-payment of membership fees for more than 3 months</li>
+                <li>Violation of these Terms of Service</li>
+                <li>Misconduct or behavior contrary to the organization's values</li>
+                <li>Providing false or misleading information</li>
+            </ul>
+            
+            <h2 style="color: #0a58ca; font-size: 22px; margin-top: 35px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e8f0fe;">3. Payments</h2>
+            
+            <h3 style="color: #1a2a4a; font-size: 18px; margin-top: 25px; margin-bottom: 10px;">3.1 Registration Fee</h3>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">A one-time registration fee of <strong style="color: #0a58ca;">TZS 3,000</strong> is required to become a full member.</p>
+            
+            <h3 style="color: #1a2a4a; font-size: 18px; margin-top: 25px; margin-bottom: 10px;">3.2 Monthly Membership Fee</h3>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">Monthly membership fee of <strong style="color: #0a58ca;">TZS 2,000</strong> is payable on the 1st of each month.</p>
+            
+            <h3 style="color: #1a2a4a; font-size: 18px; margin-top: 25px; margin-bottom: 10px;">3.3 Payment Methods</h3>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">Payments can be made via:</p>
+            <ul style="padding-left: 25px; margin-bottom: 15px; color: #444444; line-height: 1.8;">
+                <li><strong style="color: #0a58ca;">Airtel Money</strong> - Lipa Namba: 14493258</li>
+                <li><strong style="color: #0a58ca;">Tigo Pesa</strong> - Contact us for details</li>
+                <li><strong style="color: #0a58ca;">M-Pesa</strong> - Contact us for details</li>
+            </ul>
+            
+            <h3 style="color: #1a2a4a; font-size: 18px; margin-top: 25px; margin-bottom: 10px;">3.4 Late Payments</h3>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">Members who fail to pay within 14 days of the due date will be sent a reminder. Failure to pay for 3 consecutive months may result in membership suspension.</p>
+            
+            <h2 style="color: #0a58ca; font-size: 22px; margin-top: 35px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e8f0fe;">4. User Conduct</h2>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">As a member of HEYCG, you agree to:</p>
+            <ul style="padding-left: 25px; margin-bottom: 15px; color: #444444; line-height: 1.8;">
+                <li>Treat all members, volunteers, and staff with respect</li>
+                <li>Not engage in any form of harassment, discrimination, or bullying</li>
+                <li>Use the portal and services responsibly</li>
+                <li>Not share your account credentials with others</li>
+                <li>Not use the platform for illegal or harmful activities</li>
+                <li>Comply with all applicable laws and regulations</li>
+            </ul>
+            
+            <h2 style="color: #0a58ca; font-size: 22px; margin-top: 35px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e8f0fe;">5. Intellectual Property</h2>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">All content on this website, including but not limited to text, graphics, logos, images, videos, and software, is the property of HEYCG and is protected by copyright and other intellectual property laws.</p>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">You may not reproduce, distribute, modify, or create derivative works of any content without our express written permission.</p>
+            
+            <h2 style="color: #0a58ca; font-size: 22px; margin-top: 35px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e8f0fe;">6. Donations</h2>
+            
+            <h3 style="color: #1a2a4a; font-size: 18px; margin-top: 25px; margin-bottom: 10px;">6.1 Donation Policy</h3>
+            <ul style="padding-left: 25px; margin-bottom: 15px; color: #444444; line-height: 1.8;">
+                <li>All donations are voluntary and non-refundable</li>
+                <li>Donations will be used for charity programs as described</li>
+                <li>Donors will receive acknowledgment and receipts</li>
+                <li>Anonymous donations are accepted</li>
+            </ul>
+            
+            <h3 style="color: #1a2a4a; font-size: 18px; margin-top: 25px; margin-bottom: 10px;">6.2 Transparency</h3>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">HEYCG is committed to transparency. We regularly publish reports on how donations are used to support our charity programs.</p>
+            
+            <h2 style="color: #0a58ca; font-size: 22px; margin-top: 35px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e8f0fe;">7. Limitation of Liability</h2>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">HEYCG is not liable for:</p>
+            <ul style="padding-left: 25px; margin-bottom: 15px; color: #444444; line-height: 1.8;">
+                <li>Any indirect, incidental, or consequential damages</li>
+                <li>Loss of data or information</li>
+                <li>Technical issues or service interruptions</li>
+                <li>Third-party content or services</li>
+            </ul>
+            
+            <h2 style="color: #0a58ca; font-size: 22px; margin-top: 35px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e8f0fe;">8. Changes to Terms</h2>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">HEYCG reserves the right to modify these Terms of Service at any time. Members will be notified of significant changes via email or through the member portal. Your continued use of the services constitutes acceptance of the updated terms.</p>
+            
+            <h2 style="color: #0a58ca; font-size: 22px; margin-top: 35px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e8f0fe;">9. Contact Information</h2>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">If you have any questions about these Terms of Service, please contact us:</p>
+            <ul style="padding-left: 25px; margin-bottom: 15px; color: #444444; line-height: 1.8;">
+                <li><strong style="color: #0a58ca;">Email:</strong> youngcharitygeneration20@gmail.com</li>
+                <li><strong style="color: #0a58ca;">Phone:</strong> +255 719 005 790</li>
+                <li><strong style="color: #0a58ca;">Address:</strong> Makanisa matatu Street, Kimara, DSM 16104</li>
+            </ul>
+            
+            <div style="font-style: italic; color: #6c757d; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e9ecef; text-align: center;">
+                <p><strong>Last Updated:</strong> June 26, 2026</p>
+                <p>© 2026 HEYCG - HOCET Young Charity Generation. All Rights Reserved.</p>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SHARE MODAL -->
+<!-- ============================================================ -->
+<div id="shareModal" style="
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 99999;
+    align-items: center;
+    justify-content: center;
+">
+    <div style="
+        background: white;
+        max-width: 450px;
+        width: 90%;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        animation: modalSlideIn 0.3s ease;
+        position: relative;
+        max-height: 90vh;
+        overflow-y: auto;
+    ">
+        <!-- Close Button -->
+        <button onclick="closeModal('shareModal')" style="
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s;
+        " onmouseover="this.style.color='#333'" onmouseout="this.style.color='#999'">
+            &times;
+        </button>
+        
+        <h3 style="color: #0a58ca; margin-top: 0; margin-bottom: 10px; font-size: 24px;">
+            <i class="bi bi-share"></i> Share This Page
+        </h3>
+        <p style="color: #6c757d; margin-bottom: 20px; font-size: 14px;">Share this Terms of Service page with others</p>
+        
+        <!-- Link Display -->
+        <div style="
+            background: #f8f9fa;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            margin-bottom: 15px;
+            word-break: break-all;
+            font-size: 13px;
+            color: #333;
+            font-family: monospace;
+        ">
+            <span id="shareLink">{{ request.build_absolute_uri }}</span>
+        </div>
+        
+        <!-- Copy Link Button -->
+        <button onclick="copyShareLink()" style="
+            background: #0a58ca;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: background 0.3s;
+        " onmouseover="this.style.background='#084298'" onmouseout="this.style.background='#0a58ca'">
+            <i class="bi bi-clipboard"></i> Copy Link
+        </button>
+        
+        <!-- Divider -->
+        <div style="
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #ccc;
+            font-size: 12px;
+        ">
+            <hr style="flex: 1; border: none; border-top: 1px solid #e9ecef;">
+            <span style="padding: 0 10px;">OR</span>
+            <hr style="flex: 1; border: none; border-top: 1px solid #e9ecef;">
+        </div>
+        
+        <!-- Share via Email -->
+        <button onclick="shareViaEmail()" style="
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: background 0.3s;
+        " onmouseover="this.style.background='#1e7e34'" onmouseout="this.style.background='#28a745'">
+            <i class="bi bi-envelope"></i> Share via Email
+        </button>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PDF MODAL -->
+<!-- ============================================================ -->
+<div id="pdfModal" style="
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 99998;
+    align-items: center;
+    justify-content: center;
+">
+    <div style="
+        background: white;
+        max-width: 450px;
+        width: 90%;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        animation: modalSlideIn 0.3s ease;
+        position: relative;
+    ">
+        <!-- Close Button -->
+        <button onclick="closeModal('pdfModal')" style="
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s;
+        " onmouseover="this.style.color='#333'" onmouseout="this.style.color='#999'">
+            &times;
+        </button>
+        
+        <h3 style="color: #dc3545; margin-top: 0; margin-bottom: 10px; font-size: 24px;">
+            <i class="bi bi-file-pdf"></i> Download PDF
+        </h3>
+        <p style="color: #6c757d; margin-bottom: 20px; font-size: 14px;">Download this page as a PDF document</p>
+        
+        <!-- PDF Icon -->
+        <div style="
+            text-align: center;
+            margin-bottom: 20px;
+        ">
+            <i class="bi bi-file-pdf" style="font-size: 64px; color: #dc3545;"></i>
+        </div>
+        
+        <!-- Download PDF Button -->
+        <button onclick="downloadPDFAction()" style="
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: background 0.3s;
+        " onmouseover="this.style.background='#c82333'" onmouseout="this.style.background='#dc3545'">
+            <i class="bi bi-download"></i> Download PDF
+        </button>
+        
+        <!-- Divider -->
+        <div style="
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #ccc;
+            font-size: 12px;
+        ">
+            <hr style="flex: 1; border: none; border-top: 1px solid #e9ecef;">
+            <span style="padding: 0 10px;">OR</span>
+            <hr style="flex: 1; border: none; border-top: 1px solid #e9ecef;">
+        </div>
+        
+        <!-- Print Button -->
+        <button onclick="printPDFAction()" style="
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: background 0.3s;
+        " onmouseover="this.style.background='#5a6268'" onmouseout="this.style.background='#6c757d'">
+            <i class="bi bi-printer"></i> Print (Save as PDF)
+        </button>
+    </div>
+</div>
+
+<style>
+    @media print {
+        .action-buttons, .btn-print, .btn-pdf, .btn-share {
+            display: none !important;
+        }
+        .page-title-bg {
+            padding: 40px 0 20px 0 !important;
+            min-height: 150px !important;
+        }
+        #termsContent {
+            margin-top: 0 !important;
+            box-shadow: none !important;
+        }
+        #shareModal, #pdfModal {
+            display: none !important;
+        }
+    }
+    
+    @keyframes modalSlideIn {
+        from {
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+</style>
+
+<script>
+    // ============================================
+    // SHARE MODAL FUNCTIONS
+    // ============================================
+    function openShareModal() {
+        document.getElementById('shareModal').style.display = 'flex';
+        document.getElementById('shareLink').textContent = window.location.href;
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function copyShareLink() {
+        var link = document.getElementById('shareLink').textContent;
+        
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(link)
+                .then(function() {
+                    showToast('✅ Link copied to clipboard!');
+                })
+                .catch(function() {
+                    fallbackCopy(link);
+                });
+        } else {
+            fallbackCopy(link);
+        }
+    }
+    
+    function fallbackCopy(text) {
+        var input = document.createElement('input');
+        input.value = text;
+        input.style.position = 'fixed';
+        input.style.opacity = '0';
+        input.style.left = '-9999px';
+        input.style.top = '-9999px';
+        document.body.appendChild(input);
+        
+        try {
+            input.select();
+            document.execCommand('copy');
+            showToast('✅ Link copied to clipboard!');
+        } catch (err) {
+            alert('Copy this link: ' + text);
+        }
+        
+        document.body.removeChild(input);
+    }
+    
+    function shareViaEmail() {
+        var link = window.location.href;
+        var subject = 'HEYCG - Terms of Service';
+        var body = 'Check out the Terms of Service for HEYCG:\n\n' + link;
+        window.location.href = 'mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+        closeModal('shareModal');
+    }
+    
+    // ============================================
+    // PDF MODAL FUNCTIONS
+    // ============================================
+    function openPDFModal() {
+        document.getElementById('pdfModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function downloadPDFAction() {
+        closeModal('pdfModal');
+        // Show instruction then open print dialog
+        setTimeout(function() {
+            alert('📄 To save as PDF:\n\n1. Click OK to open print dialog\n2. Select "Save as PDF" from printer options\n3. Choose location and save');
+            setTimeout(function() {
+                window.print();
+            }, 500);
+        }, 300);
+    }
+    
+    function printPDFAction() {
+        closeModal('pdfModal');
+        setTimeout(function() {
+            window.print();
+        }, 300);
+    }
+    
+    // ============================================
+    // CLOSE MODAL
+    // ============================================
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+    
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        if (event.target.id === 'shareModal') {
+            closeModal('shareModal');
+        }
+        if (event.target.id === 'pdfModal') {
+            closeModal('pdfModal');
+        }
+    }
+    
+    // ============================================
+    // TOAST NOTIFICATION
+    // ============================================
+    function showToast(msg) {
+        var existing = document.querySelector('.custom-toast');
+        if (existing) {
+            existing.remove();
+        }
+        
+        var div = document.createElement('div');
+        div.className = 'custom-toast';
+        div.innerHTML = msg;
+        div.style.cssText = `
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 16px 28px;
+            background: #28a745;
+            color: white;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            z-index: 999999;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            max-width: 400px;
+            animation: slideUp 0.4s ease;
+            font-family: Arial, sans-serif;
+        `;
+        document.body.appendChild(div);
+        
+        setTimeout(function() {
+            div.style.opacity = '0';
+            div.style.transition = 'opacity 0.5s';
+            setTimeout(function() {
+                div.remove();
+            }, 500);
+        }, 3000);
+    }
+    
+    // Add animations for toast
+    var styleToast = document.createElement('style');
+    styleToast.textContent = `
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    `;
+    document.head.appendChild(styleToast);
+</script>
+
+{% endblock %}

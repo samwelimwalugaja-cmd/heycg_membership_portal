@@ -1,0 +1,722 @@
+<!-- templates/dashboard_base.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <meta name="description" content="HEYCG Member Dashboard">
+  <title>HEYCG - {% block title %}Member Portal{% endblock %}</title>
+  <link href="{% static 'images/favicon-01.png' %}" rel="icon">
+  
+  <!-- CSS Files -->
+  <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/vendors/bootstrap-icons/bootstrap-icons.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+  
+  <style>
+    /* ============================================
+       ICON BUTTON - FIX FOR BOTH THEMES
+       ============================================ */
+    .icon-button {
+      color: var(--admin-text, #1f2937) !important;
+      border: 1px solid var(--admin-border, #dbe4ef) !important;
+      background: var(--admin-surface, #ffffff) !important;
+    }
+
+    .icon-button .bi {
+      color: var(--admin-text, #1f2937) !important;
+    }
+
+    .icon-button .bi-bell {
+      color: var(--admin-text, #1f2937) !important;
+    }
+
+    .icon-button:hover {
+      background: var(--admin-surface-soft, #f8fafc) !important;
+    }
+
+    html[data-theme="dark"] .icon-button {
+      color: #e0e0e0 !important;
+      border-color: #2f3b52 !important;
+      background: #182235 !important;
+    }
+
+    html[data-theme="dark"] .icon-button .bi {
+      color: #e0e0e0 !important;
+    }
+
+    html[data-theme="dark"] .icon-button .bi-bell {
+      color: #e0e0e0 !important;
+    }
+
+    html[data-theme="dark"] .icon-button:hover {
+      background: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    html[data-theme="light"] .icon-button {
+      color: #1f2937 !important;
+      border-color: #dbe4ef !important;
+      background: #ffffff !important;
+    }
+
+    html[data-theme="light"] .icon-button .bi {
+      color: #1f2937 !important;
+    }
+
+    html[data-theme="light"] .icon-button .bi-bell {
+      color: #1f2937 !important;
+    }
+
+    /* ============================================
+       THEME TOGGLE ICON
+       ============================================ */
+    html[data-theme="dark"] .theme-toggle .bi-moon-stars {
+      color: #f0c040 !important;
+    }
+
+    html[data-theme="dark"] .theme-toggle .bi-sun {
+      color: #ffd93d !important;
+    }
+
+    html[data-theme="light"] .theme-toggle .bi-moon-stars {
+      color: #495057 !important;
+    }
+
+    html[data-theme="light"] .theme-toggle .bi-sun {
+      color: #495057 !important;
+    }
+
+    /* ============================================
+       NOTIFICATION BADGE
+       ============================================ */
+    .notification-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #dc3545 !important;
+      color: white !important;
+      border-radius: 50%;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 4px;
+      font-size: 10px;
+      font-weight: 700;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      line-height: 1;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      z-index: 10;
+      transition: transform 0.15s ease;
+    }
+
+    .notification-badge.show {
+      display: flex !important;
+    }
+
+    .notification-badge.more-than-9 {
+      min-width: 22px;
+      height: 22px;
+      font-size: 9px;
+    }
+
+    .notification-badge.more-than-99 {
+      min-width: 26px;
+      height: 22px;
+      font-size: 8px;
+      padding: 0 6px;
+      border-radius: 20px;
+    }
+
+    .icon-button:hover .notification-badge {
+      transform: scale(1.08);
+    }
+
+    .icon-button .bi-bell {
+      font-size: 1.4rem;
+    }
+
+    html[data-theme="dark"] .notification-badge {
+      border-color: #2d2d2d !important;
+    }
+
+    html[data-theme="light"] .notification-badge {
+      border-color: #ffffff !important;
+    }
+
+    @media (max-width: 576px) {
+      .notification-badge {
+        min-width: 18px;
+        height: 18px;
+        font-size: 9px;
+        top: -3px;
+        right: -3px;
+        border-width: 1.5px;
+      }
+      .notification-badge.more-than-9 {
+        min-width: 20px;
+        height: 20px;
+        font-size: 8px;
+      }
+      .icon-button .bi-bell {
+        font-size: 1.2rem;
+      }
+    }
+
+    /* ============================================
+       NOTIFICATION DROPDOWN - BOTH THEMES
+       ============================================ */
+    html[data-theme="light"] .notification-menu {
+      background: #ffffff !important;
+      border-color: #dbe4ef !important;
+    }
+
+    html[data-theme="light"] .notification-menu .dropdown-header {
+      background: #ffffff !important;
+      border-bottom-color: #dbe4ef !important;
+      color: #1f2937 !important;
+    }
+
+    html[data-theme="light"] .notification-menu .dropdown-footer {
+      background: #ffffff !important;
+      border-top-color: #dbe4ef !important;
+      color: #6b7280 !important;
+    }
+
+    html[data-theme="light"] .notification-menu .dropdown-item {
+      background: #ffffff !important;
+      border-bottom-color: #dbe4ef !important;
+      color: #1f2937 !important;
+    }
+
+    html[data-theme="light"] .notification-menu .dropdown-item:hover {
+      background: #f8fafc !important;
+    }
+
+    html[data-theme="light"] .notification-menu .dropdown-item.unread {
+      background: #f0f7ff !important;
+      border-left-color: #0a58ca !important;
+    }
+
+    html[data-theme="light"] .notification-menu .notification-time {
+      color: #6c757d !important;
+    }
+
+    html[data-theme="light"] .notification-menu .notification-message {
+      color: #6c757d !important;
+    }
+
+    html[data-theme="dark"] .notification-menu {
+      background: #2d2d2d !important;
+      border-color: #404040 !important;
+    }
+
+    html[data-theme="dark"] .notification-menu .dropdown-header {
+      background: #2d2d2d !important;
+      border-bottom-color: #404040 !important;
+      color: #e0e0e0 !important;
+    }
+
+    html[data-theme="dark"] .notification-menu .dropdown-footer {
+      background: #2d2d2d !important;
+      border-top-color: #404040 !important;
+      color: #adb5bd !important;
+    }
+
+    html[data-theme="dark"] .notification-menu .dropdown-item {
+      background: #2d2d2d !important;
+      border-bottom-color: #404040 !important;
+      color: #e0e0e0 !important;
+    }
+
+    html[data-theme="dark"] .notification-menu .dropdown-item:hover {
+      background: rgba(255, 255, 255, 0.05) !important;
+    }
+
+    html[data-theme="dark"] .notification-menu .dropdown-item.unread {
+      background: rgba(10, 88, 202, 0.2) !important;
+      border-left-color: #0a58ca !important;
+    }
+
+    html[data-theme="dark"] .notification-menu .notification-time {
+      color: #adb5bd !important;
+    }
+
+    html[data-theme="dark"] .notification-menu .notification-message {
+      color: #adb5bd !important;
+    }
+
+    html[data-theme="dark"] .notification-menu .text-muted {
+      color: #adb5bd !important;
+    }
+
+    html[data-theme="dark"] .notification-menu .badge.bg-light {
+      background: rgba(255, 255, 255, 0.1) !important;
+      color: #adb5bd !important;
+    }
+
+    html[data-theme="dark"] .notification-menu .fw-bold {
+      color: #e0e0e0 !important;
+    }
+
+    html[data-theme="dark"] .notification-menu .dropdown-header .fw-bold {
+      color: #e0e0e0 !important;
+    }
+
+    html[data-theme="dark"] .notification-menu .dropdown-header a {
+      color: #58a6ff !important;
+    }
+
+    html[data-theme="dark"] .notification-menu .dropdown-header a:hover {
+      color: #79b8ff !important;
+    }
+
+    html[data-theme="dark"] .notification-scroll::-webkit-scrollbar-thumb {
+      background: #555;
+    }
+
+    html[data-theme="dark"] .notification-scroll::-webkit-scrollbar-track {
+      background: #333;
+    }
+
+    html[data-theme="dark"] .notification-menu .text-primary {
+      color: #58a6ff !important;
+    }
+
+    html[data-theme="dark"] .notification-menu .text-warning {
+      color: #f0c040 !important;
+    }
+
+    html[data-theme="dark"] .notification-menu .text-danger {
+      color: #ff6b6b !important;
+    }
+
+    html[data-theme="dark"] .notification-menu .text-info {
+      color: #58c4ff !important;
+    }
+
+    html[data-theme="dark"] .notification-menu .text-secondary {
+      color: #adb5bd !important;
+    }
+
+    /* ============================================
+       PROFILE BUTTON
+       ============================================ */
+    html[data-theme="light"] .profile-btn {
+      background: #ffffff !important;
+      border-color: #dbe4ef !important;
+      color: #1f2937 !important;
+    }
+
+    html[data-theme="light"] .profile-btn:hover {
+      background: #f8fafc !important;
+    }
+
+    html[data-theme="light"] .profile-name-text {
+      color: #1f2937 !important;
+    }
+
+    html[data-theme="light"] .profile-chevron {
+      color: #6c757d !important;
+    }
+
+    html[data-theme="dark"] .profile-btn {
+      background: rgba(255, 255, 255, 0.08) !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+      color: #e0e0e0 !important;
+    }
+
+    html[data-theme="dark"] .profile-btn:hover {
+      background: rgba(255, 255, 255, 0.15) !important;
+    }
+
+    html[data-theme="dark"] .profile-name-text {
+      color: #e0e0e0 !important;
+    }
+
+    html[data-theme="dark"] .profile-chevron {
+      color: #e0e0e0 !important;
+    }
+
+    /* ============================================
+       DROPDOWN - BOTH THEMES
+       ============================================ */
+    html[data-theme="light"] .dropdown-menu {
+      background: #ffffff !important;
+      border-color: #dbe4ef !important;
+    }
+
+    html[data-theme="light"] .dropdown-item {
+      color: #1f2937 !important;
+    }
+
+    html[data-theme="light"] .dropdown-item:hover {
+      background: #f8fafc !important;
+    }
+
+    html[data-theme="dark"] .dropdown-menu {
+      background: #2d2d2d !important;
+      border-color: #404040 !important;
+    }
+
+    html[data-theme="dark"] .dropdown-item {
+      color: #e0e0e0 !important;
+    }
+
+    html[data-theme="dark"] .dropdown-item:hover {
+      background: rgba(255, 255, 255, 0.05) !important;
+    }
+
+    html[data-theme="dark"] .dropdown-divider {
+      border-color: #404040 !important;
+    }
+
+    @media (max-width: 576px) {
+      .navbar-actions .btn-light .fw-semibold {
+        display: none !important;
+      }
+      .navbar-actions .btn-light {
+        padding: 4px 6px !important;
+      }
+    }
+  </style>
+  
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+  <div class="admin-shell">
+    <div class="sidebar-backdrop" data-sidebar-close></div>
+
+    <!-- ========== SIDEBAR ========== -->
+    <aside class="admin-sidebar" id="adminSidebar" aria-label="Main navigation">
+      <div class="sidebar-header">
+        <a class="brand-mark" href="{% url 'members:dashboard' %}">
+          <span class="brand-icon"><i class="bi bi-grid-1x2-fill"></i></span>
+          <span class="brand-copy">
+            <span class="brand-title">HEYCG</span>
+            <span class="brand-subtitle">Member Portal</span>
+          </span>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'members:dashboard' %}">
+          <span class="nav-icon"><i class="bi bi-speedometer2"></i></span>
+          <span class="nav-text">Dashboard</span>
+        </a>
+        <a class="nav-link" href="{% url 'members:my_events' %}">
+          <span class="nav-icon"><i class="bi bi-calendar-event"></i></span>
+          <span class="nav-text">My Events</span>
+        </a>
+        <a class="nav-link" href="{% url 'members:payment_page' %}">
+          <span class="nav-icon"><i class="bi bi-credit-card"></i></span>
+          <span class="nav-text">Payments</span>
+        </a>
+        <a class="nav-link" href="{% url 'members:donations' %}">
+          <span class="nav-icon"><i class="bi bi-heart"></i></span>
+          <span class="nav-text">Donations</span>
+        </a>
+        <a class="nav-link" href="{% url 'members:gallery' %}">
+          <span class="nav-icon"><i class="bi bi-images"></i></span>
+          <span class="nav-text">Gallery</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <span class="status-dot"></span>
+        <span class="sidebar-footer-text">System running smoothly</span>
+      </div>
+    </aside>
+
+    <!-- ========== MAIN PANEL ========== -->
+    <div class="admin-main">
+      
+      <!-- ========== NAVBAR ========== -->
+      <nav class="navbar admin-navbar navbar-expand bg-white">
+        <div class="container-fluid px-2 px-sm-3 px-lg-4">
+          <button class="sidebar-toggle" type="button" data-sidebar-toggle>
+            <span></span><span></span><span></span>
+          </button>
+
+          <form class="d-none d-md-flex ms-3 flex-grow-1" role="search">
+            <input class="form-control search-input" type="search" placeholder="Search...">
+          </form>
+
+          <!-- Navbar Actions -->
+          <div class="navbar-actions ms-auto d-flex align-items-center gap-1 gap-sm-2">
+            <!-- Theme Toggle Button -->
+            <button class="icon-button theme-toggle" type="button" data-theme-toggle aria-label="Switch color theme" title="Switch color theme">
+              <i class="bi bi-moon-stars" data-theme-icon aria-hidden="true"></i>
+            </button>
+            
+            <!-- ========== NOTIFICATION DROPDOWN ========== -->
+            <div class="dropdown">
+              <button class="icon-button position-relative" type="button" data-bs-toggle="dropdown" id="notificationBell" aria-label="Notifications">
+                <i class="bi bi-bell"></i>
+                <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+              </button>
+              
+              <div class="dropdown-menu dropdown-menu-end notification-menu" id="notificationDropdown" style="min-width: 320px; max-width: 380px;">
+                <div class="dropdown-header d-flex justify-content-between align-items-center">
+                  <span class="fw-bold">Notifications</span>
+                  <a href="{% url 'members:notifications' %}" class="text-decoration-none small">View All</a>
+                </div>
+                
+                <div class="notification-scroll" id="notificationList" style="max-height: 350px; overflow-y: auto;">
+                  <div class="dropdown-item text-center text-muted py-3">
+                    <i class="bi bi-hourglass-split"></i> Loading...
+                  </div>
+                </div>
+                
+                <div class="dropdown-footer border-top p-2 text-center">
+                  <a href="{% url 'members:notifications' %}" class="text-decoration-none small">
+                    <i class="bi bi-arrow-right-circle"></i> View all notifications
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- ========== PROFILE DROPDOWN ========== -->
+            <div class="dropdown">
+              <button class="btn btn-light rounded-pill d-flex align-items-center gap-1 gap-sm-2 profile-btn" type="button" data-bs-toggle="dropdown" style="padding: 4px 8px 4px 4px;">
+                <!-- Profile Picture -->
+                {% if request.user.profile.profile_picture and request.user.profile.profile_picture.url %}
+                  <img src="{{ request.user.profile.profile_picture.url }}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+                {% else %}
+                  <div style="width: 32px; height: 32px; border-radius: 50%; background: #0a58ca; display: flex; align-items: center; justify-content: center; color: white;">
+                    <i class="bi bi-person-fill" style="font-size: 14px;"></i>
+                  </div>
+                {% endif %}
+                <span class="fw-semibold small d-none d-sm-inline profile-name-text">{{ request.user.last_name|default:request.user.username }}</span>
+                <i class="bi bi-chevron-down small profile-chevron"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="{% url 'members:profile' %}"><i class="bi bi-person me-2"></i>My Profile</a></li>
+                <li><a class="dropdown-item" href="{% url 'members:settings' %}"><i class="bi bi-gear me-2"></i>Settings</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Sign out</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <!-- ========== MAIN CONTENT ========== -->
+      <main class="dashboard-content">
+        {% block content %}
+        {% endblock %}
+      </main>
+
+      <!-- ========== FOOTER ========== -->
+      <footer class="admin-footer">
+        <div class="container-fluid px-2 px-sm-3 px-lg-4">
+          <span>&copy; 2025 HEYCG - HOCET Young Charity Generation</span>
+          <span>Member Portal v1.0</span>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ========== SCRIPTS ========== -->
+  <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/js/main.js' %}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+  <!-- Notification System JavaScript -->
+  <script>
+    // Notification System
+    class NotificationSystem {
+      constructor() {
+        this.bell = document.getElementById('notificationBell');
+        this.dropdown = document.getElementById('notificationDropdown');
+        this.list = document.getElementById('notificationList');
+        this.badge = document.getElementById('notificationBadge');
+        this.pollInterval = null;
+        this.init();
+      }
+      
+      init() {
+        this.loadNotifications();
+        this.startPolling();
+        this.setupEventListeners();
+      }
+      
+      loadNotifications() {
+        fetch('/members/api/notifications/')
+          .then(response => response.json())
+          .then(data => {
+            this.updateUI(data);
+          })
+          .catch(error => console.error('Error loading notifications:', error));
+      }
+      
+      updateUI(data) {
+        // Update badge - WhatsApp Style
+        const badge = this.badge;
+        if (data.unread_count > 0) {
+          let displayText = data.unread_count;
+          let classes = 'notification-badge show';
+          
+          if (data.unread_count > 99) {
+            displayText = '99+';
+            classes += ' more-than-99';
+          } else if (data.unread_count > 9) {
+            classes += ' more-than-9';
+          }
+          
+          badge.textContent = displayText;
+          badge.className = classes;
+          badge.style.display = 'flex';
+        } else {
+          badge.className = 'notification-badge';
+          badge.style.display = 'none';
+        }
+        
+        // Update list
+        if (data.notifications.length === 0) {
+          this.list.innerHTML = `
+            <div class="dropdown-item text-center text-muted py-4">
+              <i class="bi bi-bell-slash fs-3 d-block mb-2"></i>
+              No new notifications
+            </div>
+          `;
+          return;
+        }
+        
+        let html = '';
+        data.notifications.forEach(notif => {
+          const icon = this.getIcon(notif.type);
+          const readClass = notif.is_read ? '' : 'unread';
+          const borderColor = notif.is_read ? 'transparent' : '#0a58ca';
+          
+          let message = notif.message;
+          if (message.length > 60) {
+            message = message.substring(0, 60) + '...';
+          }
+          
+          html += `
+            <div class="dropdown-item notification-item ${readClass}" 
+                 data-id="${notif.id}" 
+                 style="border-left-color: ${borderColor}; cursor: pointer;"
+                 onclick="window.location.href='${notif.link || '#'}'">
+              <div class="d-flex gap-2 align-items-start">
+                <span class="mt-1 flex-shrink-0">${icon}</span>
+                <div class="flex-grow-1" style="min-width: 0;">
+                  <div class="d-flex justify-content-between align-items-start gap-2">
+                    <span class="${notif.is_read ? '' : 'fw-bold'} small" style="word-break: break-word; flex: 1;">
+                      ${notif.title}
+                    </span>
+                    <span class="notification-time flex-shrink-0">${notif.time_ago}</span>
+                  </div>
+                  <div class="small text-muted notification-message">${message}</div>
+                  <div class="mt-1">
+                    <span class="badge bg-light text-muted" style="font-size: 9px;">${notif.type_display}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        
+        this.list.innerHTML = html;
+        
+        // Add click handlers for marking as read
+        this.list.querySelectorAll('.notification-item.unread').forEach(item => {
+          item.addEventListener('click', function(e) {
+            if (e.target.closest('.mark-read-btn') || e.target.closest('.delete-btn')) {
+              return;
+            }
+            const id = this.dataset.id;
+            if (id) {
+              this.markAsRead(id);
+            }
+          }.bind(this));
+        });
+      }
+      
+      getIcon(type) {
+        const icons = {
+          'payment': '<i class="bi bi-credit-card text-primary"></i>',
+          'membership': '<i class="bi bi-person-check text-warning"></i>',
+          'donation': '<i class="bi bi-heart text-danger"></i>',
+          'announcement': '<i class="bi bi-megaphone text-info"></i>'
+        };
+        return icons[type] || '<i class="bi bi-bell text-secondary"></i>';
+      }
+      
+      startPolling() {
+        this.pollInterval = setInterval(() => {
+          this.loadNotifications();
+        }, 30000);
+      }
+      
+      setupEventListeners() {
+        this.bell?.addEventListener('click', () => {
+          this.loadNotifications();
+        });
+      }
+      
+      markAsRead(id) {
+        fetch(`/members/notifications/mark/${id}/`, {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': this.getCookie('csrftoken'),
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            this.loadNotifications();
+          }
+        })
+        .catch(error => console.error('Error marking notification as read:', error));
+      }
+      
+      getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+    }
+
+    // Initialize when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+      new NotificationSystem();
+    });
+  </script>
+  
+  <!-- ===== MAIN.JS IS HANDLING THE THEME ===== -->
+  <!-- main.js inashughulikia theme toggle na localStorage -->
+  <!-- Tunaweka tu data-theme na data-bs-theme kwa usalama -->
+  
+  <!-- Django Messages -->
+  <script>
+    {% if messages %}
+      {% for message in messages %}
+        Swal.fire({
+          icon: '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% else %}info{% endif %}',
+          title: '{% if message.tags == "success" %}Success!{% else %}Notice{% endif %}',
+          text: '{{ message|escapejs }}',
+          confirmButtonText: 'OK'
+        });
+      {% endfor %}
+    {% endif %}
+  </script>
+  
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

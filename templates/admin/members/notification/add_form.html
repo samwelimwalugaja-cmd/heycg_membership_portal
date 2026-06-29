@@ -1,0 +1,33 @@
+{% extends "admin/change_form.html" %}
+
+{% block form_top %}
+    {% if show_broadcast_button %}
+        <div style="margin-bottom: 20px; padding: 15px; background: #e3f2fd; border-radius: 5px; border: 1px solid #0a58ca;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div>
+                    <strong style="font-size: 16px; color: #0a58ca;">📢 Send to All Users?</strong>
+                    <span style="color: #6c757d; font-size: 14px; display: block;">
+                        Instead of adding one by one, use the broadcast feature to send notifications to all members at once.
+                    </span>
+                </div>
+                <a href="{{ broadcast_url }}" 
+                   style="background: #0a58ca; color: white; padding: 10px 25px; border-radius: 5px; text-decoration: none; font-weight: bold; white-space: nowrap; display: inline-flex; align-items: center; gap: 8px;">
+                    <span>📢</span> Send to All Users
+                </a>
+            </div>
+        </div>
+    {% endif %}
+    {{ block.super }}
+{% endblock %}
+
+{% block object-tools %}
+    {% if show_broadcast_button %}
+        <div style="margin-bottom: 10px;">
+            <a href="{{ broadcast_url }}" 
+               style="background: #0a58ca; color: white; padding: 8px 20px; border-radius: 4px; text-decoration: none; font-weight: bold; display: inline-block;">
+                📢 Broadcast Notification
+            </a>
+        </div>
+    {% endif %}
+    {{ block.super }}
+{% endblock %}

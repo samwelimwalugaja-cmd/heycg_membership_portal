@@ -1,0 +1,49 @@
+<!-- templates/website/donation_success.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Donation Successful - HEYCG{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <i class="fas fa-check-circle fa-5x text-success mb-4"></i>
+                    <h2 class="fw-bold mb-3">Thank You for Your Donation!</h2>
+                    <p class="lead text-muted mb-4">Your generosity makes a difference</p>
+                    
+                    <div class="alert alert-info">
+                        <strong>Transaction ID:</strong> {{ donation.transaction_id }}
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 mb-3">
+                                <small class="text-muted">Donation Amount</small>
+                                <h4 class="text-primary">TZS {{ donation.amount|floatformat:0 }}</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 mb-3">
+                                <small class="text-muted">Campaign</small>
+                                <h5>{{ donation.campaign.title }}</h5>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <a href="{% url 'website:donation_page' %}" class="btn btn-primary">
+                            <i class="fas fa-hand-holding-heart"></i> Donate Again
+                        </a>
+                        <a href="{% url 'website:home' %}" class="btn btn-outline-secondary ms-2">
+                            Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+<!-- templates/admin/base_site.html -->
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}HEYCG Admin Portal{% endblock %}
+{% block extrahead %}
+<link rel="stylesheet" href="{% static 'admin/css/custom_admin.css' %}">
+{% endblock %}
+{% block branding %}
+<div style="display: flex; align-items: center; justify-content: space-between; background: #1a252f; padding: 10px 20px;">
+    <div style="display: flex; align-items: center;">
+        <img src="{% static 'images/charity_logo_white.png' %}" alt="HEYCG Logo" style="height: 40px; margin-right: 15px;">
+        <h1 id="site-name" style="margin: 0;">
+            <a href="{% url 'admin:index' %}" style="color: white; text-decoration: none;">
+                HEYCG Membership Portal
+            </a>
+        </h1>
+    </div>
+    <div style="color: white; font-size: 12px;">
+        HOCET Young Charity Generation - Managing Members, Events, and Donations
+    </div>
+</div>
+{% endblock %}
+
+{% block nav-global %}
+<div style="background-color: #2c3e50; padding: 8px 20px; color: white; font-size: 13px;">
+    <strong>Welcome, {{ user.get_username }}.</strong> 
+    <a href="/" style="color: #ffd700;">View site</a> / 
+    <a href="/admin/password_change/" style="color: #ffd700;">Change password</a> / 
+    <a href="/admin/logout/" style="color: #ffd700;">Log out</a>
+</div>
+{% endblock %}

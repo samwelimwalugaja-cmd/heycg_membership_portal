@@ -1,0 +1,42 @@
+/* static/admin/css/custom_admin.css */
+
+/* Fix admin layout */
+#header {
+    background: #1a252f !important;
+    padding: 0 !important;
+}
+
+#branding h1 a {
+    color: white !important;
+}
+
+.module h2, .module caption {
+    background: #2c3e50 !important;
+}
+
+/* Dashboard improvements */
+.dashboard .module table th {
+    background: #f8f9fa;
+}
+
+#content-main .module {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Button styles */
+.submit-row input.default {
+    background: #0a58ca !important;
+}
+
+.object-tools a.addlink {
+    background-color: #28a745 !important;
+}
+
+/* Responsive admin */
+@media (max-width: 768px) {
+    #header {
+        flex-direction: column;
+        text-align: center;
+    }
+}

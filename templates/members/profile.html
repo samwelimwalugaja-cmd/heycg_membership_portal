@@ -1,0 +1,166 @@
+<!-- templates/members/profile.html -->
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+{% block title %}My Profile - HEYCG{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 px-lg-4 py-4">
+  
+  <!-- Page Heading -->
+  <div class="page-heading mb-4">
+    <div class="page-heading-copy">
+      <span class="page-icon"><i class="bi bi-person-badge"></i></span>
+      <div>
+        <p class="eyebrow mb-1">Account</p>
+        <h1 class="h3 mb-1">My Profile</h1>
+        <p class="text-muted mb-0">Manage your personal details, bio, and contact preferences.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    
+    <!-- LEFT COLUMN - Profile Card (Info) -->
+    <div class="col-12 col-lg-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body text-center">
+          <!-- Profile Photo -->
+          <div class="mb-3">
+            {% if user.profile.profile_picture %}
+              <img src="{{ user.profile.profile_picture.url }}" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #0a58ca;">
+            {% else %}
+              <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center text-white mx-auto" style="width: 100px; height: 100px;">
+                <i class="bi bi-person-fill fs-1"></i>
+              </div>
+            {% endif %}
+          </div>
+          
+          <h4 class="mb-1">{{ user.first_name|default:user.username }} {{ user.last_name }}</h4>
+          <p class="mb-3">
+            {% if user.profile.membership_status == 'active' %}
+              <span class="badge bg-success">Active Member</span>
+            {% else %}
+              <span class="badge bg-warning">{{ user.profile.membership_status|title }}</span>
+            {% endif %}
+          </p>
+          
+          <div class="text-start mt-4">
+            <div class="d-flex py-2 border-bottom">
+              <div class="text-muted" style="width: 100px;"><i class="bi bi-envelope me-2"></i> Email</div>
+              <div class="flex-grow-1 text-truncate">{{ user.email }}</div>
+            </div>
+            <div class="d-flex py-2 border-bottom">
+              <div class="text-muted" style="width: 100px;"><i class="bi bi-phone me-2"></i> Phone</div>
+              <div class="flex-grow-1">{{ user.profile.phone_number|default:"Not provided" }}</div>
+            </div>
+            <div class="d-flex py-2 border-bottom">
+              <div class="text-muted" style="width: 100px;"><i class="bi bi-gender-ambiguous me-2"></i> Gender</div>
+              <div class="flex-grow-1">{{ user.profile.get_gender_display|default:"Not specified" }}</div>
+            </div>
+            <div class="d-flex py-2 border-bottom">
+              <div class="text-muted" style="width: 100px;"><i class="bi bi-calendar me-2"></i> Member Since</div>
+              <div class="flex-grow-1">{{ user.date_joined|date:"F d, Y" }}</div>
+            </div>
+            <div class="d-flex py-2 border-bottom">
+              <div class="text-muted" style="width: 100px;"><i class="bi bi-geo-alt me-2"></i> Address</div>
+              <div class="flex-grow-1 text-truncate">{{ user.profile.address|default:"Not provided" }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN - Edit Profile Form -->
+    <div class="col-12 col-lg-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-transparent border-0 pt-4">
+          <h5 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Edit Profile</h5>
+          <p class="text-secondary small mb-0">Update your profile information.</p>
+        </div>
+        <div class="card-body">
+          <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="row g-3">
+              <!-- Readonly fields - using bg-transparent instead of bg-light -->
+              <div class="col-md-6">
+                <label class="form-label">First Name</label>
+                <input type="text" class="form-control bg-transparent" value="{{ user.first_name }}" readonly>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Last Name</label>
+                <input type="text" class="form-control bg-transparent" value="{{ user.last_name }}" readonly>
+              </div>
+              
+              <div class="col-md-6">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control bg-transparent" value="{{ user.email }}" readonly>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Gender</label>
+                <input type="text" class="form-control bg-transparent" value="{{ user.profile.get_gender_display|default:'Not specified' }}" readonly>
+              </div>
+              
+              <!-- Editable fields -->
+              <div class="col-md-6">
+                <label class="form-label">Middle Name (Optional)</label>
+                <input type="text" name="middle_name" class="form-control" value="{{ user.profile.middle_name|default:'' }}" placeholder="Enter middle name">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Phone Number</label>
+                <input type="tel" name="phone_number" class="form-control" value="{{ user.profile.phone_number|default:'' }}" placeholder="Enter phone number">
+              </div>
+              
+              <div class="col-12">
+                <label class="form-label">Address</label>
+                <textarea name="address" class="form-control" rows="2" placeholder="Enter your address">{{ user.profile.address|default:'' }}</textarea>
+              </div>
+              
+              <div class="col-12">
+                <label class="form-label">Profile Picture</label>
+                <input type="file" name="profile_picture" class="form-control" accept="image/*">
+                <div class="form-text small text-muted">Leave empty to keep current picture. Max 2MB. JPG, PNG only.</div>
+              </div>
+              
+              <div class="col-12">
+                <label class="form-label">Why did you choose to join HEYCG?</label>
+                <textarea name="why_join" class="form-control" rows="3" placeholder="Share why you want to be part of HEYCG...">{{ user.profile.why_join|default:'' }}</textarea>
+              </div>
+            </div>
+            
+            <div class="d-flex justify-content-end mt-4">
+              <button type="submit" class="btn btn-primary px-4">
+                <i class="bi bi-check2-circle me-2"></i> Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Dark theme support */
+.bg-transparent {
+  background-color: transparent !important;
+}
+.form-control.bg-transparent {
+  background-color: var(--bs-dark-bg-subtle, rgba(255,255,255,0.05));
+  border: 1px solid var(--bs-border-color, #dee2e6);
+}
+.form-control.bg-transparent:focus {
+  border-color: #0a58ca;
+  box-shadow: 0 0 0 0.2rem rgba(10,88,202,0.25);
+}
+.card-header.bg-transparent {
+  background-color: transparent !important;
+}
+</style>
+{% endblock %}

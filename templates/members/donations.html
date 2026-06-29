@@ -1,0 +1,647 @@
+<!-- templates/members/donations.html -->
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Make a Donation - HEYCG{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 px-lg-4 py-4">
+  
+  <!-- Page Heading -->
+  <div class="page-heading mb-4">
+    <div class="page-heading-copy">
+      <span class="page-icon"><i class="bi bi-heart"></i></span>
+      <div>
+        <p class="eyebrow mb-1">Give Back</p>
+        <h1 class="h3 mb-1">Make a Donation</h1>
+        <p class="text-muted mb-0">Your generosity helps us make a difference in children's lives.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    
+    <!-- LEFT COLUMN - Active Campaigns -->
+    <div class="col-xl-8">
+      
+      <!-- Impact Stats -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm text-center p-3 impact-card">
+            <i class="bi bi-cash-stack fs-1 text-primary"></i>
+            <h3 class="fw-bold mb-0">TZS {{ total_raised|default:'0'|floatformat:0 }}</h3>
+            <small class="text-muted">Total Raised</small>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm text-center p-3 impact-card">
+            <i class="bi bi-people fs-1 text-success"></i>
+            <h3 class="fw-bold mb-0">{{ total_donors|default:'0' }}</h3>
+            <small class="text-muted">Total Donors</small>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm text-center p-3 impact-card">
+            <i class="bi bi-calendar-heart fs-1 text-info"></i>
+            <h3 class="fw-bold mb-0">{{ campaigns_count|default:'0' }}</h3>
+            <small class="text-muted">Active Campaigns</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Campaigns -->
+      <div class="row g-4">
+        {% if campaigns %}
+          {% for campaign in campaigns %}
+          <div class="col-md-6">
+            <div class="card h-100 border-0 shadow-sm campaign-card">
+              {% if campaign.image %}
+                <img src="{{ campaign.image.url }}" class="card-img-top" alt="{{ campaign.title }}" style="height: 160px; object-fit: cover;">
+              {% else %}
+                <div class="bg-light text-center py-5 campaign-image-placeholder">
+                  <i class="bi bi-heart fs-1 text-muted"></i>
+                </div>
+              {% endif %}
+              <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                  <h5 class="card-title">{{ campaign.title }}</h5>
+                  {% if campaign.is_urgent %}
+                    <span class="badge bg-danger">Urgent</span>
+                  {% endif %}
+                </div>
+                <p class="card-text small text-muted">{{ campaign.description|truncatewords:25 }}</p>
+                
+                <!-- Progress Bar -->
+                <div class="mt-3">
+                  <div class="d-flex justify-content-between small mb-1">
+                    <span>Raised: TZS {{ campaign.raised_amount|floatformat:0 }}</span>
+                    <span>Goal: TZS {{ campaign.goal_amount|floatformat:0 }}</span>
+                  </div>
+                  <div class="progress" style="height: 8px;">
+                    <div class="progress-bar bg-success" style="width: {{ campaign.progress_percentage }}%"></div>
+                  </div>
+                  <div class="text-end small text-muted mt-1">{{ campaign.progress_percentage|floatformat:0 }}% funded</div>
+                </div>
+                
+                <button class="btn btn-primary w-100 mt-3" onclick="openDonateModal({{ campaign.id }}, '{{ campaign.title }}')">
+                  <i class="bi bi-heart"></i> Donate Now
+                </button>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="col-12">
+            <div class="alert alert-info text-center py-5 no-campaigns">
+              <i class="bi bi-heart fs-1"></i>
+              <p class="mb-0 mt-2">No active donation campaigns at the moment. Check back later!</p>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN - Recent Donors & Donation History -->
+    <div class="col-xl-4">
+      
+      <!-- Recent Donors -->
+      <div class="panel mb-4 recent-donors-panel">
+        <div class="panel-header">
+          <h2 class="h5 mb-1"><i class="bi bi-people"></i> Recent Donors</h2>
+          <p class="text-muted mb-0">Thank you to our generous supporters.</p>
+        </div>
+        <div class="panel-body p-0">
+          <div class="donor-list">
+            {% if recent_donations %}
+              {% for donation in recent_donations %}
+              <div class="donor-item d-flex justify-content-between align-items-center p-3 border-bottom">
+                <div>
+                  <i class="bi bi-person-circle fs-4 text-primary me-2"></i>
+                  <strong>{{ donation.full_name|truncatechars:20 }}</strong>
+                  <small class="text-muted d-block">{{ donation.campaign.title|truncatechars:25 }}</small>
+                </div>
+                <span class="fw-bold text-success">TZS {{ donation.amount|floatformat:0 }}</span>
+              </div>
+              {% endfor %}
+            {% else %}
+              <div class="text-center py-4 text-muted no-donors">
+                <i class="bi bi-heart fs-1"></i>
+                <p class="mb-0">No donations yet. Be the first!</p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- My Donation History -->
+      <div class="panel donation-history-panel">
+        <div class="panel-header">
+          <h2 class="h5 mb-1"><i class="bi bi-clock-history"></i> My Donation History</h2>
+          <p class="text-muted mb-0">Your previous donations.</p>
+        </div>
+        <div class="panel-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0 donation-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Campaign</th>
+                  <th>Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if my_donations %}
+                  {% for donation in my_donations %}
+                  <tr>
+                    <td>{{ donation.donation_date|date:"M d, Y" }}</td>
+                    <td>{{ donation.campaign.title|truncatechars:20 }}</td>
+                    <td class="fw-bold text-success">TZS {{ donation.amount|floatformat:0 }}</td>
+                  </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr>
+                    <td colspan="3" class="text-center py-4 text-muted no-history">
+                      <i class="bi bi-receipt"></i>
+                      <p class="mb-0">No donation history yet.</p>
+                    </td>
+                  </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Donation Modal - REKEBISHWA KWA DARK THEME -->
+<div class="modal fade" id="donateModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content donation-modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title"><i class="bi bi-heart"></i> Make a Donation</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="POST" id="donationForm" action="{% url 'members:process_donation' %}">
+        {% csrf_token %}
+        <div class="modal-body">
+          <input type="hidden" name="campaign_id" id="campaignId">
+          <input type="hidden" name="campaign_title" id="campaignTitle">
+          
+          <!-- Full Name - Readonly -->
+          <div class="mb-3">
+            <label class="form-label">Full Name</label>
+            <input type="text" name="full_name" id="donorName" class="form-control bg-transparent readonly-field" value="{{ user.get_full_name|default:user.username }}" readonly>
+          </div>
+          
+          <!-- Email - Readonly -->
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" id="donorEmail" class="form-control bg-transparent readonly-field" value="{{ user.email }}" readonly>
+          </div>
+          
+          <!-- Phone Number - Readonly -->
+          <div class="mb-3">
+            <label class="form-label">Phone Number</label>
+            <input type="tel" name="phone" id="donorPhone" class="form-control bg-transparent readonly-field" value="{{ user.profile.phone_number|default:'Not provided' }}" readonly>
+          </div>
+          
+          <!-- Campaign - Readonly -->
+          <div class="mb-3">
+            <label class="form-label">Campaign</label>
+            <input type="text" id="selectedCampaign" class="form-control bg-transparent readonly-field" readonly>
+          </div>
+          
+          <!-- Amount Selection -->
+          <div class="mb-3">
+            <label class="form-label">Amount (TZS) <span class="text-danger">*</span></label>
+            <div class="row g-2 mb-2">
+              <div class="col-4">
+                <button type="button" class="btn btn-outline-secondary w-100 amount-btn" data-amount="5000">5,000</button>
+              </div>
+              <div class="col-4">
+                <button type="button" class="btn btn-outline-secondary w-100 amount-btn" data-amount="10000">10,000</button>
+              </div>
+              <div class="col-4">
+                <button type="button" class="btn btn-outline-secondary w-100 amount-btn" data-amount="25000">25,000</button>
+              </div>
+              <div class="col-4">
+                <button type="button" class="btn btn-outline-secondary w-100 amount-btn" data-amount="50000">50,000</button>
+              </div>
+              <div class="col-4">
+                <button type="button" class="btn btn-outline-secondary w-100 amount-btn" data-amount="100000">100,000</button>
+              </div>
+              <div class="col-4">
+                <button type="button" class="btn btn-outline-secondary w-100 amount-btn" data-amount="other">Other</button>
+              </div>
+            </div>
+            <input type="number" name="amount" id="amountInput" class="form-control amount-input" placeholder="Enter amount (min TZS 1,000)" min="1000" required>
+          </div>
+          
+          <!-- Anonymous Option -->
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" name="is_anonymous" id="anonymousCheck">
+            <label class="form-check-label" for="anonymousCheck">
+              Donate anonymously (name will not appear publicly)
+            </label>
+          </div>
+          
+          <div class="alert alert-info small info-alert">
+            <i class="bi bi-info-circle"></i> After submitting, you will receive payment instructions via SMS or Email.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="submitDonationBtn">
+            <i class="bi bi-heart"></i> Proceed to Donation
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+/* ============================================
+   LIGHT THEME STYLES
+   ============================================ */
+.impact-card {
+  background: #ffffff !important;
+  border-radius: 12px;
+  transition: transform 0.2s;
+}
+.impact-card:hover {
+  transform: translateY(-3px);
+}
+
+.campaign-card {
+  background: #ffffff !important;
+  border-radius: 12px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.campaign-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1) !important;
+}
+
+.donor-item {
+  transition: background 0.2s;
+}
+.donor-item:hover {
+  background: #f8f9fa;
+}
+
+.no-campaigns {
+  background: #f8f9fa !important;
+  border: 1px dashed #dee2e6 !important;
+}
+
+.progress {
+  border-radius: 10px;
+  background: #e9ecef;
+}
+
+.amount-btn {
+  font-size: 12px;
+  padding: 6px;
+  border-color: #dee2e6 !important;
+  color: #212529 !important;
+  background: #ffffff !important;
+}
+.amount-btn:hover {
+  background: #0a58ca !important;
+  color: white !important;
+  border-color: #0a58ca !important;
+}
+
+.readonly-field {
+  background-color: #f8f9fa !important;
+  border: 1px solid #dee2e6 !important;
+  color: #212529 !important;
+  cursor: not-allowed;
+}
+.readonly-field:focus {
+  border-color: #0a58ca !important;
+  box-shadow: 0 0 0 0.2rem rgba(10, 88, 202, 0.25) !important;
+}
+
+.amount-input {
+  background: #ffffff !important;
+  border: 1px solid #dee2e6 !important;
+  color: #212529 !important;
+}
+.amount-input:focus {
+  border-color: #0a58ca !important;
+  box-shadow: 0 0 0 0.2rem rgba(10, 88, 202, 0.25) !important;
+}
+
+.donation-modal-content {
+  background: #ffffff !important;
+}
+
+.info-alert {
+  background: #e8f4fd !important;
+  border: 1px solid #b8d4f0 !important;
+  color: #0a58ca !important;
+}
+
+.recent-donors-panel,
+.donation-history-panel {
+  background: #ffffff !important;
+  border-color: #dee2e6 !important;
+}
+
+.donation-table thead th {
+  background: #f8f9fa !important;
+  color: #6c757d !important;
+}
+.donation-table tbody td {
+  color: #212529 !important;
+}
+.donation-table tbody tr:hover {
+  background: #f8f9fa !important;
+}
+
+.no-donors,
+.no-history {
+  color: #6c757d !important;
+}
+
+/* ============================================
+   DARK THEME STYLES
+   ============================================ */
+html[data-theme="dark"] .impact-card {
+  background: #1a1a2e !important;
+  border-color: #2d2d44 !important;
+}
+html[data-theme="dark"] .impact-card .text-muted {
+  color: #adb5bd !important;
+}
+
+html[data-theme="dark"] .campaign-card {
+  background: #1a1a2e !important;
+  border-color: #2d2d44 !important;
+}
+html[data-theme="dark"] .campaign-card .card-title {
+  color: #e0e0e0 !important;
+}
+html[data-theme="dark"] .campaign-card .card-text {
+  color: #adb5bd !important;
+}
+html[data-theme="dark"] .campaign-card .text-muted {
+  color: #adb5bd !important;
+}
+
+html[data-theme="dark"] .campaign-image-placeholder {
+  background: #2d2d44 !important;
+}
+html[data-theme="dark"] .campaign-image-placeholder i {
+  color: #495057 !important;
+}
+
+html[data-theme="dark"] .donor-item {
+  border-color: #2d2d44 !important;
+}
+html[data-theme="dark"] .donor-item:hover {
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+html[data-theme="dark"] .donor-item strong {
+  color: #e0e0e0 !important;
+}
+html[data-theme="dark"] .donor-item .text-muted {
+  color: #adb5bd !important;
+}
+
+html[data-theme="dark"] .no-campaigns {
+  background: #1a1a2e !important;
+  border-color: #2d2d44 !important;
+  color: #e0e0e0 !important;
+}
+html[data-theme="dark"] .no-campaigns i {
+  color: #adb5bd !important;
+}
+
+html[data-theme="dark"] .progress {
+  background: #2d2d44 !important;
+}
+
+html[data-theme="dark"] .amount-btn {
+  border-color: #2d2d44 !important;
+  color: #e0e0e0 !important;
+  background: #1a1a2e !important;
+}
+html[data-theme="dark"] .amount-btn:hover {
+  background: #0a58ca !important;
+  color: white !important;
+  border-color: #0a58ca !important;
+}
+
+html[data-theme="dark"] .readonly-field {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid #2d2d44 !important;
+  color: #e0e0e0 !important;
+}
+html[data-theme="dark"] .readonly-field:focus {
+  border-color: #0a58ca !important;
+  box-shadow: 0 0 0 0.2rem rgba(10, 88, 202, 0.25) !important;
+}
+
+html[data-theme="dark"] .amount-input {
+  background: #1a1a2e !important;
+  border: 1px solid #2d2d44 !important;
+  color: #e0e0e0 !important;
+}
+html[data-theme="dark"] .amount-input:focus {
+  border-color: #0a58ca !important;
+  box-shadow: 0 0 0 0.2rem rgba(10, 88, 202, 0.25) !important;
+}
+
+html[data-theme="dark"] .donation-modal-content {
+  background: #1a1a2e !important;
+  border-color: #2d2d44 !important;
+}
+html[data-theme="dark"] .donation-modal-content .modal-body {
+  color: #e0e0e0 !important;
+}
+html[data-theme="dark"] .donation-modal-content .form-label {
+  color: #e0e0e0 !important;
+}
+html[data-theme="dark"] .donation-modal-content .form-check-label {
+  color: #e0e0e0 !important;
+}
+html[data-theme="dark"] .donation-modal-content .modal-footer {
+  border-top-color: #2d2d44 !important;
+}
+html[data-theme="dark"] .donation-modal-content .btn-secondary {
+  background: #2d2d44 !important;
+  border-color: #2d2d44 !important;
+  color: #adb5bd !important;
+}
+html[data-theme="dark"] .donation-modal-content .btn-secondary:hover {
+  background: #3d3d5c !important;
+}
+
+html[data-theme="dark"] .info-alert {
+  background: rgba(10, 88, 202, 0.15) !important;
+  border: 1px solid rgba(10, 88, 202, 0.3) !important;
+  color: #58a6ff !important;
+}
+
+html[data-theme="dark"] .recent-donors-panel,
+html[data-theme="dark"] .donation-history-panel {
+  background: #1a1a2e !important;
+  border-color: #2d2d44 !important;
+}
+html[data-theme="dark"] .recent-donors-panel .panel-header,
+html[data-theme="dark"] .donation-history-panel .panel-header {
+  border-bottom-color: #2d2d44 !important;
+}
+html[data-theme="dark"] .recent-donors-panel .panel-header h2,
+html[data-theme="dark"] .donation-history-panel .panel-header h2 {
+  color: #e0e0e0 !important;
+}
+html[data-theme="dark"] .recent-donors-panel .panel-header .text-muted,
+html[data-theme="dark"] .donation-history-panel .panel-header .text-muted {
+  color: #adb5bd !important;
+}
+
+html[data-theme="dark"] .donation-table thead th {
+  background: #2d2d44 !important;
+  color: #adb5bd !important;
+}
+html[data-theme="dark"] .donation-table tbody td {
+  color: #e0e0e0 !important;
+  border-color: #2d2d44 !important;
+}
+html[data-theme="dark"] .donation-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+html[data-theme="dark"] .no-donors,
+html[data-theme="dark"] .no-history {
+  color: #adb5bd !important;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 576px) {
+  .amount-btn {
+    font-size: 10px;
+    padding: 4px;
+  }
+}
+</style>
+
+<script>
+function openDonateModal(campaignId, campaignTitle) {
+  document.getElementById('campaignId').value = campaignId;
+  document.getElementById('campaignTitle').value = campaignTitle;
+  document.getElementById('selectedCampaign').value = campaignTitle;
+  
+  // Reset amount field
+  document.getElementById('amountInput').value = '';
+  
+  // Reset anonymous checkbox
+  document.getElementById('anonymousCheck').checked = false;
+  
+  // Show modal
+  new bootstrap.Modal(document.getElementById('donateModal')).show();
+}
+
+// Amount buttons
+document.querySelectorAll('.amount-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const amount = this.dataset.amount;
+    const amountInput = document.getElementById('amountInput');
+    
+    if (amount === 'other') {
+      amountInput.value = '';
+      amountInput.focus();
+    } else {
+      amountInput.value = amount;
+    }
+  });
+});
+
+// Form submission - AJAX
+document.getElementById('donationForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  const amount = document.getElementById('amountInput').value;
+  
+  if (!amount || amount < 1000) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Invalid Amount',
+      text: 'Please enter a valid amount (minimum TZS 1,000)',
+      confirmButtonText: 'OK'
+    });
+    return;
+  }
+  
+  // Show loading
+  Swal.fire({
+    title: 'Processing...',
+    text: 'Please wait while we process your donation',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    }
+  });
+  
+  const formData = new FormData(this);
+  
+  fetch('/members/process-donation/', {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+    },
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Close modal
+      bootstrap.Modal.getInstance(document.getElementById('donateModal')).hide();
+      
+      // Show success SweetAlert
+      Swal.fire({
+        icon: 'success',
+        title: '🎉 Thank You!',
+        html: `
+          <div style="padding: 10px;">
+            <i class="bi bi-heart-fill" style="font-size: 60px; color: #dc3545; margin-bottom: 15px;"></i>
+            <p style="font-size: 16px;">Your donation has been received!</p>
+            <p style="font-size: 14px; color: #555;">Transaction ID: <strong>${data.transaction_id}</strong></p>
+            <p style="font-size: 12px; color: #888;">Admin will verify your payment within 24-48 hours.</p>
+          </div>
+        `,
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#0a58ca'
+      }).then(() => {
+        location.reload();
+      });
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: data.error || 'Failed to process donation',
+        confirmButtonText: 'OK'
+      });
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Something went wrong. Please try again.',
+      confirmButtonText: 'OK'
+    });
+  });
+});
+</script>
+
+{% endblock %}

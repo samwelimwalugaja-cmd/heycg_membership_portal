@@ -1,0 +1,288 @@
+{% extends 'dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Send Notification - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 px-lg-4 py-4">
+  
+  <!-- Page Heading -->
+  <div class="page-heading mb-4">
+    <div class="page-heading-copy">
+      <span class="page-icon"><i class="bi bi-megaphone" aria-hidden="true"></i></span>
+      <div>
+        <p class="eyebrow mb-1">Admin</p>
+        <h1 class="h3 mb-1">Send Notification to All Users</h1>
+        <p class="text-muted mb-0">Broadcast important announcements and updates to all members at once.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="card bg-primary text-white">
+        <div class="card-body text-center">
+          <h3 class="mb-0">{{ user_counts.all }}</h3>
+          <small>Total Users</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card bg-success text-white">
+        <div class="card-body text-center">
+          <h3 class="mb-0">{{ user_counts.active_members }}</h3>
+          <small>Active Members</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card bg-warning text-dark">
+        <div class="card-body text-center">
+          <h3 class="mb-0">{{ user_counts.pending_members }}</h3>
+          <small>Pending Members</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card bg-secondary text-white">
+        <div class="card-body text-center">
+          <h3 class="mb-0">{{ user_counts.inactive_members }}</h3>
+          <small>Inactive Members</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Form -->
+  <div class="panel">
+    <div class="panel-header">
+      <h2 class="h5 mb-1"><i class="bi bi-pencil-square"></i> Compose Notification</h2>
+      <p class="text-muted mb-0">Fill in the details below to send a notification to all selected users.</p>
+    </div>
+    <div class="panel-body">
+      <form method="POST" action="{% url 'members:admin_send_notification' %}" id="notificationForm">
+        {% csrf_token %}
+        
+        <!-- Title -->
+        <div class="mb-3">
+          <label for="{{ form.title.id_for_label }}" class="form-label fw-bold">
+            {{ form.title.label }}
+          </label>
+          {{ form.title }}
+          {% if form.title.errors %}
+            <div class="text-danger small">{{ form.title.errors }}</div>
+          {% endif %}
+        </div>
+
+        <!-- Message -->
+        <div class="mb-3">
+          <label for="{{ form.message.id_for_label }}" class="form-label fw-bold">
+            {{ form.message.label }}
+          </label>
+          {{ form.message }}
+          <div class="form-text">{{ form.message.help_text }}</div>
+          {% if form.message.errors %}
+            <div class="text-danger small">{{ form.message.errors }}</div>
+          {% endif %}
+        </div>
+
+        <div class="row g-3">
+          <!-- Notification Type -->
+          <div class="col-md-6">
+            <label for="{{ form.notification_type.id_for_label }}" class="form-label fw-bold">
+              {{ form.notification_type.label }}
+            </label>
+            {{ form.notification_type }}
+          </div>
+
+          <!-- Priority -->
+          <div class="col-md-6">
+            <label for="{{ form.priority.id_for_label }}" class="form-label fw-bold">
+              {{ form.priority.label }}
+            </label>
+            {{ form.priority }}
+            <div class="form-text">{{ form.priority.help_text }}</div>
+          </div>
+        </div>
+
+        <div class="row g-3 mt-1">
+          <!-- Audience -->
+          <div class="col-md-6">
+            <label for="{{ form.audience.id_for_label }}" class="form-label fw-bold">
+              {{ form.audience.label }}
+            </label>
+            {{ form.audience }}
+            <div class="form-text">{{ form.audience.help_text }}</div>
+          </div>
+
+          <!-- Link -->
+          <div class="col-md-6">
+            <label for="{{ form.link.id_for_label }}" class="form-label fw-bold">
+              {{ form.link.label }}
+            </label>
+            {{ form.link }}
+            <div class="form-text">{{ form.link.help_text }}</div>
+          </div>
+        </div>
+
+        <!-- Send Email Option -->
+        <div class="mt-3 mb-4">
+          <div class="form-check">
+            {{ form.send_email }}
+            <label class="form-check-label fw-bold" for="{{ form.send_email.id_for_label }}">
+              {{ form.send_email.label }}
+            </label>
+            <div class="form-text">{{ form.send_email.help_text }}</div>
+          </div>
+        </div>
+
+        <!-- Preview -->
+        <div class="alert alert-info">
+          <h6 class="mb-2"><i class="bi bi-eye"></i> Preview</h6>
+          <div class="bg-white p-3 rounded">
+            <div id="previewTitle" class="fw-bold text-primary">Title will appear here</div>
+            <div id="previewMessage" class="text-muted mt-1">Message will appear here...</div>
+            <div id="previewMeta" class="mt-2">
+              <span class="badge bg-secondary" id="previewType">Type</span>
+              <span class="badge bg-secondary" id="previewPriority">Priority</span>
+              <span class="badge bg-info" id="previewAudience">Audience</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Buttons -->
+        <div class="d-flex gap-2 mt-4">
+          <button type="submit" class="btn btn-primary" onclick="return confirmSend()">
+            <i class="bi bi-send me-2"></i> Send Notification
+          </button>
+          <button type="reset" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-counterclockwise me-2"></i> Reset
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Recent Notifications Sent -->
+  <div class="panel mt-4">
+    <div class="panel-header">
+      <h2 class="h5 mb-1"><i class="bi bi-clock-history"></i> Recent Notifications Sent</h2>
+      <p class="text-muted mb-0">Last 5 notifications sent by admins.</p>
+    </div>
+    <div class="panel-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Type</th>
+              <th>Priority</th>
+              <th>Date Sent</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for notif in recent_notifications %}
+              <tr>
+                <td><strong>{{ notif.title }}</strong></td>
+                <td><span class="badge bg-secondary">{{ notif.get_type_display }}</span></td>
+                <td>
+                  <span class="badge {% if notif.priority == 'high' %}bg-danger{% elif notif.priority == 'medium' %}bg-warning{% else %}bg-secondary{% endif %}">
+                    {{ notif.get_priority_display }}
+                  </span>
+                </td>
+                <td>{{ notif.created_at|date:"M d, Y H:i" }}</td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="4" class="text-center text-muted py-3">No notifications sent yet</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Live Preview
+document.addEventListener('DOMContentLoaded', function() {
+  const titleInput = document.querySelector('#{{ form.title.id_for_label }}');
+  const messageInput = document.querySelector('#{{ form.message.id_for_label }}');
+  const typeSelect = document.querySelector('#{{ form.notification_type.id_for_label }}');
+  const prioritySelect = document.querySelector('#{{ form.priority.id_for_label }}');
+  const audienceSelect = document.querySelector('#{{ form.audience.id_for_label }}');
+  
+  const previewTitle = document.getElementById('previewTitle');
+  const previewMessage = document.getElementById('previewMessage');
+  const previewType = document.getElementById('previewType');
+  const previewPriority = document.getElementById('previewPriority');
+  const previewAudience = document.getElementById('previewAudience');
+  
+  function updatePreview() {
+    // Title
+    previewTitle.textContent = titleInput.value || 'Title will appear here';
+    
+    // Message
+    previewMessage.textContent = messageInput.value || 'Message will appear here...';
+    
+    // Type
+    const typeText = typeSelect.options[typeSelect.selectedIndex]?.text || 'Type';
+    previewType.textContent = typeText;
+    
+    // Priority
+    const priorityText = prioritySelect.options[prioritySelect.selectedIndex]?.text || 'Priority';
+    const priorityValue = prioritySelect.value;
+    previewPriority.textContent = priorityText;
+    previewPriority.className = `badge ${priorityValue === 'high' ? 'bg-danger' : priorityValue === 'medium' ? 'bg-warning' : 'bg-secondary'}`;
+    
+    // Audience
+    const audienceText = audienceSelect.options[audienceSelect.selectedIndex]?.text || 'Audience';
+    previewAudience.textContent = audienceText;
+  }
+  
+  // Add event listeners
+  titleInput.addEventListener('input', updatePreview);
+  messageInput.addEventListener('input', updatePreview);
+  typeSelect.addEventListener('change', updatePreview);
+  prioritySelect.addEventListener('change', updatePreview);
+  audienceSelect.addEventListener('change', updatePreview);
+  
+  // Initial preview
+  updatePreview();
+});
+
+function confirmSend() {
+  const title = document.querySelector('#{{ form.title.id_for_label }}').value;
+  const audience = document.querySelector('#{{ form.audience.id_for_label }}');
+  const audienceText = audience.options[audience.selectedIndex]?.text || '';
+  
+  return confirm(
+    `Are you sure you want to send this notification?\n\n` +
+    `Title: ${title}\n` +
+    `Audience: ${audienceText}\n\n` +
+    `This will be sent to all selected users.`
+  );
+}
+</script>
+
+<style>
+.card {
+  transition: transform 0.2s;
+}
+.card:hover {
+  transform: translateY(-3px);
+}
+.panel-body {
+  padding: 25px;
+}
+#previewTitle {
+  font-size: 1.1rem;
+}
+#previewMessage {
+  font-size: 0.95rem;
+}
+</style>
+
+{% endblock %}

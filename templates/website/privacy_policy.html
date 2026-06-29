@@ -1,0 +1,571 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Privacy Policy - HEYCG{% endblock %}
+
+{% block content %}
+
+<!-- Page Title - With Background Image and Overlay -->
+<div style="
+    position: relative;
+    background-image: url('{% static 'images/about02.jpg' %}');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    padding: 140px 0 60px 0;
+    text-align: center;
+    min-height: 350px;
+    display: flex;
+    align-items: center;
+">
+    <div style="
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(10, 22, 40, 0.85) 0%, rgba(10, 88, 202, 0.75) 100%);
+        z-index: 1;
+    "></div>
+    
+    <div class="container" style="position: relative; z-index: 2; width: 100%;">
+        <h1 style="color: #ffffff; font-size: 42px; font-weight: 800; text-shadow: 0 2px 10px rgba(0,0,0,0.3); margin-bottom: 10px;">Privacy Policy</h1>
+        <p style="color: rgba(255,255,255,0.9); font-size: 20px; font-weight: 300; text-shadow: 0 1px 5px rgba(0,0,0,0.2);">Sera ya Faragha na Ulinzi wa Data ya HEYCG</p>
+        <p style="color: rgba(255,255,255,0.6); margin-top: 15px;">
+            <a href="{% url 'website:home' %}" style="color: rgba(255,255,255,0.7); text-decoration: none;">Home</a>
+            <span style="margin: 0 10px; color: rgba(255,255,255,0.4);">/</span>
+            <span style="color: rgba(255,255,255,0.5);">Privacy Policy</span>
+        </p>
+    </div>
+</div>
+
+<!-- Content -->
+<div style="padding: 40px 0 60px 0; background: #f8f9fa;">
+    <div class="container">
+        <div id="privacyContent" style="max-width: 900px; margin: 0 auto; padding: 40px 30px; background: #ffffff; border-radius: 10px; box-shadow: 0 0 30px rgba(0,0,0,0.08); margin-top: -30px; position: relative; z-index: 3;">
+            
+            <!-- Action Buttons -->
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: flex-end; margin-bottom: 30px;">
+                <a href="#" onclick="window.print(); return false;" style="background: #6c757d; color: white; padding: 10px 22px; border-radius: 6px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; text-decoration: none;">
+                    <i class="bi bi-printer"></i> Print
+                </a>
+                <a href="#" onclick="openPDFModal(); return false;" style="background: #dc3545; color: white; padding: 10px 22px; border-radius: 6px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; text-decoration: none;">
+                    <i class="bi bi-file-pdf"></i> Download PDF
+                </a>
+                <a href="#" onclick="openShareModal(); return false;" style="background: #0a58ca; color: white; padding: 10px 22px; border-radius: 6px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; text-decoration: none;">
+                    <i class="bi bi-share"></i> Share
+                </a>
+            </div>
+            
+            <h2 style="color: #0a58ca; font-size: 28px; text-align: center; margin-bottom: 5px;">Privacy Policy</h2>
+            <p style="text-align: center; color: #6c757d; font-size: 16px; margin-bottom: 30px;">HOCET Young Charity Generation (HEYCG)</p>
+            
+            <!-- ===== CONTENT SECTIONS (SAME AS BEFORE) ===== -->
+            <h2 style="color: #0a58ca; font-size: 22px; margin-top: 35px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e8f0fe;">1. Introduction</h2>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">HEYCG (HOCET Young Charity Generation) respects your privacy and is committed to protecting your personal data. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website, register as a member, or use our services.</p>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">Please read this Privacy Policy carefully. By using our services, you agree to the collection and use of information in accordance with this policy.</p>
+            
+            <h2 style="color: #0a58ca; font-size: 22px; margin-top: 35px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e8f0fe;">2. Information We Collect</h2>
+            
+            <h3 style="color: #1a2a4a; font-size: 18px; margin-top: 25px; margin-bottom: 10px;">2.1 Personal Information</h3>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">We may collect the following personal information:</p>
+            <ul style="padding-left: 25px; margin-bottom: 15px; color: #444444; line-height: 1.8;">
+                <li><strong style="color: #0a58ca;">Identity Data:</strong> Full name, date of birth, gender</li>
+                <li><strong style="color: #0a58ca;">Contact Data:</strong> Email address, phone number, physical address</li>
+                <li><strong style="color: #0a58ca;">Account Data:</strong> Username, password, membership status</li>
+                <li><strong style="color: #0a58ca;">Payment Data:</strong> Payment history, transaction details</li>
+                <li><strong style="color: #0a58ca;">Profile Data:</strong> Education, occupation, skills, interests</li>
+                <li><strong style="color: #0a58ca;">Usage Data:</strong> How you interact with our website and services</li>
+            </ul>
+            
+            <h3 style="color: #1a2a4a; font-size: 18px; margin-top: 25px; margin-bottom: 10px;">2.2 Automatic Data Collection</h3>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">We automatically collect certain information when you visit our website:</p>
+            <ul style="padding-left: 25px; margin-bottom: 15px; color: #444444; line-height: 1.8;">
+                <li>IP address</li>
+                <li>Browser type and version</li>
+                <li>Device information</li>
+                <li>Pages visited and time spent</li>
+                <li>Referral URLs</li>
+            </ul>
+            
+            <h2 style="color: #0a58ca; font-size: 22px; margin-top: 35px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e8f0fe;">3. How We Use Your Information</h2>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">We use your information for the following purposes:</p>
+            <ul style="padding-left: 25px; margin-bottom: 15px; color: #444444; line-height: 1.8;">
+                <li><strong style="color: #0a58ca;">Membership Management:</strong> Process registration, verify identity, manage membership status</li>
+                <li><strong style="color: #0a58ca;">Payment Processing:</strong> Process registration and monthly membership fees</li>
+                <li><strong style="color: #0a58ca;">Communication:</strong> Send updates, notifications, newsletters, and event information</li>
+                <li><strong style="color: #0a58ca;">Event Management:</strong> Register you for events and track participation</li>
+                <li><strong style="color: #0a58ca;">Donation Processing:</strong> Process donations and issue receipts</li>
+                <li><strong style="color: #0a58ca;">Service Improvement:</strong> Analyze usage to improve our services</li>
+                <li><strong style="color: #0a58ca;">Legal Compliance:</strong> Comply with applicable laws and regulations</li>
+            </ul>
+            
+            <h2 style="color: #0a58ca; font-size: 22px; margin-top: 35px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e8f0fe;">4. Legal Basis for Processing</h2>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">We process your personal data based on the following legal grounds:</p>
+            <ul style="padding-left: 25px; margin-bottom: 15px; color: #444444; line-height: 1.8;">
+                <li><strong style="color: #0a58ca;">Contractual Obligation:</strong> To fulfill our membership agreement</li>
+                <li><strong style="color: #0a58ca;">Consent:</strong> For marketing communications (you can opt out anytime)</li>
+                <li><strong style="color: #0a58ca;">Legitimate Interest:</strong> To improve our services and communicate with members</li>
+                <li><strong style="color: #0a58ca;">Legal Compliance:</strong> To comply with legal and regulatory requirements</li>
+            </ul>
+            
+            <h2 style="color: #0a58ca; font-size: 22px; margin-top: 35px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e8f0fe;">5. Information Sharing</h2>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">We do not sell, trade, or rent your personal information to third parties. However, we may share your information in the following circumstances:</p>
+            <ul style="padding-left: 25px; margin-bottom: 15px; color: #444444; line-height: 1.8;">
+                <li><strong style="color: #0a58ca;">With Service Providers:</strong> Payment processors, email service providers, hosting providers</li>
+                <li><strong style="color: #0a58ca;">Legal Requirements:</strong> If required by law or in response to legal process</li>
+                <li><strong style="color: #0a58ca;">Organization Purposes:</strong> Within HEYCG for administrative and program purposes</li>
+                <li><strong style="color: #0a58ca;">With Your Consent:</strong> When you have given explicit consent</li>
+            </ul>
+            
+            <h2 style="color: #0a58ca; font-size: 22px; margin-top: 35px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e8f0fe;">6. Data Security</h2>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">We implement appropriate technical and organizational measures to protect your personal data:</p>
+            <ul style="padding-left: 25px; margin-bottom: 15px; color: #444444; line-height: 1.8;">
+                <li><strong style="color: #0a58ca;">Encryption:</strong> SSL encryption for data transmission</li>
+                <li><strong style="color: #0a58ca;">Access Control:</strong> Limited access to authorized personnel only</li>
+                <li><strong style="color: #0a58ca;">Secure Storage:</strong> Data stored on secure servers with regular backups</li>
+                <li><strong style="color: #0a58ca;">Regular Audits:</strong> Regular security reviews and updates</li>
+            </ul>
+            
+            <h2 style="color: #0a58ca; font-size: 22px; margin-top: 35px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e8f0fe;">7. Data Retention</h2>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">We retain your personal data for as long as:</p>
+            <ul style="padding-left: 25px; margin-bottom: 15px; color: #444444; line-height: 1.8;">
+                <li>You are an active member of HEYCG</li>
+                <li>Necessary for the purposes for which it was collected</li>
+                <li>Required by law or for legal claims</li>
+                <li>For a reasonable period after membership termination</li>
+            </ul>
+            
+            <h2 style="color: #0a58ca; font-size: 22px; margin-top: 35px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e8f0fe;">8. Your Rights</h2>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">As a member, you have the following rights regarding your personal data:</p>
+            <ul style="padding-left: 25px; margin-bottom: 15px; color: #444444; line-height: 1.8;">
+                <li><strong style="color: #0a58ca;">Access:</strong> Request a copy of your personal data</li>
+                <li><strong style="color: #0a58ca;">Correction:</strong> Correct inaccurate or incomplete data</li>
+                <li><strong style="color: #0a58ca;">Deletion:</strong> Request deletion of your data (subject to legal obligations)</li>
+                <li><strong style="color: #0a58ca;">Restriction:</strong> Restrict processing of your data</li>
+                <li><strong style="color: #0a58ca;">Objection:</strong> Object to processing of your data</li>
+                <li><strong style="color: #0a58ca;">Data Portability:</strong> Receive your data in a structured format</li>
+            </ul>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">To exercise any of these rights, please contact us using the information below.</p>
+            
+            <h2 style="color: #0a58ca; font-size: 22px; margin-top: 35px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e8f0fe;">9. Cookies</h2>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">Our website uses cookies to enhance your experience. Cookies are small text files stored on your device. We use:</p>
+            <ul style="padding-left: 25px; margin-bottom: 15px; color: #444444; line-height: 1.8;">
+                <li><strong style="color: #0a58ca;">Essential Cookies:</strong> For basic website functionality</li>
+                <li><strong style="color: #0a58ca;">Analytics Cookies:</strong> To understand how visitors use our website</li>
+                <li><strong style="color: #0a58ca;">Preference Cookies:</strong> To remember your preferences</li>
+            </ul>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">You can control cookies through your browser settings. However, disabling cookies may affect some website features.</p>
+            
+            <h2 style="color: #0a58ca; font-size: 22px; margin-top: 35px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e8f0fe;">10. Children's Privacy</h2>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">Our services are not directed at individuals under 18 years of age. We do not knowingly collect personal information from minors. If you are a parent or guardian and become aware that your child has provided us with personal information, please contact us.</p>
+            
+            <h2 style="color: #0a58ca; font-size: 22px; margin-top: 35px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e8f0fe;">11. Updates to Privacy Policy</h2>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and, where appropriate, sending you an email notification.</p>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">We encourage you to review this Privacy Policy periodically for any changes.</p>
+            
+            <h2 style="color: #0a58ca; font-size: 22px; margin-top: 35px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e8f0fe;">12. Contact Information</h2>
+            <p style="color: #444444; line-height: 1.8; margin-bottom: 15px;">If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact us:</p>
+            <ul style="padding-left: 25px; margin-bottom: 15px; color: #444444; line-height: 1.8;">
+                <li><strong style="color: #0a58ca;">Email:</strong> youngcharitygeneration20@gmail.com</li>
+                <li><strong style="color: #0a58ca;">Phone:</strong> +255 719 005 790</li>
+                <li><strong style="color: #0a58ca;">Address:</strong> Makanisa matatu Street, Kimara, DSM 16104</li>
+            </ul>
+            
+            <div style="font-style: italic; color: #6c757d; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e9ecef; text-align: center;">
+                <p><strong>Last Updated:</strong> June 26, 2026</p>
+                <p>© 2026 HEYCG - HOCET Young Charity Generation. All Rights Reserved.</p>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SHARE MODAL -->
+<!-- ============================================================ -->
+<div id="shareModal" style="
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 99999;
+    align-items: center;
+    justify-content: center;
+">
+    <div style="
+        background: white;
+        max-width: 450px;
+        width: 90%;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        animation: modalSlideIn 0.3s ease;
+        position: relative;
+        max-height: 90vh;
+        overflow-y: auto;
+    ">
+        <button onclick="closeModal('shareModal')" style="
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s;
+        " onmouseover="this.style.color='#333'" onmouseout="this.style.color='#999'">
+            &times;
+        </button>
+        
+        <h3 style="color: #0a58ca; margin-top: 0; margin-bottom: 10px; font-size: 24px;">
+            <i class="bi bi-share"></i> Share This Page
+        </h3>
+        <p style="color: #6c757d; margin-bottom: 20px; font-size: 14px;">Share this Privacy Policy page with others</p>
+        
+        <div style="
+            background: #f8f9fa;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            margin-bottom: 15px;
+            word-break: break-all;
+            font-size: 13px;
+            color: #333;
+            font-family: monospace;
+        ">
+            <span id="shareLinkPrivacy">{{ request.build_absolute_uri }}</span>
+        </div>
+        
+        <button onclick="copyShareLinkPrivacy()" style="
+            background: #0a58ca;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: background 0.3s;
+        " onmouseover="this.style.background='#084298'" onmouseout="this.style.background='#0a58ca'">
+            <i class="bi bi-clipboard"></i> Copy Link
+        </button>
+        
+        <div style="
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #ccc;
+            font-size: 12px;
+        ">
+            <hr style="flex: 1; border: none; border-top: 1px solid #e9ecef;">
+            <span style="padding: 0 10px;">OR</span>
+            <hr style="flex: 1; border: none; border-top: 1px solid #e9ecef;">
+        </div>
+        
+        <button onclick="shareViaEmailPrivacy()" style="
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: background 0.3s;
+        " onmouseover="this.style.background='#1e7e34'" onmouseout="this.style.background='#28a745'">
+            <i class="bi bi-envelope"></i> Share via Email
+        </button>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PDF MODAL -->
+<!-- ============================================================ -->
+<div id="pdfModalPrivacy" style="
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 99998;
+    align-items: center;
+    justify-content: center;
+">
+    <div style="
+        background: white;
+        max-width: 450px;
+        width: 90%;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        animation: modalSlideIn 0.3s ease;
+        position: relative;
+    ">
+        <button onclick="closeModal('pdfModalPrivacy')" style="
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s;
+        " onmouseover="this.style.color='#333'" onmouseout="this.style.color='#999'">
+            &times;
+        </button>
+        
+        <h3 style="color: #dc3545; margin-top: 0; margin-bottom: 10px; font-size: 24px;">
+            <i class="bi bi-file-pdf"></i> Download PDF
+        </h3>
+        <p style="color: #6c757d; margin-bottom: 20px; font-size: 14px;">Download this page as a PDF document</p>
+        
+        <div style="text-align: center; margin-bottom: 20px;">
+            <i class="bi bi-file-pdf" style="font-size: 64px; color: #dc3545;"></i>
+        </div>
+        
+        <button onclick="downloadPDFActionPrivacy()" style="
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: background 0.3s;
+        " onmouseover="this.style.background='#c82333'" onmouseout="this.style.background='#dc3545'">
+            <i class="bi bi-download"></i> Download PDF
+        </button>
+        
+        <div style="
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #ccc;
+            font-size: 12px;
+        ">
+            <hr style="flex: 1; border: none; border-top: 1px solid #e9ecef;">
+            <span style="padding: 0 10px;">OR</span>
+            <hr style="flex: 1; border: none; border-top: 1px solid #e9ecef;">
+        </div>
+        
+        <button onclick="printPDFActionPrivacy()" style="
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: background 0.3s;
+        " onmouseover="this.style.background='#5a6268'" onmouseout="this.style.background='#6c757d'">
+            <i class="bi bi-printer"></i> Print (Save as PDF)
+        </button>
+    </div>
+</div>
+
+<style>
+    @media print {
+        .action-buttons, .btn-print, .btn-pdf, .btn-share {
+            display: none !important;
+        }
+        .page-title-bg {
+            padding: 40px 0 20px 0 !important;
+            min-height: 150px !important;
+        }
+        #privacyContent {
+            margin-top: 0 !important;
+            box-shadow: none !important;
+        }
+        #shareModal, #pdfModalPrivacy {
+            display: none !important;
+        }
+    }
+    
+    @keyframes modalSlideIn {
+        from {
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+</style>
+
+<script>
+    // ============================================
+    // SHARE MODAL FUNCTIONS
+    // ============================================
+    function openShareModal() {
+        document.getElementById('shareModal').style.display = 'flex';
+        document.getElementById('shareLinkPrivacy').textContent = window.location.href;
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function copyShareLinkPrivacy() {
+        var link = document.getElementById('shareLinkPrivacy').textContent;
+        
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(link)
+                .then(function() {
+                    showToast('✅ Link copied to clipboard!');
+                })
+                .catch(function() {
+                    fallbackCopyPrivacy(link);
+                });
+        } else {
+            fallbackCopyPrivacy(link);
+        }
+    }
+    
+    function fallbackCopyPrivacy(text) {
+        var input = document.createElement('input');
+        input.value = text;
+        input.style.position = 'fixed';
+        input.style.opacity = '0';
+        input.style.left = '-9999px';
+        input.style.top = '-9999px';
+        document.body.appendChild(input);
+        
+        try {
+            input.select();
+            document.execCommand('copy');
+            showToast('✅ Link copied to clipboard!');
+        } catch (err) {
+            alert('Copy this link: ' + text);
+        }
+        
+        document.body.removeChild(input);
+    }
+    
+    function shareViaEmailPrivacy() {
+        var link = window.location.href;
+        var subject = 'HEYCG - Privacy Policy';
+        var body = 'Check out the Privacy Policy for HEYCG:\n\n' + link;
+        window.location.href = 'mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+        closeModal('shareModal');
+    }
+    
+    // ============================================
+    // PDF MODAL FUNCTIONS
+    // ============================================
+    function openPDFModal() {
+        document.getElementById('pdfModalPrivacy').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function downloadPDFActionPrivacy() {
+        closeModal('pdfModalPrivacy');
+        setTimeout(function() {
+            alert('📄 To save as PDF:\n\n1. Click OK to open print dialog\n2. Select "Save as PDF" from printer options\n3. Choose location and save');
+            setTimeout(function() {
+                window.print();
+            }, 500);
+        }, 300);
+    }
+    
+    function printPDFActionPrivacy() {
+        closeModal('pdfModalPrivacy');
+        setTimeout(function() {
+            window.print();
+        }, 300);
+    }
+    
+    // ============================================
+    // CLOSE MODAL
+    // ============================================
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+    
+    window.onclick = function(event) {
+        if (event.target.id === 'shareModal') {
+            closeModal('shareModal');
+        }
+        if (event.target.id === 'pdfModalPrivacy') {
+            closeModal('pdfModalPrivacy');
+        }
+    }
+    
+    // ============================================
+    // TOAST NOTIFICATION
+    // ============================================
+    function showToast(msg) {
+        var existing = document.querySelector('.custom-toast');
+        if (existing) {
+            existing.remove();
+        }
+        
+        var div = document.createElement('div');
+        div.className = 'custom-toast';
+        div.innerHTML = msg;
+        div.style.cssText = `
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 16px 28px;
+            background: #28a745;
+            color: white;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            z-index: 999999;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            max-width: 400px;
+            animation: slideUp 0.4s ease;
+            font-family: Arial, sans-serif;
+        `;
+        document.body.appendChild(div);
+        
+        setTimeout(function() {
+            div.style.opacity = '0';
+            div.style.transition = 'opacity 0.5s';
+            setTimeout(function() {
+                div.remove();
+            }, 500);
+        }, 3000);
+    }
+    
+    var styleToast = document.createElement('style');
+    styleToast.textContent = `
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    `;
+    document.head.appendChild(styleToast);
+</script>
+
+{% endblock %}

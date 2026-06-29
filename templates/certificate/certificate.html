@@ -1,0 +1,115 @@
+<!-- templates/certificate/certificate.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Certificate of Participation</title>
+  <style>
+    @page {
+      size: landscape;
+      margin: 1cm;
+    }
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      background: white;
+      margin: 0;
+      padding: 0;
+    }
+    .certificate {
+      border: 12px solid #d4af37;
+      padding: 30px;
+      text-align: center;
+      min-height: 500px;
+    }
+    .logo {
+      font-size: 36px;
+      font-weight: bold;
+      color: #0a58ca;
+      margin-bottom: 5px;
+    }
+    .sub-logo {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 30px;
+    }
+    .title {
+      font-size: 32px;
+      font-weight: bold;
+      color: #c0392b;
+      margin-top: 30px;
+      margin-bottom: 15px;
+      letter-spacing: 2px;
+    }
+    .subtitle {
+      font-size: 16px;
+      color: #333;
+      margin-bottom: 30px;
+    }
+    .name {
+      font-size: 38px;
+      font-weight: bold;
+      color: #2c3e50;
+      margin: 25px 0;
+      border-top: 2px solid #d4af37;
+      border-bottom: 2px solid #d4af37;
+      padding: 15px 0;
+      display: inline-block;
+      width: 80%;
+    }
+    .achievement {
+      font-size: 15px;
+      margin: 15px 0;
+    }
+    .event-name {
+      font-size: 22px;
+      font-weight: bold;
+      color: #2980b9;
+      margin: 15px 0;
+    }
+    .event-details {
+      font-size: 13px;
+      color: #666;
+      margin: 8px 0;
+    }
+    .date {
+      font-size: 13px;
+      margin-top: 35px;
+    }
+    .footer {
+      font-size: 11px;
+      color: #888;
+      margin-top: 35px;
+      border-top: 1px solid #d4af37;
+      padding-top: 15px;
+    }
+    hr {
+      border: 1px solid #d4af37;
+      width: 50%;
+      margin: 15px auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="certificate">
+    <div class="logo">HEYCG</div>
+    <div class="sub-logo">HOCET Young Charity Generation</div>
+    
+    <div class="title">CERTIFICATE OF PARTICIPATION</div>
+    <div class="subtitle">This certificate is proudly presented to</div>
+    
+    <div class="name">{{ user.get_full_name|default:user.username }}</div>
+    
+    <div class="achievement">for participating in</div>
+    <div class="event-name">{{ event.title }}</div>
+    <div class="event-details">Held on {{ event.event_date|date:"F d, Y" }} | Location: {{ event.location }}</div>
+    
+    <hr>
+    
+    <div class="date">Issued on: {{ today }}</div>
+    
+    <div class="footer">
+      Making a difference in our community
+    </div>
+  </div>
+</body>
+</html>

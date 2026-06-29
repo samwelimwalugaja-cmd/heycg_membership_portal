@@ -1,0 +1,681 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Gallery - HEYCG{% endblock %}
+
+
+{% block content %}
+
+<header id="header" class="header d-flex align-items-center fixed-top" style="background-color: #000000ab;">
+    <div class="container-fluid container-xl position-relative d-flex align-items-center">
+
+      <a href="/" class="logo d-flex align-items-center me-auto">
+        <!-- Uncomment the line below if you also wish to use an image logo -->
+       <img src="{% static 'images/charity_logo_white.png' %}" alt="HEYCG Logo">
+      </a>
+
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="/" >Home</a></li>
+          <li><a href="{% url 'website:events_gallery' %}" class="active">Events & Gallery</a></li>
+          <li><a href="{% url 'website:donation_page' %}">Donation</a></li>
+          <li><a href="{% url 'website:blog_list' %}">Blog</a></li>
+          {% comment %} <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <ul>
+              <li><a href="#">Dropdown 1</a></li>
+              <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                <ul>
+                  <li><a href="#">Deep Dropdown 1</a></li>
+                  <li><a href="#">Deep Dropdown 2</a></li>
+                  <li><a href="#">Deep Dropdown 3</a></li>
+                  <li><a href="#">Deep Dropdown 4</a></li>
+                  <li><a href="#">Deep Dropdown 5</a></li>
+                </ul>
+              </li>
+              <li><a href="#">Dropdown 2</a></li>
+              <li><a href="#">Dropdown 3</a></li>
+              <li><a href="#">Dropdown 4</a></li>
+            </ul>
+          </li> {% endcomment %}
+          
+        </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+
+      <a class="cta-btn" href="#" target="_blank">login</a>
+
+    </div>
+  </header>
+
+
+
+  <main class="main pt-5">
+
+
+   <!-- Events Table Section -->
+<section class="event-gallery py-5">
+    <div class="container">
+        
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <a href="{% url 'website:events_gallery' %}" class="btn btn-outline-secondary mb-3">
+                <i class="fas fa-arrow-left"></i> Back to Events
+            </a>
+            <h1 class="display-5 fw-bold">{{ event.title }}</h1>
+            <p class="lead text-muted">{{ event.event_date|date:"F d, Y" }} | {{ event.location }}</p>
+            <p class="text-muted">{{ event.gallery_images.count }} photos in this gallery</p>
+        </div>
+        
+        <!-- Gallery Grid -->
+        <div class="gallery-grid">
+            <div class="row g-4">
+                {% for image in event.gallery_images.all %}
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="gallery-item" data-image-id="{{ image.id }}" data-image-index="{{ forloop.counter0 }}">
+                        <img src="{{ image.image.url }}" class="gallery-thumb" alt="{{ image.title }}" loading="lazy">
+                        <div class="gallery-overlay">
+                            <div class="overlay-content">
+                                <button class="btn-view">
+                                    <i class="fas fa-search-plus"></i> View
+                                </button>
+                                <button class="btn-download" data-image-url="{{ image.image.url }}" data-image-title="{{ image.title }}">
+                                    <i class="fas fa-download"></i> Download
+                                </button>
+                            </div>
+                        </div>
+                        <p class="image-caption text-center mt-2 small">{{ image.title|default:"Event Photo" }}</p>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center py-5">
+                    <i class="fas fa-images fa-4x text-muted mb-3"></i>
+                    <h3>No images in this gallery</h3>
+                    <p class="text-muted">Check back later for photos from this event.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+    </div>
+</section>
+
+<!-- Lightbox Modal -->
+<div id="lightboxModal" class="lightbox-modal">
+    <div class="lightbox-container">
+        <div class="lightbox-header">
+            <h4 id="lightboxTitle" class="mb-0"></h4>
+            <div class="lightbox-controls">
+                <button id="downloadBtn" class="btn-download-lightbox">
+                    <i class="fas fa-download"></i> Download
+                </button>
+                <button id="closeLightbox" class="btn-close-lightbox">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="lightbox-body">
+            <button id="prevBtn" class="nav-btn prev-btn">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <img id="lightboxImage" src="" alt="">
+            <button id="nextBtn" class="nav-btn next-btn">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+            <div class="image-counter" id="imageCounter"></div>
+        </div>
+        <div class="lightbox-footer">
+            <div class="thumbnails-container" id="thumbnailsContainer">
+                <!-- Thumbnails will be added here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+    
+
+    
+
+
+  </main>
+
+  <footer id="footer" class="footer dark-background">
+
+    <div class="container footer-top">
+      <div class="row gy-4">
+        <div class="col-lg-4 col-md-6 footer-about">
+          <a href="index.html" class="logo d-flex align-items-center">
+            <span class="sitename">HEYCG</span>
+          </a>
+          <div class="footer-contact pt-3">
+            <p>Makanisa matatu Street</p>
+            <p>Kimara, DSM 16104</p>
+            <p class="mt-3"><strong>Phone:</strong> <span>+255 719 005 790</span></p>
+            <p><strong>Email:</strong> <span>youngcharity@gmail.com</span></p>
+          </div>
+          <div class="social-links d-flex mt-4">
+            <a href="https://www.tiktok.com/@young_charity_generation" target="_blank"><i class="bi bi-tiktok"></i></a>
+            <a href="https://www.facebook.com/profile.php?id=61555713284053" target="_blank"><i class="bi bi-facebook"></i></a>
+            <a href="" target="_blank"><i class="bi bi-instagram"></i></a>
+            <a href="https://www.youtube.com/@YoungCharityGeneration" target="_blank"><i class="bi bi-youtube"></i></a>
+          </div>
+        </div>
+
+        <div class="col-lg-2 col-md-3 footer-links">
+          <h4>Useful Links</h4>
+          <ul>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Home</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">About us</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Services</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Terms of service</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Privacy policy</a></li>
+          </ul>
+        </div>
+
+        <div class="col-lg-2 col-md-3 footer-links">
+          <h4>Our Services</h4>
+          <ul>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Web Design</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Web Development</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Product Management</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Marketing</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Graphic Design</a></li>
+          </ul>
+        </div>
+
+        <div class="col-lg-4 col-md-12 footer-newsletter">
+          <h4>Stay Updated</h4>
+          <p>Subscribe to receive the latest charity events, community projects, and important announcements from HEYCG.</p>
+          <form action="forms/newsletter.php" method="post" class="php-email-form">
+            <div class="newsletter-form"><input type="email" name="email"><input type="submit" value="Subscribe"></div>
+            <div class="loading">Loading</div>
+            <div class="error-message"></div>
+            <div class="sent-message">Your subscription request has been sent. Thank you!</div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="container copyright text-center mt-4">
+      <p>© <span>Copyright</span> <strong class="px-1 sitename">HEYCG</strong> <span>All Rights Reserved</span></p>
+      <div class="credits">
+        <!-- All the links in the footer should remain intact. -->
+        <!-- You can delete the links only if you've purchased the pro version. -->
+        <!-- Licensing information: https://bootstrapmade.com/license/ -->
+        <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
+        Designed by <a href="https://bootstrapmade.com/">shmforfuture</a> | <a href="https://bootstrapmade.com/tools/">WebDeveloper</a>
+      </div>
+    </div>
+
+  </footer>
+
+  <!-- Scroll Top -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Preloader -->
+  <div id="preloader"></div>
+
+
+
+ <style>
+/* Gallery Grid Styles */
+.event-gallery {
+    background: #f8f9fa;
+    min-height: 100vh;
+    padding: 40px 0;
+}
+
+.gallery-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    cursor: pointer;
+    background: white;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.gallery-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.gallery-thumb {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.gallery-item:hover .gallery-thumb {
+    transform: scale(1.05);
+}
+
+.gallery-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.gallery-item:hover .gallery-overlay {
+    opacity: 1;
+}
+
+.overlay-content {
+    text-align: center;
+}
+
+.btn-view, .btn-download {
+    background: white;
+    border: none;
+    padding: 8px 16px;
+    margin: 5px;
+    border-radius: 25px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-view {
+    background: #2c3e50;
+    color: white;
+}
+
+.btn-view:hover {
+    background: #1a252f;
+    transform: scale(1.05);
+}
+
+.btn-download {
+    background: #28a745;
+    color: white;
+}
+
+.btn-download:hover {
+    background: #1e7e34;
+    transform: scale(1.05);
+}
+
+.image-caption {
+    font-size: 12px;
+    color: #6c757d;
+    padding: 0 10px;
+}
+
+/* Lightbox Styles */
+.lightbox-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.95);
+    z-index: 9999;
+    animation: fadeIn 0.3s ease;
+}
+
+.lightbox-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.lightbox-header {
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.lightbox-controls {
+    display: flex;
+    gap: 15px;
+}
+
+.btn-download-lightbox, .btn-close-lightbox {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 5px 12px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.btn-download-lightbox:hover {
+    background: #28a745;
+}
+
+.btn-close-lightbox:hover {
+    background: #dc3545;
+}
+
+.lightbox-body {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    min-height: 0;
+}
+
+#lightboxImage {
+    max-width: 85%;
+    max-height: 75vh;
+    object-fit: contain;
+    animation: zoomIn 0.3s ease;
+}
+
+@keyframes zoomIn {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.image-counter {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.7);
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    z-index: 10;
+}
+
+.nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 20;
+}
+
+.nav-btn:hover {
+    background: rgba(0,0,0,0.9);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.prev-btn {
+    left: 20px;
+}
+
+.next-btn {
+    right: 20px;
+}
+
+.lightbox-footer {
+    background: rgba(0,0,0,0.8);
+    padding: 15px;
+    overflow-x: auto;
+}
+
+.thumbnails-container {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 10px;
+}
+
+.thumbnail {
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 5px;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.thumbnail:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+}
+
+.thumbnail.active {
+    opacity: 1;
+    border-color: #fff;
+    box-shadow: 0 0 10px rgba(255,255,255,0.5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .gallery-thumb {
+        height: 180px;
+    }
+    
+    .nav-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 16px;
+    }
+    
+    .prev-btn {
+        left: 10px;
+    }
+    
+    .next-btn {
+        right: 10px;
+    }
+    
+    .thumbnail {
+        width: 60px;
+        height: 45px;
+    }
+    
+    .lightbox-header h4 {
+        font-size: 14px;
+    }
+}
+</style>
+
+<script>
+// Gallery Data - Load all images from Django
+const galleryImages = [
+    {% for image in event.gallery_images.all %}
+    {
+        id: {{ image.id }},
+        url: "{{ image.image.url }}",
+        title: "{{ image.title|default:'Event Photo'|escapejs }}",
+        thumbnail: "{{ image.image.url }}"
+    },
+    {% endfor %}
+];
+
+let currentIndex = 0;
+const lightboxModal = document.getElementById('lightboxModal');
+const lightboxImage = document.getElementById('lightboxImage');
+const lightboxTitle = document.getElementById('lightboxTitle');
+const imageCounter = document.getElementById('imageCounter');
+const thumbnailsContainer = document.getElementById('thumbnailsContainer');
+let currentDownloadUrl = '';
+
+// Build thumbnails
+function buildThumbnails() {
+    thumbnailsContainer.innerHTML = '';
+    galleryImages.forEach((image, index) => {
+        const thumb = document.createElement('img');
+        thumb.src = image.thumbnail;
+        thumb.alt = image.title;
+        thumb.className = 'thumbnail';
+        if (index === currentIndex) thumb.classList.add('active');
+        thumb.addEventListener('click', () => openLightbox(index));
+        thumbnailsContainer.appendChild(thumb);
+    });
+}
+
+// Update active thumbnail
+function updateActiveThumbnail() {
+    const thumbs = document.querySelectorAll('.thumbnail');
+    thumbs.forEach((thumb, idx) => {
+        if (idx === currentIndex) {
+            thumb.classList.add('active');
+            // Scroll thumbnail into view
+            thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        } else {
+            thumb.classList.remove('active');
+        }
+    });
+}
+
+// Open lightbox
+function openLightbox(index) {
+    if (!galleryImages.length) return;
+    currentIndex = index;
+    const image = galleryImages[currentIndex];
+    lightboxImage.src = image.url;
+    lightboxTitle.textContent = image.title;
+    currentDownloadUrl = image.url;
+    imageCounter.textContent = `${currentIndex + 1} / ${galleryImages.length}`;
+    lightboxModal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    updateActiveThumbnail();
+}
+
+// Close lightbox
+function closeLightbox() {
+    lightboxModal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+// Next image
+function nextImage() {
+    if (currentIndex < galleryImages.length - 1) {
+        currentIndex++;
+        const image = galleryImages[currentIndex];
+        lightboxImage.src = image.url;
+        lightboxTitle.textContent = image.title;
+        currentDownloadUrl = image.url;
+        imageCounter.textContent = `${currentIndex + 1} / ${galleryImages.length}`;
+        updateActiveThumbnail();
+    }
+}
+
+// Previous image
+function prevImage() {
+    if (currentIndex > 0) {
+        currentIndex--;
+        const image = galleryImages[currentIndex];
+        lightboxImage.src = image.url;
+        lightboxTitle.textContent = image.title;
+        currentDownloadUrl = image.url;
+        imageCounter.textContent = `${currentIndex + 1} / ${galleryImages.length}`;
+        updateActiveThumbnail();
+    }
+}
+
+// Download image
+function downloadImage(url, filename) {
+    fetch(url)
+        .then(response => response.blob())
+        .then(blob => {
+            const link = document.createElement('a');
+            const objectUrl = URL.createObjectURL(blob);
+            link.href = objectUrl;
+            link.download = filename || 'event-photo.jpg';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(objectUrl);
+        })
+        .catch(() => {
+            window.open(url, '_blank');
+        });
+}
+
+// Event Listeners
+document.querySelectorAll('.gallery-item').forEach((item) => {
+    const viewBtn = item.querySelector('.btn-view');
+    const downloadBtn = item.querySelector('.btn-download');
+    const index = parseInt(item.dataset.imageIndex);
+    
+    if (viewBtn) {
+        viewBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openLightbox(index);
+        });
+    }
+    
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const url = downloadBtn.dataset.imageUrl;
+            const title = downloadBtn.dataset.imageTitle;
+            const filename = title ? `${title}.jpg` : 'event-photo.jpg';
+            downloadImage(url, filename);
+        });
+    }
+    
+    // Click on image itself also opens lightbox
+    item.addEventListener('click', () => openLightbox(index));
+});
+
+// Lightbox controls
+document.getElementById('closeLightbox').addEventListener('click', closeLightbox);
+document.getElementById('nextBtn').addEventListener('click', nextImage);
+document.getElementById('prevBtn').addEventListener('click', prevImage);
+document.getElementById('downloadBtn').addEventListener('click', () => {
+    const filename = lightboxTitle.textContent || 'event-photo.jpg';
+    downloadImage(currentDownloadUrl, filename);
+});
+
+// Keyboard navigation
+document.addEventListener('keydown', (e) => {
+    if (lightboxModal.style.display === 'block') {
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowRight') nextImage();
+        if (e.key === 'ArrowLeft') prevImage();
+    }
+});
+
+// Close on click outside
+lightboxModal.addEventListener('click', (e) => {
+    if (e.target === lightboxModal || e.target.classList.contains('lightbox-body')) {
+        closeLightbox();
+    }
+});
+
+// Build thumbnails on page load
+if (galleryImages.length > 0) {
+    buildThumbnails();
+}
+</script>
+
+{% endblock %}

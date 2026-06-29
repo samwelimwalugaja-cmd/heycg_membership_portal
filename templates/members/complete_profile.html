@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete Profile - HEYCG</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    body { background: #eef2f5; padding: 2rem; font-family: 'Inter', sans-serif; }
+    .profile-card { max-width: 800px; margin: 0 auto; background: white; border-radius: 1.5rem; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
+    .success-header { background: linear-gradient(135deg, #28a745, #20c997); padding: 1.5rem; text-align: center; color: white; }
+    .form-section { padding: 2rem; }
+    .form-label { font-weight: 600; font-size: 0.8rem; margin-bottom: 0.3rem; }
+    .form-control, .form-select { border-radius: 0.75rem; border: 1.5px solid #e2e8f0; padding: 0.6rem 0.9rem; width: 100%; }
+    .form-control:focus, .form-select:focus { border-color: #0a58ca; outline: none; box-shadow: 0 0 0 3px rgba(10,88,202,0.1); }
+    .btn-submit { background: linear-gradient(135deg, #0a58ca, #764ba2); border: none; color: white; font-weight: 700; padding: 0.8rem; border-radius: 60px; width: 100%; margin-top: 1rem; }
+    .btn-submit:hover { transform: translateY(-2px); }
+    .info-box { background: #e8f4fd; border-radius: 0.75rem; padding: 0.8rem; margin-bottom: 1.5rem; font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+
+<div class="profile-card">
+  <div class="success-header">
+    <i class="fas fa-check-circle fa-3x"></i>
+    <h3 class="mt-2">Congratulations {{ profile.first_name|title }}!</h3>
+    <p>Your membership fee has been approved. Complete your profile to become active.</p>
+  </div>
+
+  <div class="form-section">
+    <div class="info-box">
+      <i class="fas fa-info-circle"></i> Please complete your profile information below.
+    </div>
+
+    <form method="post" id="profileForm">
+      {% csrf_token %}
+      
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">First Name</label>
+          <input type="text" class="form-control" value="{{ profile.first_name }}" readonly>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Last Name</label>
+          <input type="text" class="form-control" value="{{ profile.last_name }}" readonly>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-control" value="{{ user.email }}" readonly>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Gender</label>
+          <input type="text" class="form-control" value="{{ profile.get_gender_display }}" readonly>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Middle Name (Optional)</label>
+          <input type="text" name="middle_name" class="form-control" value="{{ form.middle_name.value|default:'' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Phone Number <span class="text-danger">*</span></label>
+          <input type="tel" name="phone_number" class="form-control" value="{{ form.phone_number.value|default:'' }}" required>
+        </div>
+        <div class="col-12">
+          <label class="form-label">Address <span class="text-danger">*</span></label>
+          <textarea name="address" class="form-control" rows="2" required>{{ form.address.value|default:'' }}</textarea>
+        </div>
+        <div class="col-12">
+          <label class="form-label">Why did you choose to join HEYCG? <span class="text-danger">*</span></label>
+          <textarea name="why_join" class="form-control" rows="3" required>{{ form.why_join.value|default:'' }}</textarea>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit">
+        <i class="fas fa-check-circle me-2"></i> Complete & Activate Membership
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+document.getElementById('profileForm').addEventListener('submit', function(e) {
+  // Show loading
+  Swal.fire({
+    title: 'Processing...',
+    text: 'Please wait',
+    allowOutsideClick: false,
+    didOpen: () => Swal.showLoading()
+  });
+  
+  // Form will submit normally, SweetAlert will close on page reload
+});
+</script>
+
+<!-- Django Messages SweetAlert -->
+{% if messages %}
+<script>
+  {% for message in messages %}
+    Swal.fire({
+      icon: '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% else %}info{% endif %}',
+      title: '{% if message.tags == "success" %}Success!{% else %}Notice{% endif %}',
+      text: '{{ message|escapejs }}',
+      confirmButtonText: 'OK'
+    }).then(() => {
+      {% if message.tags == "success" %}
+        window.location.href = "{% url 'members:dashboard' %}";
+      {% endif %}
+    });
+  {% endfor %}
+</script>
+{% endif %}
+
+</body>
+</html>

@@ -1,0 +1,574 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Donation - HEYCG{% endblock %}
+
+
+{% block content %}
+
+<header id="header" class="header d-flex align-items-center fixed-top" style="background-color: #474747ab;">
+    <div class="container-fluid container-xl position-relative d-flex align-items-center">
+
+      <a href="/" class="logo d-flex align-items-center me-auto">
+        <!-- Uncomment the line below if you also wish to use an image logo -->
+       <img src="{% static 'images/charity_logo_white.png' %}" alt="HEYCG Logo">
+      </a>
+
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="/" >Home</a></li>
+          <li><a href="{% url 'website:events_gallery' %}" >Events & Gallery</a></li>
+          <li><a href="{% url 'website:donation_page' %}" class="active">Donation</a></li>
+          <li><a href="{% url 'website:blog_list' %}">Blog</a></li>
+          {% comment %} <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <ul>
+              <li><a href="#">Dropdown 1</a></li>
+              <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                <ul>
+                  <li><a href="#">Deep Dropdown 1</a></li>
+                  <li><a href="#">Deep Dropdown 2</a></li>
+                  <li><a href="#">Deep Dropdown 3</a></li>
+                  <li><a href="#">Deep Dropdown 4</a></li>
+                  <li><a href="#">Deep Dropdown 5</a></li>
+                </ul>
+              </li>
+              <li><a href="#">Dropdown 2</a></li>
+              <li><a href="#">Dropdown 3</a></li>
+              <li><a href="#">Dropdown 4</a></li>
+            </ul>
+          </li> {% endcomment %}
+          
+        </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+
+      <a class="cta-btn" href="#" target="_blank">login</a>
+
+    </div>
+  </header>
+
+
+
+  <main class="main pt-5">
+
+
+   <!-- Donation Hero Section -->
+<section class="donation-hero py-5">
+    <div class="container">
+        <div class="row text-center text-white">
+            <div class="col-lg-8 mx-auto">
+                <h1 class="display-6 fw-bold mb-3">Support Our Cause</h1>
+                <p class="lead mb-4 text-dark">Your donation helps us make a difference in children's lives</p>
+                <p class="mb-0 text-dark">Every contribution, big or small, brings hope to those in need</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ======= MESSAGES SECTION - ONGEZA HII ======= -->
+{% if messages %}
+<div class="container mt-3">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %} me-2"></i>
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+
+<!-- Impact Statistics -->
+<section class="impact-stats py-4 bg-light">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-4 mb-3">
+                <div class="stat-card p-3">
+                    <h3 class="fw-bold text-primary">TZS {{ total_amount|floatformat:0 }}</h3>
+                    <p class="text-muted mb-0">Total Raised</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="stat-card p-3">
+                    <h3 class="fw-bold text-primary">{{ total_donors }}</h3>
+                    <p class="text-muted mb-0">Total Donors</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="stat-card p-3">
+                    <h3 class="fw-bold text-primary">50+</h3>
+                    <p class="text-muted mb-0">Projects Supported</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Active Campaigns Section -->
+<section class="campaigns py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Active Campaigns</h2>
+            <p class="text-muted">Choose a campaign to support</p>
+        </div>
+        
+        <div class="row g-4">
+            {% for campaign in campaigns_page %}
+            <div class="col-lg-4 col-md-6">
+                <div class="card campaign-card h-100 shadow-sm">
+                    <div class="card-img-top-wrapper">
+                        {% if campaign.image %}
+                        <img src="{{ campaign.image.url }}" class="card-img-top" alt="{{ campaign.title }}">
+                        {% else %}
+                        <img src="https://via.placeholder.com/400x200/2c3e50/white?text={{ campaign.title }}" class="card-img-top" alt="{{ campaign.title }}">
+                        {% endif %}
+                        {% if campaign.is_urgent %}
+                        <span class="campaign-badge bg-danger">Urgent</span>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">{{ campaign.title }}</h5>
+                        <p class="card-text text-muted small">{{ campaign.description|truncatewords:25 }}</p>
+                        
+                        <!-- Progress Bar -->
+                        <div class="progress mb-2" style="height: 8px;">
+                            <div class="progress-bar bg-success" style="width: {{ campaign.progress_percentage }}%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between small mb-3">
+                            <span>Raised: TZS {{ campaign.raised_amount|floatformat:0 }}</span>
+                            <span>Goal: TZS {{ campaign.goal_amount|floatformat:0 }}</span>
+                        </div>
+                        
+                        <!-- Donors Count -->
+                        <div class="donors-count mb-3">
+                            <i class="fas fa-users text-primary"></i>
+                            <span class="small text-muted"> {{ campaign.donations.count }} donors</span>
+                        </div>
+                        
+                        <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#donateModal{{ campaign.id }}">
+                            <i class="fas fa-hand-holding-heart me-2"></i> Donate Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Donation Modal for each campaign -->
+            <div class="modal fade" id="donateModal{{ campaign.id }}" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title">Donate to {{ campaign.title }}</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form method="POST" action="{% url 'website:process_donation' %}">
+                            {% csrf_token %}
+                            <div class="modal-body">
+                                <input type="hidden" name="campaign" value="{{ campaign.title }}">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Full Name</label>
+                                    <input type="text" name="name" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Email</label>
+                                    <input type="email" name="email" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Phone Number</label>
+                                    <input type="tel" name="phone" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Amount (TZS)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">TZS</span>
+                                        <input type="number" name="amount" class="form-control" min="1000" required>
+                                    </div>
+                                    <div class="mt-2">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary quick-amount" data-amount="5000">5,000</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary quick-amount" data-amount="10000">10,000</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary quick-amount" data-amount="25000">25,000</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary quick-amount" data-amount="50000">50,000</button>
+                                    </div>
+                                </div>
+                                <div class="form-check mb-3">
+                                    <input type="checkbox" name="anonymous" class="form-check-input" id="anonymous{{ campaign.id }}">
+                                    <label class="form-check-label">Donate anonymously</label>
+                                </div>
+                                <div class="alert alert-info small">
+                                    <i class="fas fa-info-circle"></i> After submitting, you will receive payment instructions via SMS or Email.
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Proceed to Donation</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-hand-holding-heart fa-3x text-muted mb-3"></i>
+                <h4>No active campaigns at the moment</h4>
+                <p class="text-muted">Check back later for our fundraising campaigns</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if campaigns_page.has_other_pages %}
+        <div class="row mt-5">
+            <div class="col-12">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        {% if campaigns_page.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ campaigns_page.previous_page_number }}">
+                                <i class="fas fa-chevron-left"></i> Previous
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for num in campaigns_page.paginator.page_range %}
+                            {% if campaigns_page.number == num %}
+                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                            {% elif num > campaigns_page.number|add:'-3' and num < campaigns_page.number|add:'3' %}
+                            <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if campaigns_page.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ campaigns_page.next_page_number }}">
+                                Next <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Recent Donations Section -->
+<section class="recent-donations py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Recent Donors</h2>
+            <p class="text-muted">Thank you to our generous supporters</p>
+        </div>
+        
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="donor-list">
+                    {% for donation in recent_donations %}
+                    <div class="donor-item d-flex justify-content-between align-items-center p-3 border-bottom">
+                        <div>
+                            <i class="fas fa-user-circle fa-2x text-primary me-3"></i>
+                            <strong>{{ donation.full_name }}</strong>
+                            <span class="text-muted small ms-2">- {{ donation.campaign.title|truncatewords:5 }}</span>
+                        </div>
+                        <span class="fw-bold text-success">TZS {{ donation.amount|floatformat:0 }}</span>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-4">
+                        <p class="text-muted">No donations yet. Be the first to donate!</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+    
+
+    
+
+
+  </main>
+
+  <footer id="footer" class="footer dark-background">
+
+    <div class="container footer-top">
+      <div class="row gy-4">
+        <div class="col-lg-4 col-md-6 footer-about">
+          <a href="index.html" class="logo d-flex align-items-center">
+            <span class="sitename">HEYCG</span>
+          </a>
+          <div class="footer-contact pt-3">
+            <p>Makanisa matatu Street</p>
+            <p>Kimara, DSM 16104</p>
+            <p class="mt-3"><strong>Phone:</strong> <span>+255 719 005 790</span></p>
+            <p><strong>Email:</strong> <span>youngcharity@gmail.com</span></p>
+          </div>
+          <div class="social-links d-flex mt-4">
+            <a href="https://www.tiktok.com/@young_charity_generation" target="_blank"><i class="bi bi-tiktok"></i></a>
+            <a href="https://www.facebook.com/profile.php?id=61555713284053" target="_blank"><i class="bi bi-facebook"></i></a>
+            <a href="" target="_blank"><i class="bi bi-instagram"></i></a>
+            <a href="https://www.youtube.com/@YoungCharityGeneration" target="_blank"><i class="bi bi-youtube"></i></a>
+          </div>
+        </div>
+
+        {% comment %} <div class="col-lg-2 col-md-3 footer-links">
+          <h4>Useful Links</h4>
+          <ul>
+            <li><i class="bi bi-chevron-right"></i> <a href="#hero">Home</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#about">About us</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#services">Services</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Terms of service</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Privacy policy</a></li>
+          </ul>
+        </div> {% endcomment %}
+
+        <div class="col-lg-2 col-md-3 footer-links">
+          <h4>Our Services</h4>
+          <ul>
+            <li><i class="bi bi-chevron-right"></i> <a href="{% url 'website:events_gallery' %}">Event & Gallery</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="{% url 'website:blog_list' %}">Blog</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="{% url 'website:donation_page' %}">Donation</a></li>
+            {% comment %} <li><i class="bi bi-chevron-right"></i> <a href="#">Marketing</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Graphic Design</a></li> {% endcomment %}
+          </ul>
+        </div>
+
+        <div class="col-lg-4 col-md-12 footer-newsletter">
+  <h4>Stay Updated</h4>
+  <p>Subscribe to receive the latest charity events, community projects, and important announcements from HEYCG.</p>
+  
+  <!-- Form rahisi - Bila JavaScript -->
+  <form method="post" action="{% url 'website:newsletter_subscribe' %}" id="newsletterForm">
+    {% csrf_token %}
+    <div class="newsletter-form">
+      <input type="email" name="email" placeholder="Enter your email" 
+             autocomplete="email" required>
+      <button type="submit" class="subscribe-btn">Subscribe</button>
+    </div>
+  </form>
+  
+  <!-- Django Messages -->
+  {% if messages %}
+    <div class="newsletter-messages">
+      {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'warning' %}warning{% else %}success{% endif %} alert-dismissible fade show" role="alert" style="font-size: 13px; padding: 8px 12px; margin-bottom: 5px;">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" style="font-size: 10px; padding: 8px;"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+
+<style>
+/* Ensure button matches your design */
+.subscribe-btn {
+  background: #0a58ca;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+.subscribe-btn:hover {
+  background: #084298;
+}
+
+/* Make sure form displays properly */
+.newsletter-form {
+  display: flex;
+  gap: 0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+  background: white;
+}
+
+.newsletter-form input[type="email"] {
+  flex: 1;
+  padding: 10px 15px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  background: transparent;
+  min-width: 0;
+}
+
+.newsletter-form input[type="email"]::placeholder {
+  color: #999;
+}
+
+.newsletter-form .subscribe-btn {
+  padding: 10px 25px;
+  background: #0a58ca;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background 0.3s;
+  white-space: nowrap;
+  border-radius: 0;
+}
+
+.newsletter-form .subscribe-btn:hover {
+  background: #084298;
+}
+
+.newsletter-messages {
+  margin-top: 10px;
+}
+
+.newsletter-messages .alert {
+  font-size: 13px;
+  padding: 8px 12px;
+  margin-bottom: 5px;
+  border-radius: 4px;
+}
+
+.newsletter-messages .alert-success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.newsletter-messages .alert-danger {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.newsletter-messages .alert-warning {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+</style>
+
+      </div>
+    </div>
+
+    <div class="container copyright text-center mt-4">
+      <p>© <span>Copyright</span> <strong class="px-1 sitename">HEYCG</strong> <span>All Rights Reserved</span></p>
+      <div class="credits">
+        <!-- All the links in the footer should remain intact. -->
+        <!-- You can delete the links only if you've purchased the pro version. -->
+        <!-- Licensing information: https://bootstrapmade.com/license/ -->
+        <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
+        Designed by <a href="https://bootstrapmade.com/">shmforfuture</a> | <a href="https://bootstrapmade.com/tools/">WebDeveloper</a>
+      </div>
+    </div>
+
+  </footer>
+
+  <!-- Scroll Top -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Preloader -->
+  <div id="preloader"></div>
+
+
+<style>
+/* Campaign Card Styles */
+.campaign-card {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.campaign-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+.card-img-top-wrapper {
+    position: relative;
+    overflow: hidden;
+    height: 200px;
+}
+
+.card-img-top-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.campaign-card:hover .card-img-top-wrapper img {
+    transform: scale(1.05);
+}
+
+.campaign-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.progress {
+    border-radius: 10px;
+}
+
+/* Stat Cards */
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+/* Donor List */
+.donor-item {
+    transition: background-color 0.3s ease;
+    border-radius: 10px;
+    background: white;
+}
+
+.donor-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* Quick Amount Buttons */
+.quick-amount {
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .donation-hero h1 {
+        font-size: 28px;
+    }
+    
+    .donation-hero .lead {
+        font-size: 16px;
+    }
+    
+    .campaign-card .card-title {
+        font-size: 18px;
+    }
+}
+</style>
+
+<script>
+// Quick amount buttons
+document.querySelectorAll('.quick-amount').forEach(button => {
+    button.addEventListener('click', function() {
+        const amount = this.dataset.amount;
+        const amountInput = this.closest('.modal-body').querySelector('input[name="amount"]');
+        if (amountInput) {
+            amountInput.value = amount;
+        }
+    });
+});
+</script>
+ 
+{% endblock %}
