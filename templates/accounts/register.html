@@ -472,6 +472,23 @@
         if (successDiv) successDiv.innerText = '';
     }
 
+    // Get CSRF token from cookie
+    function getCSRFToken() {
+        const name = 'csrftoken';
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
     // First Name validation
     const firstName = document.getElementById('firstName');
     firstName.addEventListener('input', function() {
@@ -593,7 +610,7 @@
         }
     });
 
-    // ========== FORM SUBMISSION WITH AJAX ==========
+    // ========== FORM SUBMISSION WITH AJAX - FIXED ==========
     document.getElementById('registrationForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
@@ -642,15 +659,14 @@
             }
         });
 
-        // Submit via AJAX
+        // Submit via AJAX - FIXED: NO headers for FormData!
         const formData = new FormData(this);
 
         fetch('/accounts/register/', {
             method: 'POST',
             body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
+            // ===== MUHIMU: Usiweke headers za content-type! =====
+            // ===== Browser inajishughulisha na multipart =====
         })
         .then(response => response.json())
         .then(data => {
