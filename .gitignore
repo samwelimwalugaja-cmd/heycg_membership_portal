@@ -17,7 +17,12 @@ venv.bak/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-media/
+
+# Media files (zote zizuiliwe, isipokuwa .gitkeep)
+media/*
+!media/.gitkeep
+
+# Static files
 staticfiles/
 
 # IDE
