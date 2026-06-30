@@ -20,6 +20,10 @@ urlpatterns = [
     path('members/', include('members.urls')),
 ]
 
-# ===== SERVE MEDIA FILES - INAFANYA KAZI KILA MAHA =====
-# Hii inaserve media files kwenye development NA production
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# ===== SERVE MEDIA FILES - HII INAFANYA KAZI KILA MAHA! =====
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+else:
+    # Hii ndiyo muhimu: Inalazimisha Django kuserve media hata kwenye production
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
