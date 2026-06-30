@@ -5,13 +5,7 @@ import dj_database_url
 from pathlib import Path
 from dotenv import load_dotenv
 
-# ===== LOAD ENVIRONMENT VARIABLES =====
 load_dotenv()
-
-# ===== CLOUDINARY IMPORTS =====
-import cloudinary
-import cloudinary.uploader
-import cloudinary.api
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -29,10 +23,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    
-    # ===== CLOUDINARY =====
-    'cloudinary_storage',
-    'cloudinary',
     
     'crispy_forms',
     'crispy_bootstrap5',
@@ -98,31 +88,23 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
+# ============================================================
 # ===== STATIC FILES =====
+# ============================================================
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # ============================================================
-# ===== CLOUDINARY CONFIGURATION - FIXED =====
+# ===== MEDIA FILES - LOCAL FILESYSTEM =====
 # ============================================================
 
-# ===== FAFANUA CLOUDINARY VARIABLES =====
-CLOUDINARY_CLOUD_NAME = os.environ.get('CLOUDINARY_CLOUD_NAME')
-CLOUDINARY_API_KEY = os.environ.get('CLOUDINARY_API_KEY')
-CLOUDINARY_API_SECRET = os.environ.get('CLOUDINARY_API_SECRET')
-
-# ===== CONFIGURE CLOUDINARY =====
-cloudinary.config(
-    cloud_name=CLOUDINARY_CLOUD_NAME,
-    api_key=CLOUDINARY_API_KEY,
-    api_secret=CLOUDINARY_API_SECRET,
-    secure=True
-)
-
 # ===== MEDIA FILES STORAGE =====
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+# Tumia filesystem storage (si Cloudinary)
+DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+
+# Media URLs na paths
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 

@@ -5,7 +5,6 @@ from django.utils.text import slugify
 from django.contrib.auth.models import User
 from django.urls import reverse
 from tinymce.models import HTMLField
-import uuid
 
 # ====================================================================
 # Blog models
