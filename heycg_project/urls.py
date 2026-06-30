@@ -20,11 +20,6 @@ urlpatterns = [
     path('members/', include('members.urls')),
 ]
 
-# ===== SERVE MEDIA FILES =====
-# Hii inafanya kazi kwenye development NA production
-if settings.DEBUG:
-    # Development: serve media from local filesystem
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-else:
-    # Production: serve media from local filesystem (Render, inigne, n.k.)
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# ===== SERVE MEDIA FILES - INAFANYA KAZI KILA MAHA =====
+# Hii inaserve media files kwenye development NA production
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -108,6 +108,11 @@ DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+
+# ===== ADD THIS =====
+# Whitenoise inaserve media files pia
+WHITENOISE_USE_FINDERS = True
+
 # ============================================================
 
 # ===== CRISPY FORMS =====
