@@ -487,14 +487,13 @@
                 <div style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; flex-shrink: 0; background: #0a58ca; display: flex; align-items: center; justify-content: center; color: white;">
                   {% if request.user.profile.profile_picture and request.user.profile.profile_picture.url %}
                     <img src="{{ request.user.profile.profile_picture.url }}" 
-                        style="width: 100%; height: 100%; object-fit: cover; display: block;" 
-                        alt="Profile"
-                        onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\"bi bi-person-fill\" style=\"font-size:14px;\"></i>'">
+                      style="width: 100%; height: 100%; object-fit: cover; display: block;" 
+                      alt="Profile">
                   {% else %}
                     <i class="bi bi-person-fill" style="font-size: 14px;"></i>
                   {% endif %}
                 </div>
-                <span class="fw-semibold small d-none d-sm-inline profile-name-text">{{ request.user.last_name|default:request.user.username }}</span>
+                <span class="fw-semibold small d-none d-sm-inline profile-name-text">{{ request.user.first_name|default:request.user.username }} {{ request.user.last_name|default:request.user.username }}</span>
                 <i class="bi bi-chevron-down small profile-chevron"></i>
               </button>
               <ul class="dropdown-menu dropdown-menu-end">
