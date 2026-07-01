@@ -11,7 +11,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ===== SECURITY =====
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-!q(u41=*%5qcd9qs-+nmm+gu9eb1z#zs*bxy-6qxw!yqpu5r&=')
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+
+# ===== MUHIMU: Weka DEBUG kuwa True kwa testing =====
+DEBUG = True  # Badili hii! Usitumie environment variable.
+
 ALLOWED_HOSTS = ['*']
 
 # ===== INSTALLED APPS =====
@@ -101,17 +104,11 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # ============================================================
 
 # ===== MEDIA FILES STORAGE =====
-# Tumia filesystem storage (si Cloudinary)
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 # Media URLs na paths
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-
-# ===== ADD THIS =====
-# Whitenoise inaserve media files pia
-WHITENOISE_USE_FINDERS = True
 
 # ============================================================
 
