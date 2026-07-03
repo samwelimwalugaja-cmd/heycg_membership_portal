@@ -91,9 +91,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # ============================================================
 
 # ===== FAFANUA CLOUDINARY VARIABLES =====
-CLOUDINARY_CLOUD_NAME = os.environ.get('CLOUDINARY_CLOUD_NAME')
-CLOUDINARY_API_KEY = os.environ.get('CLOUDINARY_API_KEY')
-CLOUDINARY_API_SECRET = os.environ.get('CLOUDINARY_API_SECRET')
+CLOUDINARY_CLOUD_NAME = 'diqw9vxni'
+CLOUDINARY_API_KEY = '214443295411688'
+CLOUDINARY_API_SECRET = 'f5ywn0NI6Ww9vshruM9KmfqeRFY'
 
 # ===== SANIDI CLOUDINARY =====
 cloudinary.config(
