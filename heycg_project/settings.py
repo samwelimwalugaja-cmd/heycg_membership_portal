@@ -19,6 +19,8 @@ ALLOWED_HOSTS = ['*']
 
 # ===== INSTALLED APPS =====
 INSTALLED_APPS = [
+    'cloudinary_storage',
+    'cloudinary',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -33,8 +35,7 @@ INSTALLED_APPS = [
     'website',
     'accounts',
     'members',
-    'cloudinary_storage',
-    'cloudinary',
+    
 ]
 
 # ===== MIDDLEWARE =====
