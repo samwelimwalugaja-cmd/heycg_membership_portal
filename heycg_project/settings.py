@@ -34,6 +34,8 @@ INSTALLED_APPS = [
     'website',
     'accounts',
     'members',
+    'cloudinary_storage',
+    'cloudinary',
 ]
 
 # ===== MIDDLEWARE =====
@@ -104,7 +106,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # ============================================================
 
 # ===== MEDIA FILES STORAGE =====
-DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Media URLs na paths
 MEDIA_URL = '/media/'

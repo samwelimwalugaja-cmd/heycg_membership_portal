@@ -21,4 +21,4 @@ urlpatterns = [
 ]
 
 # ===== SERVE MEDIA FILES - INAFANYA KAZI KILA MAHA =====
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
