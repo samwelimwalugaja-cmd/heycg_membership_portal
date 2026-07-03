@@ -4,6 +4,9 @@ import os
 import dj_database_url
 from pathlib import Path
 from dotenv import load_dotenv
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 load_dotenv()
 
@@ -11,10 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ===== SECURITY =====
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-!q(u41=*%5qcd9qs-+nmm+gu9eb1z#zs*bxy-6qxw!yqpu5r&=')
-
-# ===== MUHIMU: Weka DEBUG kuwa True kwa testing =====
-DEBUG = True  # Badili hii! Usitumie environment variable.
-
+DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 # ===== INSTALLED APPS =====
@@ -26,7 +26,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    
     'crispy_forms',
     'crispy_bootstrap5',
     'tinymce',
@@ -87,32 +86,41 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+# ============================================================
+# ===== CLOUDINARY CONFIGURATION =====
+# ============================================================
+
+# ===== FAFANUA CLOUDINARY VARIABLES =====
+CLOUDINARY_CLOUD_NAME = os.environ.get('CLOUDINARY_CLOUD_NAME')
+CLOUDINARY_API_KEY = os.environ.get('CLOUDINARY_API_KEY')
+CLOUDINARY_API_SECRET = os.environ.get('CLOUDINARY_API_SECRET')
+
+# ===== SANIDI CLOUDINARY =====
+cloudinary.config(
+    cloud_name=CLOUDINARY_CLOUD_NAME,
+    api_key=CLOUDINARY_API_KEY,
+    api_secret=CLOUDINARY_API_SECRET,
+    secure=True
+)
+
+# ===== MEDIA FILES STORAGE =====
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# ============================================================
+
 # ===== INTERNATIONALIZATION =====
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# ============================================================
 # ===== STATIC FILES =====
-# ============================================================
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-# ============================================================
-# ===== MEDIA FILES - LOCAL FILESYSTEM =====
-# ============================================================
-
-# ===== MEDIA FILES STORAGE =====
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-# Media URLs na paths
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# ============================================================
 
 # ===== CRISPY FORMS =====
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
