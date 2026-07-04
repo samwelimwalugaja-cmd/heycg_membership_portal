@@ -1,7 +1,6 @@
 # heycg_project/settings.py
 
 import os
-import dj_database_url
 from pathlib import Path
 from dotenv import load_dotenv
 import cloudinary
@@ -14,8 +13,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ===== SECURITY =====
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-!q(u41=*%5qcd9qs-+nmm+gu9eb1z#zs*bxy-6qxw!yqpu5r&=')
-DEBUG = True
-ALLOWED_HOSTS = ['*']
+
+# ===== MUHIMU: PythonAnywhere inahitaji DEBUG=False kwa production =====
+DEBUG = False
+
+ALLOWED_HOSTS = ['*', '.pythonanywhere.com']
 
 # ===== INSTALLED APPS =====
 INSTALLED_APPS = [
@@ -35,7 +37,6 @@ INSTALLED_APPS = [
     'website',
     'accounts',
     'members',
-    
 ]
 
 # ===== MIDDLEWARE =====
@@ -71,12 +72,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'heycg_project.wsgi.application'
 
-# ===== DATABASE =====
+# ===== DATABASE - SQLITE KWA PYTHONANYWHERE =====
+# ONDOA dj_database_url - haihitajiki kwa SQLite
 DATABASES = {
-    'default': dj_database_url.config(
-        default='sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
-        conn_max_age=600
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
 
 # ===== PASSWORD VALIDATION =====
@@ -91,12 +93,10 @@ AUTH_PASSWORD_VALIDATORS = [
 # ===== CLOUDINARY CONFIGURATION =====
 # ============================================================
 
-# ===== FAFANUA CLOUDINARY VARIABLES =====
 CLOUDINARY_CLOUD_NAME = 'diqw9vxni'
 CLOUDINARY_API_KEY = '214443295411688'
 CLOUDINARY_API_SECRET = 'f5ywn0NI6Ww9vshruM9KmfqeRFY'
 
-# ===== SANIDI CLOUDINARY =====
 cloudinary.config(
     cloud_name=CLOUDINARY_CLOUD_NAME,
     api_key=CLOUDINARY_API_KEY,
@@ -117,13 +117,17 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
+# ============================================================
 # ===== STATIC FILES =====
+# ============================================================
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+# ============================================================
 # ===== CRISPY FORMS =====
+# ============================================================
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
@@ -146,7 +150,7 @@ SESSION_COOKIE_SAMESITE = 'Lax'
 CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:8000',
     'http://localhost:8000',
-    'https://*.onrender.com',
+    'https://*.pythonanywhere.com',
 ]
 
 CSRF_COOKIE_NAME = 'csrftoken'
