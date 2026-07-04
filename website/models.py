@@ -49,7 +49,7 @@ class BlogPost(models.Model):
     
     excerpt = models.TextField(max_length=500)
     content = HTMLField()
-    featured_image = models.ImageField(null=True, blank=True)
+    featured_image = models.ImageField(upload_to='blog_images/', null=True, blank=True)
     
     views = models.PositiveIntegerField(default=0)
     likes = models.ManyToManyField(User, related_name='liked_posts', blank=True)
@@ -131,7 +131,7 @@ class Event(models.Model):
     event_date = models.DateTimeField()
     location = models.CharField(max_length=200)
     event_type = models.CharField(max_length=10, choices=EVENT_TYPES, default='upcoming')
-    image = models.ImageField(blank=True, null=True)
+    image = models.ImageField(upload_to='event_images/', blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     
@@ -141,7 +141,7 @@ class Event(models.Model):
 
 class GalleryImage(models.Model):
     title = models.CharField(max_length=100)
-    image = models.ImageField(blank=True, null=True)
+    image = models.ImageField(upload_to='gallery_images/', blank=True, null=True)
     description = models.TextField(blank=True)
     event = models.ForeignKey(Event, on_delete=models.SET_NULL, null=True, blank=True, related_name='gallery_images')
     uploaded_at = models.DateTimeField(auto_now_add=True)
@@ -160,7 +160,7 @@ class DonationCampaign(models.Model):
     description = models.TextField()
     goal_amount = models.DecimalField(max_digits=10, decimal_places=2)
     raised_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    image = models.ImageField(blank=True, null=True)
+    image = models.ImageField(upload_to='donation_images/', blank=True, null=True)
     is_active = models.BooleanField(default=True)
     is_urgent = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
