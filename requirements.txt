@@ -5,12 +5,10 @@ brotli==1.2.0
 certifi==2026.5.20
 cffi==2.0.0
 charset-normalizer==3.4.7
-cloudinary==1.44.3
 crispy-bootstrap5==2026.3
 cryptography==48.0.0
 cssselect2==0.9.0
 Django==6.0.5
-django-cloudinary-storage==0.3.0
 django-crispy-forms==2.6
 django-grappelli==5.0.0
 django-tinymce==5.0.0

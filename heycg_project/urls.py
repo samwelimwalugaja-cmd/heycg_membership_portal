@@ -21,4 +21,5 @@ urlpatterns = [
 ]
 
 # ===== SERVE MEDIA FILES - INAFANYA KAZI KILA MAHA =====
-# urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# Hii inaserve media files kwenye development NA production
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

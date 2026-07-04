@@ -3,9 +3,6 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-import cloudinary
-import cloudinary.uploader
-import cloudinary.api
 
 load_dotenv()
 
@@ -21,8 +18,6 @@ ALLOWED_HOSTS = ['*', '.pythonanywhere.com']
 
 # ===== INSTALLED APPS =====
 INSTALLED_APPS = [
-    'cloudinary_storage',
-    'cloudinary',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -73,7 +68,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'heycg_project.wsgi.application'
 
 # ===== DATABASE - SQLITE KWA PYTHONANYWHERE =====
-# ONDOA dj_database_url - haihitajiki kwa SQLite
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -88,28 +82,6 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
-
-# ============================================================
-# ===== CLOUDINARY CONFIGURATION =====
-# ============================================================
-
-CLOUDINARY_CLOUD_NAME = 'diqw9vxni'
-CLOUDINARY_API_KEY = '214443295411688'
-CLOUDINARY_API_SECRET = 'f5ywn0NI6Ww9vshruM9KmfqeRFY'
-
-cloudinary.config(
-    cloud_name=CLOUDINARY_CLOUD_NAME,
-    api_key=CLOUDINARY_API_KEY,
-    api_secret=CLOUDINARY_API_SECRET,
-    secure=True
-)
-
-# ===== MEDIA FILES STORAGE =====
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# ============================================================
 
 # ===== INTERNATIONALIZATION =====
 LANGUAGE_CODE = 'en-us'
@@ -126,8 +98,19 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # ============================================================
-# ===== CRISPY FORMS =====
+# ===== MEDIA FILES - LOCAL FILESYSTEM =====
 # ============================================================
+
+# ===== MEDIA FILES STORAGE =====
+DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+
+# Media URLs na paths
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# ============================================================
+
+# ===== CRISPY FORMS =====
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
